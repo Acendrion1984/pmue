@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMÜ - Prüfmittelüberwachung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+        }
+
+        .pmu-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .pmu-header {
+            background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,51,102,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .header-title .subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .filter-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1 1 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-group label i {
+            margin-right: 6px;
+            color: #003366;
+        }
+
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-group select:focus, .filter-group input:focus {
+            outline: none;
+            border-color: #003366;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,51,102,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .kpi-card.warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .kpi-card.danger {
+            border-left: 4px solid #dc2626;
+        }
+
+        .kpi-card.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            background: #eef2ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #003366;
+            font-size: 20px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .kpi-label {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .faelligkeiten-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-header h3 i {
+            color: #003366;
+            margin-right: 8px;
+        }
+
+        .faelligkeiten-liste {
+            list-style: none;
+        }
+
+        .faelligkeiten-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .faelligkeiten-item:last-child {
+            border-bottom: none;
+        }
+
+        .faelligkeit-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .status-rot { background: #dc2626; }
+        .status-gelb { background: #f59e0b; }
+        .status-gruen { background: #10b981; }
+
+        .faelligkeit-info {
+            flex: 1;
+        }
+
+        .faelligkeit-titel {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .faelligkeit-datum {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .faelligkeit-segment {
+            font-size: 11px;
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1400px;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 10px;
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .status-aktiv { background: #d1fae5; color: #065f46; }
+        .status-inaktiv { background: #fee2e2; color: #991b1b; }
+        .status-in-reparatur { background: #fed7aa; color: #92400e; }
+
+        .zustand-sehrgut { color: #10b981; font-weight: 600; }
+        .zustand-gut { color: #3b82f6; font-weight: 600; }
+        .zustand-befriedigend { color: #f59e0b; font-weight: 600; }
+        .zustand-prueffaellig { color: #dc2626; font-weight: 600; }
+
+        .pruefverfahren-badge {
+            background: #e9eef2;
+            color: #2c3e50;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: #003366;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .action-btn:hover {
+            background: #eef2ff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            color: #1e293b;
+            font-size: 24px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .modal-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #003366;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="pmu-container">
+        <div class="pmu-header">
+            <div class="header-title">
+                <h1>
+                    <i class="fas fa-clipboard-list"></i>
+                    PMÜ - Prüfmittelüberwachung
+                </h1>
+                <div class="subtitle">
+                    <i class="fas fa-calendar-check"></i>
+                    Zentrale Übersicht aller Prüfmittel und Fristen
+                </div>
+            </div>
+            <div class="header-stats" id="headerStats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalAnlagen">0</div>
+                    <div class="stat-label">Anlagen gesamt</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="aktivAnlagen">0</div>
+                    <div class="stat-label">Aktiv</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="faelligkeitenCount">0</div>
+                    <div class="stat-label">Fälligkeiten</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Segment</label>
+                <select id="segmentFilter">
+                    <option value="">Alle</option>
+                    <option value="Segment 4">Segment 4</option>
+                    <option value="Segment 6">Segment 6</option>
+                    <option value="Segment 11">Segment 11</option>
+                    <option value="Segment 12">Segment 12</option>
+                    <option value="Segment 14">Segment 14</option>
+                    <option value="Segment 15">Segment 15</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-circle"></i> Status</label>
+                <select id="statusFilter">
+                    <option value="">Alle</option>
+                    <option value="aktiv">Aktiv</option>
+                    <option value="inaktiv">Inaktiv</option>
+                    <option value="in Reparatur">In Reparatur</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-search"></i> Suche</label>
+                <input type="text" id="searchFilter" placeholder="Suchen...">
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Neu
+                </button>
+                <button class="btn" onclick="loadPruefmittel()">
+                    <i class="fas fa-sync-alt"></i> Aktualisieren
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <div class="faelligkeiten-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Anstehende Prüfungen</h3>
+                    <span id="faelligkeitenCount2">0</span>
+                </div>
+                <div class="faelligkeiten-liste" id="faelligkeitenListe"></div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="pruefmittelTable">
+                <thead>
+                    <tr>
+                        <th>Equipmentnr.</th>
+                        <th>Bezeichnung</th>
+                        <th>Materialnr.</th>
+                        <th>Seriennummer</th>
+                        <th>Segment</th>
+                        <th>Status</th>
+                        <th>Zustand</th>
+                        <th>Prüfzyklus</th>
+                        <th>Kalibrierstichtag</th>
+                        <th>Standort</th>
+                        <th>Prüfverfahren</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="12" style="text-align: center;">Daten werden geladen...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" id="pruefmittelModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Neues Prüfmittel</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="pruefmittelForm" class="modal-form">
+                <input type="hidden" id="editId">
+                
+                <div class="form-group">
+                    <label>Equipmentnummer *</label>
+                    <input type="text" id="inventarnummer" required placeholder="z.B. 12169257">
+                </div>
+
+                <div class="form-group">
+                    <label>Bezeichnung *</label>
+                    <input type="text" id="bezeichnung" required placeholder="z.B. Hanjoch TWM22D">
+                </div>
+
+                <div class="form-group">
+                    <label>Materialnummer</label>
+                    <input type="text" id="materialnummer" placeholder="z.B. 070935815-0000">
+                </div>
+
+                <div class="form-group">
+                    <label>Seriennummer</label>
+                    <input type="text" id="seriennummer" placeholder="z.B. 094">
+                </div>
+
+                <div class="form-group">
+                    <label>Segment</label>
+                    <select id="segment">
+                        <option value="">Bitte wählen</option>
+                        <option value="Segment 4">Segment 4</option>
+                        <option value="Segment 6">Segment 6</option>
+                        <option value="Segment 11">Segment 11</option>
+                        <option value="Segment 12">Segment 12</option>
+                        <option value="Segment 14">Segment 14</option>
+                        <option value="Segment 15">Segment 15</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="status">
+                        <option value="aktiv">Aktiv</option>
+                        <option value="inaktiv">Inaktiv</option>
+                        <option value="in Reparatur">In Reparatur</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Zustand</label>
+                    <select id="zustand">
+                        <option value="sehr gut">Sehr gut</option>
+                        <option value="gut">Gut</option>
+                        <option value="befriedigend">Befriedigend</option>
+                        <option value="prüffällig">Prüffällig</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Prüfzyklus</label>
+                    <select id="pruefzyklus">
+                        <option value="">Bitte wählen</option>
+                        <option value="90 Tage">90 Tage</option>
+                        <option value="180 Tage">180 Tage</option>
+                        <option value="365 Tage">365 Tage</option>
+                        <option value="730 Tage">730 Tage</option>
+                        <option value="1825 Tage">1825 Tage</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kalibrierstichtag</label>
+                    <input type="date" id="naechste_kalibrierung">
+                </div>
+
+                <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" id="standort" placeholder="z.B. Bau 17 - Fluxraum">
+                </div>
+
+                <div class="form-group">
+                    <label>Prüfverfahren</label>
+                    <select id="pruefverfahren">
+                        <option value="">Bitte wählen</option>
+                        <option value="ET">Wirbelstromprüfung (ET)</option>
+                        <option value="MT">Magnetpulverprüfung (MT)</option>
+                        <option value="UT">Ultraschallprüfung (UT)</option>
+                        <option value="Sonstiges">Sonstiges</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Letzte Prüfung</label>
+                    <input type="date" id="letzte_pruefung">
+                </div>
+
+                <div class="form-group">
+                    <label>Nächste Prüfung</label>
+                    <input type="date" id="naechste_pruefung">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Abbrechen</button>
+                    <button type="submit" class="btn btn-success">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Supabase Konfiguration
+        const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+        
+        // Supabase Client initialisieren
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Globale Variable für die aktuellen Daten
+        let currentPruefmittel = [];
+
+        // Beim Laden der Seite
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM geladen, starte Datenabfrage...');
+            loadPruefmittel();
+            
+            // Event-Listener für Filter
+            document.getElementById('segmentFilter').addEventListener('change', filterData);
+            document.getElementById('statusFilter').addEventListener('change', filterData);
+            document.getElementById('searchFilter').addEventListener('input', filterData);
+        });
+
+        // Hauptfunktion zum Laden der Daten
+        async function loadPruefmittel() {
+            showLoading();
+            
+            try {
+                console.log('Lade Daten von Supabase...');
+                
+                const { data, error } = await supabaseClient
+                    .from('pruefmittel')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Supabase Fehler:', error);
+                    throw error;
+                }
+                
+                console.log('Geladene Daten:', data);
+                currentPruefmittel = data || [];
+                
+                if (currentPruefmittel.length === 0) {
+                    console.log('Keine Daten gefunden');
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
+                } else {
+                    updateDashboard();
+                    renderTable(currentPruefmittel);
+                }
+                
+            } catch (error) {
+                console.error('Fehler beim Laden:', error);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" style="text-align: center; color: red;">Fehler beim Laden: ${error.message}</td></tr>`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Daten filtern
+        function filterData() {
+            const segment = document.getElementById('segmentFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const search = document.getElementById('searchFilter').value.toLowerCase();
+            
+            let filtered = currentPruefmittel;
+            
+            if (segment) {
+                filtered = filtered.filter(item => item.segment === segment);
+            }
+            
+            if (status) {
+                filtered = filtered.filter(item => item.status === status);
+            }
+            
+            if (search) {
+                filtered = filtered.filter(item => 
+                    (item.inventarnummer && item.inventarnummer.toLowerCase().includes(search)) ||
+                    (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
+                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search)) ||
+                    (item.seriennummer && item.seriennummer.toLowerCase().includes(search))
+                );
+            }
+            
+            renderTable(filtered);
+        }
+
+        // Tabelle rendern
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = data.map(item => {
+                const zustandClass = getZustandClass(item.zustand);
+                const pruefverfahren = item.pruefverfahren || '-';
+                const statusClass = item.status === 'in Reparatur' ? 'in-reparatur' : (item.status || 'aktiv');
+                
+                return `
+                    <tr>
+                        <td><strong>${item.inventarnummer || '-'}</strong></td>
+                        <td>${item.bezeichnung || '-'}</td>
+                        <td>${item.materialnummer || '-'}</td>
+                        <td>${item.seriennummer || '-'}</td>
+                        <td>${item.segment || '-'}</td>
+                        <td><span class="status-badge status-${statusClass}">${item.status || 'aktiv'}</span></td>
+                        <td class="${zustandClass}">${item.zustand || '-'}</td>
+                        <td>${item.pruefzyklus || '-'}</td>
+                        <td>${formatDate(item.naechste_kalibrierung)}</td>
+                        <td>${item.standort || '-'}</td>
+                        <td><span class="pruefverfahren-badge">${pruefverfahren}</span></td>
+                        <td>
+                            <button class="action-btn" onclick="editPruefmittel(${item.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn" onclick="deletePruefmittel(${item.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Dashboard aktualisieren
+        function updateDashboard() {
+            const total = currentPruefmittel.length;
+            const aktiv = currentPruefmittel.filter(p => p.status === 'aktiv').length;
+            
+            const heute = new Date();
+            const in30Tagen = new Date();
+            in30Tagen.setDate(heute.getDate() + 30);
+            
+            const faelligkeiten = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum <= in30Tagen;
+            }).length;
+            
+            document.getElementById('totalAnlagen').textContent = total;
+            document.getElementById('aktivAnlagen').textContent = aktiv;
+            document.getElementById('faelligkeitenCount').textContent = faelligkeiten;
+            document.getElementById('faelligkeitenCount2').textContent = faelligkeiten;
+            
+            renderKpiCards();
+            renderFaelligkeiten();
+        }
+
+        // KPI-Karten rendern
+        function renderKpiCards() {
+            const heute = new Date();
+            const in30Tagen = new Date();
+            in30Tagen.setDate(heute.getDate() + 30);
+            const in7Tagen = new Date();
+            in7Tagen.setDate(heute.getDate() + 7);
+            
+            const faelligkeiten30 = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum <= in30Tagen;
+            }).length;
+            
+            const faelligkeiten7 = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum <= in7Tagen;
+            }).length;
+            
+            const ueberfaellig = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum < heute;
+            }).length;
+            
+            document.getElementById('kpiGrid').innerHTML = `
+                <div class="kpi-card ${ueberfaellig > 0 ? 'danger' : ''}">
+                    <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
+                    <div class="kpi-value">${ueberfaellig}</div>
+                    <div class="kpi-label">Überfällig</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-value">${faelligkeiten7}</div>
+                    <div class="kpi-label">In 7 Tagen</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="kpi-value">${faelligkeiten30}</div>
+                    <div class="kpi-label">In 30 Tagen</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-value">${currentPruefmittel.length}</div>
+                    <div class="kpi-label">Gesamt</div>
+                </div>
+            `;
+        }
+
+        // Fälligkeiten-Liste rendern
+        function renderFaelligkeiten() {
+            const heute = new Date();
+            const in30Tagen = new Date();
+            in30Tagen.setDate(heute.getDate() + 30);
+            
+            const faelligkeiten = currentPruefmittel
+                .filter(p => {
+                    if (!p.naechste_kalibrierung) return false;
+                    const datum = new Date(p.naechste_kalibrierung);
+                    return datum <= in30Tagen;
+                })
+                .sort((a, b) => new Date(a.naechste_kalibrierung) - new Date(b.naechste_kalibrierung))
+                .slice(0, 10);
+            
+            const liste = document.getElementById('faelligkeitenListe');
+            
+            if (faelligkeiten.length === 0) {
+                liste.innerHTML = '<div style="text-align: center; color: #64748b; padding: 20px;">Keine anstehenden Kalibrierungen</div>';
+                return;
+            }
+            
+            liste.innerHTML = faelligkeiten.map(item => {
+                const datum = new Date(item.naechste_kalibrierung);
+                const diffTage = Math.ceil((datum - heute) / (1000 * 60 * 60 * 24));
+                
+                let statusClass = 'status-gruen';
+                if (diffTage < 0) statusClass = 'status-rot';
+                else if (diffTage < 14) statusClass = 'status-gelb';
+                
+                return `
+                    <div class="faelligkeiten-item">
+                        <div class="faelligkeit-status ${statusClass}"></div>
+                        <div class="faelligkeit-info">
+                            <div class="faelligkeit-titel">${item.inventarnummer} - ${item.bezeichnung}</div>
+                            <div class="faelligkeit-datum">${formatDate(item.naechste_kalibrierung)} (${diffTage < 0 ? 'überfällig' : `in ${diffTage} Tagen`})</div>
+                        </div>
+                        <span class="faelligkeit-segment">${item.segment || '-'}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Modal-Funktionen
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
+            document.getElementById('pruefmittelForm').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('pruefmittelModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('pruefmittelModal').style.display = 'none';
+        }
+
+        async function editPruefmittel(id) {
+            const item = currentPruefmittel.find(p => p.id === id);
+            if (!item) return;
+            
+            document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
+            document.getElementById('editId').value = item.id;
+            
+            document.getElementById('inventarnummer').value = item.inventarnummer || '';
+            document.getElementById('bezeichnung').value = item.bezeichnung || '';
+            document.getElementById('materialnummer').value = item.materialnummer || '';
+            document.getElementById('seriennummer').value = item.seriennummer || '';
+            document.getElementById('segment').value = item.segment || '';
+            document.getElementById('status').value = item.status || 'aktiv';
+            document.getElementById('zustand').value = item.zustand || 'gut';
+            document.getElementById('pruefzyklus').value = item.pruefzyklus || '';
+            document.getElementById('naechste_kalibrierung').value = item.naechste_kalibrierung || '';
+            document.getElementById('standort').value = item.standort || '';
+            document.getElementById('pruefverfahren').value = item.pruefverfahren || '';
+            document.getElementById('letzte_pruefung').value = item.letzte_pruefung || '';
+            document.getElementById('naechste_pruefung').value = item.naechste_pruefung || '';
+            
+            document.getElementById('pruefmittelModal').style.display = 'flex';
+        }
+
+        async function deletePruefmittel(id) {
+            if (!confirm('Wirklich löschen?')) return;
+            
+            showLoading();
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('pruefmittel')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                
+                await loadPruefmittel();
+                
+            } catch (error) {
+                console.error('Fehler:', error);
+                alert('Fehler beim Löschen: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Formular-Submit
+        document.getElementById('pruefmittelForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            showLoading();
+            
+            try {
+                const formData = {
+                    inventarnummer: document.getElementById('inventarnummer').value,
+                    bezeichnung: document.getElementById('bezeichnung').value,
+                    materialnummer: document.getElementById('materialnummer').value || null,
+                    seriennummer: document.getElementById('seriennummer').value || null,
+                    segment: document.getElementById('segment').value || null,
+                    status: document.getElementById('status').value,
+                    zustand: document.getElementById('zustand').value,
+                    pruefzyklus: document.getElementById('pruefzyklus').value || null,
+                    naechste_kalibrierung: document.getElementById('naechste_kalibrierung').value || null,
+                    standort: document.getElementById('standort').value || null,
+                    pruefverfahren: document.getElementById('pruefverfahren').value || null,
+                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null,
+                    naechste_pruefung: document.getElementById('naechste_pruefung').value || null
+                };
+                
+                const editId = document.getElementById('editId').value;
+                
+                let result;
+                if (editId) {
+                    result = await supabaseClient
+                        .from('pruefmittel')
+                        .update(formData)
+                        .eq('id', editId);
+                } else {
+                    result = await supabaseClient
+                        .from('pruefmittel')
+                        .insert([formData]);
+                }
+                
+                if (result.error) throw result.error;
+                
+                closeModal();
+                await loadPruefmittel();
+                
+            } catch (error) {
+                console.error('Fehler:', error);
+                alert('Fehler beim Speichern: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Hilfsfunktionen
+        function formatDate(date) {
+            if (!date) return '-';
+            return new Date(date).toLocaleDateString('de-DE');
+        }
+
+        function getZustandClass(zustand) {
+            switch(zustand) {
+                case 'sehr gut': return 'zustand-sehrgut';
+                case 'gut': return 'zustand-gut';
+                case 'befriedigend': return 'zustand-befriedigend';
+                case 'prüffällig': return 'zustand-prueffaellig';
+                default: return '';
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        // Modal schließen bei Klick außerhalb
+        window.onclick = function(event) {
+            const modal = document.getElementById('pruefmittelModal');
+            if (event.target === modal) closeModal();
+        }
+    </script>
+</body>
+</html>
