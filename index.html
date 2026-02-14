@@ -341,7 +341,7 @@
 
         .status-aktiv { background: #d1fae5; color: #065f46; }
         .status-inaktiv { background: #fee2e2; color: #991b1b; }
-        .status-reparatur { background: #fed7aa; color: #92400e; }
+        .status-in-reparatur { background: #fed7aa; color: #92400e; }
 
         .zustand-sehrgut { color: #10b981; font-weight: 600; }
         .zustand-gut { color: #3b82f6; font-weight: 600; }
@@ -553,6 +553,9 @@
                 <button class="btn btn-primary" onclick="openAddModal()">
                     <i class="fas fa-plus"></i> Neu
                 </button>
+                <button class="btn" onclick="loadPruefmittel()">
+                    <i class="fas fa-sync-alt"></i> Aktualisieren
+                </button>
             </div>
         </div>
 
@@ -605,22 +608,22 @@
                 
                 <div class="form-group">
                     <label>Equipmentnummer *</label>
-                    <input type="text" id="inventarnummer" required placeholder="z.B. EQ-001">
+                    <input type="text" id="inventarnummer" required placeholder="z.B. 12169257">
                 </div>
 
                 <div class="form-group">
                     <label>Bezeichnung *</label>
-                    <input type="text" id="bezeichnung" required placeholder="z.B. Digitales Multimeter">
+                    <input type="text" id="bezeichnung" required placeholder="z.B. Hanjoch TWM22D">
                 </div>
 
                 <div class="form-group">
                     <label>Materialnummer</label>
-                    <input type="text" id="materialnummer" placeholder="z.B. MAT-001">
+                    <input type="text" id="materialnummer" placeholder="z.B. 070935815-0000">
                 </div>
 
                 <div class="form-group">
                     <label>Seriennummer</label>
-                    <input type="text" id="seriennummer" placeholder="z.B. SN-12345">
+                    <input type="text" id="seriennummer" placeholder="z.B. 094">
                 </div>
 
                 <div class="form-group">
@@ -664,7 +667,6 @@
                         <option value="365 Tage">365 Tage</option>
                         <option value="730 Tage">730 Tage</option>
                         <option value="1825 Tage">1825 Tage</option>
-
                     </select>
                 </div>
 
@@ -675,16 +677,16 @@
 
                 <div class="form-group">
                     <label>Standort</label>
-                    <input type="text" id="standort" placeholder="z.B. Labor 101">
+                    <input type="text" id="standort" placeholder="z.B. Bau 17 - Fluxraum">
                 </div>
 
                 <div class="form-group">
                     <label>Prüfverfahren</label>
                     <select id="pruefverfahren">
                         <option value="">Bitte wählen</option>
-                        <option value="ET">Wirbelstromprüfung</option>
-                        <option value="MT">Magnetpulverprüfung</option>
-                        <option value="UT">Ultraschallprüfung</option>
+                        <option value="ET">Wirbelstromprüfung (ET)</option>
+                        <option value="MT">Magnetpulverprüfung (MT)</option>
+                        <option value="UT">Ultraschallprüfung (UT)</option>
                         <option value="Sonstiges">Sonstiges</option>
                     </select>
                 </div>
@@ -692,6 +694,11 @@
                 <div class="form-group">
                     <label>Letzte Prüfung</label>
                     <input type="date" id="letzte_pruefung">
+                </div>
+
+                <div class="form-group">
+                    <label>Nächste Prüfung</label>
+                    <input type="date" id="naechste_pruefung">
                 </div>
 
                 <div class="modal-actions">
@@ -707,43 +714,64 @@
     </div>
 
     <script>
+        // Supabase Konfiguration
         const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+        
+        // Supabase Client initialisieren
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        // Globale Variable für die aktuellen Daten
         let currentPruefmittel = [];
 
+        // Beim Laden der Seite
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM geladen, starte Datenabfrage...');
             loadPruefmittel();
             
+            // Event-Listener für Filter
             document.getElementById('segmentFilter').addEventListener('change', filterData);
             document.getElementById('statusFilter').addEventListener('change', filterData);
             document.getElementById('searchFilter').addEventListener('input', filterData);
         });
 
+        // Hauptfunktion zum Laden der Daten
         async function loadPruefmittel() {
             showLoading();
             
             try {
+                console.log('Lade Daten von Supabase...');
+                
                 const { data, error } = await supabaseClient
                     .from('pruefmittel')
                     .select('*')
                     .order('created_at', { ascending: false });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase Fehler:', error);
+                    throw error;
+                }
                 
+                console.log('Geladene Daten:', data);
                 currentPruefmittel = data || [];
-                updateDashboard();
-                renderTable(currentPruefmittel);
+                
+                if (currentPruefmittel.length === 0) {
+                    console.log('Keine Daten gefunden');
+                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
+                } else {
+                    updateDashboard();
+                    renderTable(currentPruefmittel);
+                }
                 
             } catch (error) {
-                console.error('Fehler:', error);
-                alert('Fehler beim Laden: ' + error.message);
+                console.error('Fehler beim Laden:', error);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" style="text-align: center; color: red;">Fehler beim Laden: ${error.message}</td></tr>`;
             } finally {
                 hideLoading();
             }
         }
 
+        // Daten filtern
         function filterData() {
             const segment = document.getElementById('segmentFilter').value;
             const status = document.getElementById('statusFilter').value;
@@ -751,19 +779,27 @@
             
             let filtered = currentPruefmittel;
             
-            if (segment) filtered = filtered.filter(item => item.segment === segment);
-            if (status) filtered = filtered.filter(item => item.status === status);
+            if (segment) {
+                filtered = filtered.filter(item => item.segment === segment);
+            }
+            
+            if (status) {
+                filtered = filtered.filter(item => item.status === status);
+            }
+            
             if (search) {
                 filtered = filtered.filter(item => 
                     (item.inventarnummer && item.inventarnummer.toLowerCase().includes(search)) ||
                     (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
-                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search))
+                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search)) ||
+                    (item.seriennummer && item.seriennummer.toLowerCase().includes(search))
                 );
             }
             
             renderTable(filtered);
         }
 
+        // Tabelle rendern
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             
@@ -775,6 +811,7 @@
             tbody.innerHTML = data.map(item => {
                 const zustandClass = getZustandClass(item.zustand);
                 const pruefverfahren = item.pruefverfahren || '-';
+                const statusClass = item.status === 'in Reparatur' ? 'in-reparatur' : (item.status || 'aktiv');
                 
                 return `
                     <tr>
@@ -783,7 +820,7 @@
                         <td>${item.materialnummer || '-'}</td>
                         <td>${item.seriennummer || '-'}</td>
                         <td>${item.segment || '-'}</td>
-                        <td><span class="status-badge status-${item.status || 'aktiv'}">${item.status || 'aktiv'}</span></td>
+                        <td><span class="status-badge status-${statusClass}">${item.status || 'aktiv'}</span></td>
                         <td class="${zustandClass}">${item.zustand || '-'}</td>
                         <td>${item.pruefzyklus || '-'}</td>
                         <td>${formatDate(item.naechste_kalibrierung)}</td>
@@ -802,6 +839,7 @@
             }).join('');
         }
 
+        // Dashboard aktualisieren
         function updateDashboard() {
             const total = currentPruefmittel.length;
             const aktiv = currentPruefmittel.filter(p => p.status === 'aktiv').length;
@@ -825,6 +863,7 @@
             renderFaelligkeiten();
         }
 
+        // KPI-Karten rendern
         function renderKpiCards() {
             const heute = new Date();
             const in30Tagen = new Date();
@@ -874,6 +913,7 @@
             `;
         }
 
+        // Fälligkeiten-Liste rendern
         function renderFaelligkeiten() {
             const heute = new Date();
             const in30Tagen = new Date();
@@ -916,6 +956,7 @@
             }).join('');
         }
 
+        // Modal-Funktionen
         function openAddModal() {
             document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
             document.getElementById('pruefmittelForm').reset();
@@ -946,6 +987,7 @@
             document.getElementById('standort').value = item.standort || '';
             document.getElementById('pruefverfahren').value = item.pruefverfahren || '';
             document.getElementById('letzte_pruefung').value = item.letzte_pruefung || '';
+            document.getElementById('naechste_pruefung').value = item.naechste_pruefung || '';
             
             document.getElementById('pruefmittelModal').style.display = 'flex';
         }
@@ -973,6 +1015,7 @@
             }
         }
 
+        // Formular-Submit
         document.getElementById('pruefmittelForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -991,23 +1034,9 @@
                     naechste_kalibrierung: document.getElementById('naechste_kalibrierung').value || null,
                     standort: document.getElementById('standort').value || null,
                     pruefverfahren: document.getElementById('pruefverfahren').value || null,
-                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null
+                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null,
+                    naechste_pruefung: document.getElementById('naechste_pruefung').value || null
                 };
-                
-                // Nächstes Prüfdatum berechnen (optional)
-                if (formData.letzte_pruefung && formData.pruefzyklus) {
-                    const letztePruefung = new Date(formData.letzte_pruefung);
-                    const naechstePruefung = new Date(letztePruefung);
-                    
-                    switch(formData.pruefzyklus) {
-                        case 'monatlich': naechstePruefung.setMonth(naechstePruefung.getMonth() + 1); break;
-                        case 'vierteljährlich': naechstePruefung.setMonth(naechstePruefung.getMonth() + 3); break;
-                        case 'halbjährlich': naechstePruefung.setMonth(naechstePruefung.getMonth() + 6); break;
-                        case 'jährlich': naechstePruefung.setFullYear(naechstePruefung.getFullYear() + 1); break;
-                    }
-                    
-                    formData.naechste_pruefung = naechstePruefung.toISOString().split('T')[0];
-                }
                 
                 const editId = document.getElementById('editId').value;
                 
@@ -1036,6 +1065,7 @@
             }
         });
 
+        // Hilfsfunktionen
         function formatDate(date) {
             if (!date) return '-';
             return new Date(date).toLocaleDateString('de-DE');
@@ -1059,6 +1089,7 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
+        // Modal schließen bei Klick außerhalb
         window.onclick = function(event) {
             const modal = document.getElementById('pruefmittelModal');
             if (event.target === modal) closeModal();
