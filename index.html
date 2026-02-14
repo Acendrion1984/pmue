@@ -19,7 +19,7 @@
 
         /* Main Container */
         .pmu-container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -316,6 +316,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1400px;
         }
 
         th {
@@ -324,16 +325,18 @@
             background: #f8fafc;
             color: #1e293b;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
+            white-space: nowrap;
         }
 
         td {
             padding: 15px 10px;
             border-bottom: 1px solid #e2e8f0;
             color: #334155;
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
         tr:hover td {
@@ -343,19 +346,32 @@
         .status-badge {
             padding: 5px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             display: inline-block;
+            white-space: nowrap;
         }
 
         .status-aktiv { background: #d1fae5; color: #065f46; }
         .status-inaktiv { background: #fee2e2; color: #991b1b; }
         .status-reparatur { background: #fed7aa; color: #92400e; }
 
-        .zustand-sehrgut { color: #10b981; }
-        .zustand-gut { color: #3b82f6; }
-        .zustand-befriedigend { color: #f59e0b; }
+        .zustand-sehrgut { color: #10b981; font-weight: 600; }
+        .zustand-gut { color: #3b82f6; font-weight: 600; }
+        .zustand-befriedigend { color: #f59e0b; font-weight: 600; }
         .zustand-prueffaellig { color: #dc2626; font-weight: 600; }
+
+        .pruefverfahren-badge {
+            background: #e9eef2;
+            color: #2c3e50;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-align: center;
+            display: inline-block;
+        }
 
         .action-btn {
             background: none;
@@ -364,7 +380,7 @@
             cursor: pointer;
             padding: 5px 10px;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .action-btn:hover {
@@ -558,7 +574,7 @@
             </div>
             <div class="filter-group">
                 <label><i class="fas fa-search"></i> Suche</label>
-                <input type="text" id="searchFilter" placeholder="Inventarnummer, Bezeichnung...">
+                <input type="text" id="searchFilter" placeholder="Equipment-Nr., Bezeichnung...">
             </div>
             <div class="filter-actions">
                 <button class="btn" onclick="loadPruefmittel()">
@@ -592,21 +608,23 @@
             <table id="pruefmittelTable">
                 <thead>
                     <tr>
-                        <th>Inventarnr.</th>
+                        <th>Equipmentnr.</th>
                         <th>Bezeichnung</th>
+                        <th>Materialnr.</th>
+                        <th>Seriennummer</th>
                         <th>Segment</th>
                         <th>Status</th>
                         <th>Zustand</th>
-                        <th>Letzte Prüfung</th>
-                        <th>Nächste Prüfung</th>
                         <th>Prüfzyklus</th>
-                        <th>Nächste Kalibrierung</th>
+                        <th>Kalibrierstichtag</th>
+                        <th>Standort</th>
+                        <th>Prüfverfahren</th>
                         <th>Aktionen</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     <tr>
-                        <td colspan="10" style="text-align: center;">Daten werden geladen...</td>
+                        <td colspan="12" style="text-align: center;">Daten werden geladen...</td>
                     </tr>
                 </tbody>
             </table>
@@ -625,12 +643,23 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Inventarnummer *</label>
+                        <label>Equipmentnummer *</label>
                         <input type="text" id="inventarnummer" required>
                     </div>
                     <div class="form-group">
                         <label>Bezeichnung *</label>
                         <input type="text" id="bezeichnung" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Materialnummer</label>
+                        <input type="text" id="materialnummer">
+                    </div>
+                    <div class="form-group">
+                        <label>Seriennummer</label>
+                        <input type="text" id="seriennummer">
                     </div>
                 </div>
 
@@ -647,10 +676,6 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Seriennummer</label>
-                        <input type="text" id="seriennummer">
-                    </div>
-                    <div class="form-group">
                         <label>Segment *</label>
                         <select id="segment" required>
                             <option value="">Bitte wählen</option>
@@ -660,9 +685,6 @@
                             <option value="Segment D">Segment D</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
                         <label>Abteilung *</label>
                         <select id="abteilung" required>
@@ -672,13 +694,13 @@
                             <option value="Qualitätssicherung">Qualitätssicherung</option>
                         </select>
                     </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label>Standort</label>
                         <input type="text" id="standort">
                     </div>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
                         <label>Prüfzyklus *</label>
                         <select id="pruefzyklus" required>
@@ -687,6 +709,20 @@
                             <option value="vierteljährlich">Vierteljährlich</option>
                             <option value="halbjährlich">Halbjährlich</option>
                             <option value="jährlich">Jährlich</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Prüfverfahren</label>
+                        <select id="pruefverfahren">
+                            <option value="">Bitte wählen</option>
+                            <option value="ET">ET - Externe Prüfung</option>
+                            <option value="IT">IT - Interne Prüfung</option>
+                            <option value="WA">WA - Werksabnahme</option>
+                            <option value="KA">KA - Kalibrierung</option>
+                            <option value="VA">VA - Validierung</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -717,13 +753,8 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Prüfart</label>
-                        <select id="pruefart">
-                            <option value="">Bitte wählen</option>
-                            <option value="intern">Intern</option>
-                            <option value="extern">Extern</option>
-                            <option value="werksabnahme">Werksabnahme</option>
-                        </select>
+                        <label>Nächste Kalibrierung</label>
+                        <input type="date" id="naechste_kalibrierung">
                     </div>
                     <div class="form-group">
                         <label>Prüfmittel-Norm</label>
@@ -766,12 +797,12 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Nächste Kalibrierung</label>
-                        <input type="date" id="naechste_kalibrierung">
-                    </div>
-                    <div class="form-group">
                         <label>Wartungsfirma</label>
                         <input type="text" id="wartungsfirma">
+                    </div>
+                    <div class="form-group">
+                        <label>Prüfintervall (Tage)</label>
+                        <input type="number" id="pruefintervall_tage">
                     </div>
                 </div>
 
@@ -859,7 +890,8 @@
                 filtered = filtered.filter(item => 
                     (item.inventarnummer && item.inventarnummer.toLowerCase().includes(search)) ||
                     (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
-                    (item.hersteller && item.hersteller.toLowerCase().includes(search))
+                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search)) ||
+                    (item.seriennummer && item.seriennummer.toLowerCase().includes(search))
                 );
             }
             
@@ -871,32 +903,39 @@
             const tbody = document.getElementById('tableBody');
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
                 return;
             }
             
             tbody.innerHTML = data.map(item => {
-                const naechstePruefung = item.naechste_pruefung ? new Date(item.naechste_pruefung) : null;
-                const heute = new Date();
-                let faelligkeitsClass = '';
-                
-                if (naechstePruefung) {
-                    const diffTage = Math.ceil((naechstePruefung - heute) / (1000 * 60 * 60 * 24));
-                    if (diffTage < 0) faelligkeitsClass = 'zustand-prueffaellig';
-                    else if (diffTage < 30) faelligkeitsClass = 'zustand-befriedigend';
+                // Prüfverfahren abkürzen
+                let pruefverfahrenText = '-';
+                if (item.pruefverfahren) {
+                    const verfahren = item.pruefverfahren;
+                    if (verfahren === 'ET' || verfahren === 'Externe Prüfung') pruefverfahrenText = 'ET';
+                    else if (verfahren === 'IT' || verfahren === 'Interne Prüfung') pruefverfahrenText = 'IT';
+                    else if (verfahren === 'WA' || verfahren === 'Werksabnahme') pruefverfahrenText = 'WA';
+                    else if (verfahren === 'KA' || verfahren === 'Kalibrierung') pruefverfahrenText = 'KA';
+                    else if (verfahren === 'VA' || verfahren === 'Validierung') pruefverfahrenText = 'VA';
+                    else pruefverfahrenText = verfahren.substring(0, 2).toUpperCase();
                 }
+                
+                // Zustandsklasse für Formatierung
+                const zustandClass = getZustandClass(item.zustand);
                 
                 return `
                     <tr>
                         <td><strong>${item.inventarnummer || '-'}</strong></td>
                         <td>${item.bezeichnung || '-'}</td>
+                        <td>${item.materialnummer || '-'}</td>
+                        <td>${item.seriennummer || '-'}</td>
                         <td>${item.segment || '-'}</td>
                         <td><span class="status-badge status-${item.status || 'aktiv'}">${item.status || 'aktiv'}</span></td>
-                        <td class="${getZustandClass(item.zustand)}">${item.zustand || '-'}</td>
-                        <td>${formatDate(item.letzte_pruefung)}</td>
-                        <td class="${faelligkeitsClass}">${formatDate(item.naechste_pruefung)}</td>
+                        <td class="${zustandClass}">${item.zustand || '-'}</td>
                         <td>${item.pruefzyklus || '-'}</td>
                         <td>${formatDate(item.naechste_kalibrierung)}</td>
+                        <td>${item.standort || '-'}</td>
+                        <td><span class="pruefverfahren-badge">${pruefverfahrenText}</span></td>
                         <td>
                             <button class="action-btn" onclick="editPruefmittel(${item.id})">
                                 <i class="fas fa-edit"></i>
@@ -1097,6 +1136,7 @@
                 const formData = {
                     inventarnummer: document.getElementById('inventarnummer').value,
                     bezeichnung: document.getElementById('bezeichnung').value,
+                    materialnummer: document.getElementById('materialnummer').value,
                     hersteller: document.getElementById('hersteller').value,
                     typ: document.getElementById('typ').value,
                     seriennummer: document.getElementById('seriennummer').value,
@@ -1104,10 +1144,10 @@
                     abteilung: document.getElementById('abteilung').value,
                     standort: document.getElementById('standort').value,
                     pruefzyklus: document.getElementById('pruefzyklus').value,
+                    pruefverfahren: document.getElementById('pruefverfahren').value,
                     letzte_pruefung: document.getElementById('letzte_pruefung').value || null,
                     status: document.getElementById('status').value,
                     zustand: document.getElementById('zustand').value,
-                    pruefart: document.getElementById('pruefart').value,
                     pruefmittel_norm: document.getElementById('pruefmittel_norm').value,
                     messbereich_min: document.getElementById('messbereich_min').value || null,
                     messbereich_max: document.getElementById('messbereich_max').value || null,
@@ -1117,6 +1157,7 @@
                     kalibrierschein_nummer: document.getElementById('kalibrierschein_nummer').value,
                     naechste_kalibrierung: document.getElementById('naechste_kalibrierung').value || null,
                     wartungsfirma: document.getElementById('wartungsfirma').value,
+                    pruefintervall_tage: document.getElementById('pruefintervall_tage').value || null,
                     notizen: document.getElementById('notizen').value
                 };
                 
