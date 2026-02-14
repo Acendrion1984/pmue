@@ -17,14 +17,12 @@
             min-height: 100vh;
         }
 
-        /* Main Container */
         .pmu-container {
             max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* Header */
         .pmu-header {
             background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
             color: white;
@@ -76,7 +74,6 @@
             opacity: 0.8;
         }
 
-        /* Filter Bar */
         .filter-bar {
             background: white;
             border-radius: 15px;
@@ -160,7 +157,6 @@
             border: none;
         }
 
-        /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -168,7 +164,6 @@
             margin-bottom: 25px;
         }
 
-        /* KPI Cards */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -225,13 +220,6 @@
             font-weight: 500;
         }
 
-        .kpi-sub {
-            font-size: 12px;
-            color: #94a3b8;
-            margin-top: 8px;
-        }
-
-        /* Fälligkeiten Card */
         .faelligkeiten-card {
             background: white;
             border-radius: 15px;
@@ -304,7 +292,6 @@
             border-radius: 12px;
         }
 
-        /* Tabelle */
         .table-container {
             background: white;
             border-radius: 15px;
@@ -387,7 +374,6 @@
             background: #eef2ff;
         }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -405,7 +391,7 @@
             background: white;
             border-radius: 20px;
             width: 90%;
-            max-width: 700px;
+            max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
             padding: 30px;
@@ -433,12 +419,6 @@
 
         .modal-form {
             display: grid;
-            gap: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
 
@@ -461,6 +441,7 @@
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 14px;
+            width: 100%;
         }
 
         .modal-actions {
@@ -470,7 +451,6 @@
             margin-top: 25px;
         }
 
-        /* Loading */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -498,7 +478,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive */
         @media (max-width: 1024px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -506,24 +485,17 @@
         }
 
         @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
             .header-stats {
                 width: 100%;
                 justify-content: space-around;
             }
         }
     </style>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="pmu-container">
-        <!-- Header -->
         <div class="pmu-header">
             <div class="header-title">
                 <h1>
@@ -551,22 +523,20 @@
             </div>
         </div>
 
-        <!-- Filter Bar -->
         <div class="filter-bar">
             <div class="filter-group">
-                <label><i class="fas fa-filter"></i> Segment filtern</label>
+                <label><i class="fas fa-filter"></i> Segment</label>
                 <select id="segmentFilter">
-                    <option value="">Alle Segmente</option>
+                    <option value="">Alle</option>
                     <option value="Segment A">Segment A</option>
                     <option value="Segment B">Segment B</option>
                     <option value="Segment C">Segment C</option>
-                    <option value="Segment D">Segment D</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label><i class="fas fa-circle"></i> Status</label>
                 <select id="statusFilter">
-                    <option value="">Alle Status</option>
+                    <option value="">Alle</option>
                     <option value="aktiv">Aktiv</option>
                     <option value="inaktiv">Inaktiv</option>
                     <option value="in Reparatur">In Reparatur</option>
@@ -574,36 +544,26 @@
             </div>
             <div class="filter-group">
                 <label><i class="fas fa-search"></i> Suche</label>
-                <input type="text" id="searchFilter" placeholder="Equipment-Nr., Bezeichnung...">
+                <input type="text" id="searchFilter" placeholder="Suchen...">
             </div>
             <div class="filter-actions">
-                <button class="btn" onclick="loadPruefmittel()">
-                    <i class="fas fa-sync-alt"></i> Aktualisieren
-                </button>
                 <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fas fa-plus"></i> Neues Prüfmittel
+                    <i class="fas fa-plus"></i> Neu
                 </button>
             </div>
         </div>
 
-        <!-- Dashboard Grid -->
         <div class="dashboard-grid">
-            <!-- KPI Cards -->
             <div class="kpi-grid" id="kpiGrid"></div>
-
-            <!-- Fälligkeiten Card -->
             <div class="faelligkeiten-card">
                 <div class="card-header">
                     <h3><i class="fas fa-exclamation-triangle"></i> Anstehende Prüfungen</h3>
-                    <span class="badge" id="faelligkeitenCount2">0</span>
+                    <span id="faelligkeitenCount2">0</span>
                 </div>
-                <div class="faelligkeiten-liste" id="faelligkeitenListe">
-                    <!-- Wird dynamisch befüllt -->
-                </div>
+                <div class="faelligkeiten-liste" id="faelligkeitenListe"></div>
             </div>
         </div>
 
-        <!-- Haupttabelle -->
         <div class="table-container">
             <table id="pruefmittelTable">
                 <thead>
@@ -631,7 +591,6 @@
         </div>
     </div>
 
-    <!-- Modal für neues/bearbeiten Prüfmittel -->
     <div class="modal" id="pruefmittelModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -641,174 +600,90 @@
             <form id="pruefmittelForm" class="modal-form">
                 <input type="hidden" id="editId">
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Equipmentnummer *</label>
-                        <input type="text" id="inventarnummer" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Bezeichnung *</label>
-                        <input type="text" id="bezeichnung" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Materialnummer</label>
-                        <input type="text" id="materialnummer">
-                    </div>
-                    <div class="form-group">
-                        <label>Seriennummer</label>
-                        <input type="text" id="seriennummer">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Hersteller</label>
-                        <input type="text" id="hersteller">
-                    </div>
-                    <div class="form-group">
-                        <label>Typ</label>
-                        <input type="text" id="typ">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Segment *</label>
-                        <select id="segment" required>
-                            <option value="">Bitte wählen</option>
-                            <option value="Segment A">Segment A</option>
-                            <option value="Segment B">Segment B</option>
-                            <option value="Segment C">Segment C</option>
-                            <option value="Segment D">Segment D</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Abteilung *</label>
-                        <select id="abteilung" required>
-                            <option value="">Bitte wählen</option>
-                            <option value="Produktion">Produktion</option>
-                            <option value="Instandhaltung">Instandhaltung</option>
-                            <option value="Qualitätssicherung">Qualitätssicherung</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Standort</label>
-                        <input type="text" id="standort">
-                    </div>
-                    <div class="form-group">
-                        <label>Prüfzyklus *</label>
-                        <select id="pruefzyklus" required>
-                            <option value="">Bitte wählen</option>
-                            <option value="monatlich">Monatlich</option>
-                            <option value="vierteljährlich">Vierteljährlich</option>
-                            <option value="halbjährlich">Halbjährlich</option>
-                            <option value="jährlich">Jährlich</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Prüfverfahren</label>
-                        <select id="pruefverfahren">
-                            <option value="">Bitte wählen</option>
-                            <option value="ET">ET - Externe Prüfung</option>
-                            <option value="IT">IT - Interne Prüfung</option>
-                            <option value="WA">WA - Werksabnahme</option>
-                            <option value="KA">KA - Kalibrierung</option>
-                            <option value="VA">VA - Validierung</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Letzte Prüfung</label>
-                        <input type="date" id="letzte_pruefung">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="status">
-                            <option value="aktiv">Aktiv</option>
-                            <option value="inaktiv">Inaktiv</option>
-                            <option value="in Reparatur">In Reparatur</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Zustand</label>
-                        <select id="zustand">
-                            <option value="sehr gut">Sehr gut</option>
-                            <option value="gut">Gut</option>
-                            <option value="befriedigend">Befriedigend</option>
-                            <option value="prüffällig">Prüffällig</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nächste Kalibrierung</label>
-                        <input type="date" id="naechste_kalibrierung">
-                    </div>
-                    <div class="form-group">
-                        <label>Prüfmittel-Norm</label>
-                        <input type="text" id="pruefmittel_norm" placeholder="z.B. DIN EN ISO 9001">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Messbereich Min</label>
-                        <input type="number" step="0.01" id="messbereich_min">
-                    </div>
-                    <div class="form-group">
-                        <label>Messbereich Max</label>
-                        <input type="number" step="0.01" id="messbereich_max">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Genauigkeit</label>
-                        <input type="text" id="genauigkeit" placeholder="z.B. ±0.01mm">
-                    </div>
-                    <div class="form-group">
-                        <label>Abnahmedatum</label>
-                        <input type="date" id="abnahme_datum">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Abnahmebehörde</label>
-                        <input type="text" id="abnahme_behoerde">
-                    </div>
-                    <div class="form-group">
-                        <label>Kalibrierschein-Nr.</label>
-                        <input type="text" id="kalibrierschein_nummer">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Wartungsfirma</label>
-                        <input type="text" id="wartungsfirma">
-                    </div>
-                    <div class="form-group">
-                        <label>Prüfintervall (Tage)</label>
-                        <input type="number" id="pruefintervall_tage">
-                    </div>
+                <div class="form-group">
+                    <label>Equipmentnummer *</label>
+                    <input type="text" id="inventarnummer" required placeholder="z.B. EQ-001">
                 </div>
 
                 <div class="form-group">
-                    <label>Notizen</label>
-                    <textarea id="notizen" rows="3"></textarea>
+                    <label>Bezeichnung *</label>
+                    <input type="text" id="bezeichnung" required placeholder="z.B. Digitales Multimeter">
+                </div>
+
+                <div class="form-group">
+                    <label>Materialnummer</label>
+                    <input type="text" id="materialnummer" placeholder="z.B. MAT-001">
+                </div>
+
+                <div class="form-group">
+                    <label>Seriennummer</label>
+                    <input type="text" id="seriennummer" placeholder="z.B. SN-12345">
+                </div>
+
+                <div class="form-group">
+                    <label>Segment</label>
+                    <select id="segment">
+                        <option value="">Bitte wählen</option>
+                        <option value="Segment A">Segment A</option>
+                        <option value="Segment B">Segment B</option>
+                        <option value="Segment C">Segment C</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="status">
+                        <option value="aktiv">Aktiv</option>
+                        <option value="inaktiv">Inaktiv</option>
+                        <option value="in Reparatur">In Reparatur</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Zustand</label>
+                    <select id="zustand">
+                        <option value="sehr gut">Sehr gut</option>
+                        <option value="gut">Gut</option>
+                        <option value="befriedigend">Befriedigend</option>
+                        <option value="prüffällig">Prüffällig</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Prüfzyklus</label>
+                    <select id="pruefzyklus">
+                        <option value="">Bitte wählen</option>
+                        <option value="monatlich">Monatlich</option>
+                        <option value="vierteljährlich">Vierteljährlich</option>
+                        <option value="halbjährlich">Halbjährlich</option>
+                        <option value="jährlich">Jährlich</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kalibrierstichtag</label>
+                    <input type="date" id="naechste_kalibrierung">
+                </div>
+
+                <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" id="standort" placeholder="z.B. Labor 101">
+                </div>
+
+                <div class="form-group">
+                    <label>Prüfverfahren</label>
+                    <select id="pruefverfahren">
+                        <option value="">Bitte wählen</option>
+                        <option value="ET">ET - Externe Prüfung</option>
+                        <option value="IT">IT - Interne Prüfung</option>
+                        <option value="WA">WA - Werksabnahme</option>
+                        <option value="KA">KA - Kalibrierung</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Letzte Prüfung</label>
+                    <input type="date" id="letzte_pruefung">
                 </div>
 
                 <div class="modal-actions">
@@ -819,36 +694,30 @@
         </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
 
     <script>
-        // Supabase Konfiguration
         const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Globale Variable für aktuelle Daten
         let currentPruefmittel = [];
 
-        // Initial load
         document.addEventListener('DOMContentLoaded', function() {
             loadPruefmittel();
             
-            // Event Listener für Filter
             document.getElementById('segmentFilter').addEventListener('change', filterData);
             document.getElementById('statusFilter').addEventListener('change', filterData);
             document.getElementById('searchFilter').addEventListener('input', filterData);
         });
 
-        // Prüfmittel laden
         async function loadPruefmittel() {
             showLoading();
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('pruefmittel')
                     .select('*')
                     .order('created_at', { ascending: false });
@@ -858,19 +727,15 @@
                 currentPruefmittel = data || [];
                 updateDashboard();
                 renderTable(currentPruefmittel);
-                updateHeaderStats();
-                renderKpiCards();
-                renderFaelligkeiten();
                 
             } catch (error) {
-                console.error('Fehler beim Laden:', error);
-                alert('Fehler beim Laden der Daten: ' + error.message);
+                console.error('Fehler:', error);
+                alert('Fehler beim Laden: ' + error.message);
             } finally {
                 hideLoading();
             }
         }
 
-        // Filter anwenden
         function filterData() {
             const segment = document.getElementById('segmentFilter').value;
             const status = document.getElementById('statusFilter').value;
@@ -878,27 +743,19 @@
             
             let filtered = currentPruefmittel;
             
-            if (segment) {
-                filtered = filtered.filter(item => item.segment === segment);
-            }
-            
-            if (status) {
-                filtered = filtered.filter(item => item.status === status);
-            }
-            
+            if (segment) filtered = filtered.filter(item => item.segment === segment);
+            if (status) filtered = filtered.filter(item => item.status === status);
             if (search) {
                 filtered = filtered.filter(item => 
                     (item.inventarnummer && item.inventarnummer.toLowerCase().includes(search)) ||
                     (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
-                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search)) ||
-                    (item.seriennummer && item.seriennummer.toLowerCase().includes(search))
+                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search))
                 );
             }
             
             renderTable(filtered);
         }
 
-        // Tabelle rendern
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             
@@ -908,20 +765,8 @@
             }
             
             tbody.innerHTML = data.map(item => {
-                // Prüfverfahren abkürzen
-                let pruefverfahrenText = '-';
-                if (item.pruefverfahren) {
-                    const verfahren = item.pruefverfahren;
-                    if (verfahren === 'ET' || verfahren === 'Externe Prüfung') pruefverfahrenText = 'ET';
-                    else if (verfahren === 'IT' || verfahren === 'Interne Prüfung') pruefverfahrenText = 'IT';
-                    else if (verfahren === 'WA' || verfahren === 'Werksabnahme') pruefverfahrenText = 'WA';
-                    else if (verfahren === 'KA' || verfahren === 'Kalibrierung') pruefverfahrenText = 'KA';
-                    else if (verfahren === 'VA' || verfahren === 'Validierung') pruefverfahrenText = 'VA';
-                    else pruefverfahrenText = verfahren.substring(0, 2).toUpperCase();
-                }
-                
-                // Zustandsklasse für Formatierung
                 const zustandClass = getZustandClass(item.zustand);
+                const pruefverfahren = item.pruefverfahren || '-';
                 
                 return `
                     <tr>
@@ -935,7 +780,7 @@
                         <td>${item.pruefzyklus || '-'}</td>
                         <td>${formatDate(item.naechste_kalibrierung)}</td>
                         <td>${item.standort || '-'}</td>
-                        <td><span class="pruefverfahren-badge">${pruefverfahrenText}</span></td>
+                        <td><span class="pruefverfahren-badge">${pruefverfahren}</span></td>
                         <td>
                             <button class="action-btn" onclick="editPruefmittel(${item.id})">
                                 <i class="fas fa-edit"></i>
@@ -949,28 +794,29 @@
             }).join('');
         }
 
-        // Header Stats aktualisieren
-        function updateHeaderStats() {
-            document.getElementById('totalAnlagen').textContent = currentPruefmittel.length;
-            
+        function updateDashboard() {
+            const total = currentPruefmittel.length;
             const aktiv = currentPruefmittel.filter(p => p.status === 'aktiv').length;
-            document.getElementById('aktivAnlagen').textContent = aktiv;
             
             const heute = new Date();
             const in30Tagen = new Date();
             in30Tagen.setDate(heute.getDate() + 30);
             
             const faelligkeiten = currentPruefmittel.filter(p => {
-                if (!p.naechste_pruefung) return false;
-                const pruefDatum = new Date(p.naechste_pruefung);
-                return pruefDatum <= in30Tagen;
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum <= in30Tagen;
             }).length;
             
+            document.getElementById('totalAnlagen').textContent = total;
+            document.getElementById('aktivAnlagen').textContent = aktiv;
             document.getElementById('faelligkeitenCount').textContent = faelligkeiten;
             document.getElementById('faelligkeitenCount2').textContent = faelligkeiten;
+            
+            renderKpiCards();
+            renderFaelligkeiten();
         }
 
-        // KPI Cards rendern
         function renderKpiCards() {
             const heute = new Date();
             const in30Tagen = new Date();
@@ -979,55 +825,47 @@
             in7Tagen.setDate(heute.getDate() + 7);
             
             const faelligkeiten30 = currentPruefmittel.filter(p => {
-                if (!p.naechste_pruefung) return false;
-                const datum = new Date(p.naechste_pruefung);
-                return datum <= in30Tagen;
-            }).length;
-            
-            const faelligkeiten7 = currentPruefmittel.filter(p => {
-                if (!p.naechste_pruefung) return false;
-                const datum = new Date(p.naechste_pruefung);
-                return datum <= in7Tagen;
-            }).length;
-            
-            const ueberfaellig = currentPruefmittel.filter(p => {
-                if (!p.naechste_pruefung) return false;
-                const datum = new Date(p.naechste_pruefung);
-                return datum < heute;
-            }).length;
-            
-            const kalibrierungFaellig = currentPruefmittel.filter(p => {
                 if (!p.naechste_kalibrierung) return false;
                 const datum = new Date(p.naechste_kalibrierung);
                 return datum <= in30Tagen;
             }).length;
             
-            const kpiGrid = document.getElementById('kpiGrid');
-            kpiGrid.innerHTML = `
+            const faelligkeiten7 = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum <= in7Tagen;
+            }).length;
+            
+            const ueberfaellig = currentPruefmittel.filter(p => {
+                if (!p.naechste_kalibrierung) return false;
+                const datum = new Date(p.naechste_kalibrierung);
+                return datum < heute;
+            }).length;
+            
+            document.getElementById('kpiGrid').innerHTML = `
                 <div class="kpi-card ${ueberfaellig > 0 ? 'danger' : ''}">
                     <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
                     <div class="kpi-value">${ueberfaellig}</div>
-                    <div class="kpi-label">Überfällige Prüfungen</div>
+                    <div class="kpi-label">Überfällig</div>
                 </div>
                 <div class="kpi-card warning">
                     <div class="kpi-icon"><i class="fas fa-clock"></i></div>
                     <div class="kpi-value">${faelligkeiten7}</div>
-                    <div class="kpi-label">Fällig in 7 Tagen</div>
+                    <div class="kpi-label">In 7 Tagen</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
                     <div class="kpi-value">${faelligkeiten30}</div>
-                    <div class="kpi-label">Fällig in 30 Tagen</div>
+                    <div class="kpi-label">In 30 Tagen</div>
                 </div>
                 <div class="kpi-card">
-                    <div class="kpi-icon"><i class="fas fa-flask"></i></div>
-                    <div class="kpi-value">${kalibrierungFaellig}</div>
-                    <div class="kpi-label">Kalibrierung fällig</div>
+                    <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-value">${currentPruefmittel.length}</div>
+                    <div class="kpi-label">Gesamt</div>
                 </div>
             `;
         }
 
-        // Fälligkeiten rendern
         function renderFaelligkeiten() {
             const heute = new Date();
             const in30Tagen = new Date();
@@ -1035,23 +873,23 @@
             
             const faelligkeiten = currentPruefmittel
                 .filter(p => {
-                    if (!p.naechste_pruefung) return false;
-                    const datum = new Date(p.naechste_pruefung);
+                    if (!p.naechste_kalibrierung) return false;
+                    const datum = new Date(p.naechste_kalibrierung);
                     return datum <= in30Tagen;
                 })
-                .sort((a, b) => new Date(a.naechste_pruefung) - new Date(b.naechste_pruefung))
+                .sort((a, b) => new Date(a.naechste_kalibrierung) - new Date(b.naechste_kalibrierung))
                 .slice(0, 10);
             
             const liste = document.getElementById('faelligkeitenListe');
             
             if (faelligkeiten.length === 0) {
-                liste.innerHTML = '<div style="text-align: center; color: #64748b; padding: 20px;">Keine anstehenden Prüfungen</div>';
+                liste.innerHTML = '<div style="text-align: center; color: #64748b; padding: 20px;">Keine anstehenden Kalibrierungen</div>';
                 return;
             }
             
             liste.innerHTML = faelligkeiten.map(item => {
-                const pruefDatum = new Date(item.naechste_pruefung);
-                const diffTage = Math.ceil((pruefDatum - heute) / (1000 * 60 * 60 * 24));
+                const datum = new Date(item.naechste_kalibrierung);
+                const diffTage = Math.ceil((datum - heute) / (1000 * 60 * 60 * 24));
                 
                 let statusClass = 'status-gruen';
                 if (diffTage < 0) statusClass = 'status-rot';
@@ -1062,7 +900,7 @@
                         <div class="faelligkeit-status ${statusClass}"></div>
                         <div class="faelligkeit-info">
                             <div class="faelligkeit-titel">${item.inventarnummer} - ${item.bezeichnung}</div>
-                            <div class="faelligkeit-datum">Prüfung: ${formatDate(item.naechste_pruefung)} (${diffTage < 0 ? 'überfällig' : `in ${diffTage} Tagen`})</div>
+                            <div class="faelligkeit-datum">${formatDate(item.naechste_kalibrierung)} (${diffTage < 0 ? 'überfällig' : `in ${diffTage} Tagen`})</div>
                         </div>
                         <span class="faelligkeit-segment">${item.segment || '-'}</span>
                     </div>
@@ -1070,7 +908,6 @@
             }).join('');
         }
 
-        // Modal öffnen für neues Prüfmittel
         function openAddModal() {
             document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
             document.getElementById('pruefmittelForm').reset();
@@ -1078,12 +915,10 @@
             document.getElementById('pruefmittelModal').style.display = 'flex';
         }
 
-        // Modal schließen
         function closeModal() {
             document.getElementById('pruefmittelModal').style.display = 'none';
         }
 
-        // Prüfmittel bearbeiten
         async function editPruefmittel(id) {
             const item = currentPruefmittel.find(p => p.id === id);
             if (!item) return;
@@ -1091,25 +926,29 @@
             document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
             document.getElementById('editId').value = item.id;
             
-            // Formular füllen
-            for (let key in item) {
-                const field = document.getElementById(key);
-                if (field) {
-                    field.value = item[key] || '';
-                }
-            }
+            document.getElementById('inventarnummer').value = item.inventarnummer || '';
+            document.getElementById('bezeichnung').value = item.bezeichnung || '';
+            document.getElementById('materialnummer').value = item.materialnummer || '';
+            document.getElementById('seriennummer').value = item.seriennummer || '';
+            document.getElementById('segment').value = item.segment || '';
+            document.getElementById('status').value = item.status || 'aktiv';
+            document.getElementById('zustand').value = item.zustand || 'gut';
+            document.getElementById('pruefzyklus').value = item.pruefzyklus || '';
+            document.getElementById('naechste_kalibrierung').value = item.naechste_kalibrierung || '';
+            document.getElementById('standort').value = item.standort || '';
+            document.getElementById('pruefverfahren').value = item.pruefverfahren || '';
+            document.getElementById('letzte_pruefung').value = item.letzte_pruefung || '';
             
             document.getElementById('pruefmittelModal').style.display = 'flex';
         }
 
-        // Prüfmittel löschen
         async function deletePruefmittel(id) {
             if (!confirm('Wirklich löschen?')) return;
             
             showLoading();
             
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('pruefmittel')
                     .delete()
                     .eq('id', id);
@@ -1119,14 +958,13 @@
                 await loadPruefmittel();
                 
             } catch (error) {
-                console.error('Fehler beim Löschen:', error);
+                console.error('Fehler:', error);
                 alert('Fehler beim Löschen: ' + error.message);
             } finally {
                 hideLoading();
             }
         }
 
-        // Form Submit
         document.getElementById('pruefmittelForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -1136,32 +974,19 @@
                 const formData = {
                     inventarnummer: document.getElementById('inventarnummer').value,
                     bezeichnung: document.getElementById('bezeichnung').value,
-                    materialnummer: document.getElementById('materialnummer').value,
-                    hersteller: document.getElementById('hersteller').value,
-                    typ: document.getElementById('typ').value,
-                    seriennummer: document.getElementById('seriennummer').value,
-                    segment: document.getElementById('segment').value,
-                    abteilung: document.getElementById('abteilung').value,
-                    standort: document.getElementById('standort').value,
-                    pruefzyklus: document.getElementById('pruefzyklus').value,
-                    pruefverfahren: document.getElementById('pruefverfahren').value,
-                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null,
+                    materialnummer: document.getElementById('materialnummer').value || null,
+                    seriennummer: document.getElementById('seriennummer').value || null,
+                    segment: document.getElementById('segment').value || null,
                     status: document.getElementById('status').value,
                     zustand: document.getElementById('zustand').value,
-                    pruefmittel_norm: document.getElementById('pruefmittel_norm').value,
-                    messbereich_min: document.getElementById('messbereich_min').value || null,
-                    messbereich_max: document.getElementById('messbereich_max').value || null,
-                    genauigkeit: document.getElementById('genauigkeit').value,
-                    abnahme_datum: document.getElementById('abnahme_datum').value || null,
-                    abnahme_behoerde: document.getElementById('abnahme_behoerde').value,
-                    kalibrierschein_nummer: document.getElementById('kalibrierschein_nummer').value,
+                    pruefzyklus: document.getElementById('pruefzyklus').value || null,
                     naechste_kalibrierung: document.getElementById('naechste_kalibrierung').value || null,
-                    wartungsfirma: document.getElementById('wartungsfirma').value,
-                    pruefintervall_tage: document.getElementById('pruefintervall_tage').value || null,
-                    notizen: document.getElementById('notizen').value
+                    standort: document.getElementById('standort').value || null,
+                    pruefverfahren: document.getElementById('pruefverfahren').value || null,
+                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null
                 };
                 
-                // Nächstes Prüfdatum berechnen
+                // Nächstes Prüfdatum berechnen (optional)
                 if (formData.letzte_pruefung && formData.pruefzyklus) {
                     const letztePruefung = new Date(formData.letzte_pruefung);
                     const naechstePruefung = new Date(letztePruefung);
@@ -1176,20 +1001,16 @@
                     formData.naechste_pruefung = naechstePruefung.toISOString().split('T')[0];
                 }
                 
-                formData.updated_at = new Date().toISOString();
-                
                 const editId = document.getElementById('editId').value;
                 
                 let result;
                 if (editId) {
-                    // Update
-                    result = await supabase
+                    result = await supabaseClient
                         .from('pruefmittel')
                         .update(formData)
                         .eq('id', editId);
                 } else {
-                    // Insert
-                    result = await supabase
+                    result = await supabaseClient
                         .from('pruefmittel')
                         .insert([formData]);
                 }
@@ -1200,14 +1021,13 @@
                 await loadPruefmittel();
                 
             } catch (error) {
-                console.error('Fehler beim Speichern:', error);
+                console.error('Fehler:', error);
                 alert('Fehler beim Speichern: ' + error.message);
             } finally {
                 hideLoading();
             }
         });
 
-        // Hilfsfunktionen
         function formatDate(date) {
             if (!date) return '-';
             return new Date(date).toLocaleDateString('de-DE');
@@ -1231,12 +1051,9 @@
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // Modal schließen wenn außerhalb geklickt
         window.onclick = function(event) {
             const modal = document.getElementById('pruefmittelModal');
-            if (event.target === modal) {
-                closeModal();
-            }
+            if (event.target === modal) closeModal();
         }
     </script>
 </body>
