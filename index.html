@@ -2,379 +2,590 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PMÜ - Prüfmittelüberwachung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>ZfP‑Schulungen 2026 · mit Teilnehmer-Bearbeitung</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
+            margin: 0;
+            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.2s ease, border-color 0.2s, color 0.1s;
         }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f7;
+            background: var(--bg-body);
+            padding: 1rem 0.8rem;
+            display: flex;
+            justify-content: center;
             min-height: 100vh;
         }
-
-        .pmu-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
+        :root {
+            --bg-body: #f0f7f0;
+            --header-bg: linear-gradient(145deg, #1e4a2b, #2d6a3f);
+            --header-text: white;
+            --card-bg: #ffffff;
+            --card-border: #c0e0c0;
+            --month-title: #1e4a2b;
+            --item-bg: #f4fcf4;
+            --item-border: #c8e6c8;
+            --item-type: #1e4a2b;
+            --location-bg: #d8f0d8;
+            --location-text: #1e4a2b;
+            --badge-bg: #c8e6c8;
+            --badge-text: #1e4a2b;
+            --start-badge-bg: #e8f5e8;
+            --start-badge-text: #1e4a2b;
+            --spots-text: #1e4a2b;
+            --bar-bg: #d0e8d0;
+            --fill-bg: #2e7d32;
+            --panel-bg: #ffffff;
+            --panel-border: #c0e0c0;
+            --input-bg: #f8fff8;
+            --input-border: #a8d8a8;
+            --label-color: #1e4a2b;
+            --optional-label: #2e5a2e;
+            --btn-border: #a8d8a8;
+            --btn-text: #1e4a2b;
+            --btn-primary-bg: #2e7d32;
+            --btn-primary-text: white;
+            --btn-warning-bg: #f59e0b;
+            --btn-warning-text: white;
+            --btn-danger-bg: #d32f2f;
+            --btn-danger-text: white;
+            --table-header-bg: #2e7d32;
+            --table-header-text: white;
+            --table-border: #c8e6c8;
+            --table-row-bg: #ffffff;
+            --table-row-alt: #f9fff9;
+            --empty-bg: #e8f5e8;
+            --empty-text: #1e4a2b;
+            --footnote: #2e5a2e;
+            --ort-hinweis-bg: #ffd966c0;
+            --ort-hinweis-text: #1e4a2b;
+            --loading-bg: #ffffff;
+            --loading-text: #1e4a2b;
         }
 
-        .pmu-header {
-            background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
-            color: white;
-            padding: 25px 30px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,51,102,0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+        body.dark {
+            --bg-body: #121212;
+            --header-bg: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            --header-text: #f0f0f0;
+            --card-bg: #2a2a2a;
+            --card-border: #4a4a4a;
+            --month-title: #e0e0e0;
+            --item-bg: #2a2a2a;
+            --item-border: #4a4a4a;
+            --item-type: #f0f0f0;
+            --location-bg: #3a3a3a;
+            --location-text: #f0f0f0;
+            --badge-bg: #3a3a3a;
+            --badge-text: #f0f0f0;
+            --start-badge-bg: #3a3a3a;
+            --start-badge-text: #f0f0f0;
+            --spots-text: #e0e0e0;
+            --bar-bg: #4a4a4a;
+            --fill-bg: #4caf50;
+            --panel-bg: #2a2a2a;
+            --panel-border: #4a4a4a;
+            --input-bg: #1a1a1a;
+            --input-border: #5a5a5a;
+            --label-color: #e0e0e0;
+            --optional-label: #a0a0a0;
+            --btn-border: #5a5a5a;
+            --btn-text: #f0f0f0;
+            --btn-primary-bg: #2e7d32;
+            --btn-primary-text: white;
+            --btn-warning-bg: #f59e0b;
+            --btn-warning-text: white;
+            --btn-danger-bg: #b71c1c;
+            --btn-danger-text: white;
+            --table-header-bg: #3a3a3a;
+            --table-header-text: #ffffff;
+            --table-border: #4a4a4a;
+            --table-row-bg: #ffffff;
+            --table-row-alt: #f0f0f0;
+            --empty-bg: #2a2a2a;
+            --empty-text: #e0e0e0;
+            --footnote: #a0a0a0;
+            --ort-hinweis-bg: #4a4a4ac0;
+            --ort-hinweis-text: #f0f0f0;
+            --loading-bg: #2a2a2a;
+            --loading-text: #e0e0e0;
         }
 
-        .header-title h1 {
-            font-size: 28px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-
-        .header-title .subtitle {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .header-stats {
-            display: flex;
-            gap: 20px;
-            background: rgba(255,255,255,0.1);
-            padding: 15px 25px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
-        .filter-bar {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-
-        .filter-group {
-            flex: 1 1 200px;
-        }
-
-        .filter-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .filter-group label i {
-            margin-right: 6px;
-            color: #003366;
-        }
-
-        .filter-group select, .filter-group input {
+        .app {
+            max-width: 1200px;
             width: 100%;
-            padding: 10px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.2s;
+            position: relative;
         }
-
-        .filter-group select:focus, .filter-group input:focus {
-            outline: none;
-            border-color: #003366;
-        }
-
-        .filter-actions {
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-body);
             display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            border: 2px solid #e2e8f0;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,51,102,0.2);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: white;
-            border: none;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-            margin-bottom: 25px;
-        }
-
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-
-        .kpi-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .kpi-card.warning {
-            border-left: 4px solid #f59e0b;
-        }
-
-        .kpi-card.danger {
-            border-left: 4px solid #dc2626;
-        }
-
-        .kpi-card.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .kpi-icon {
-            width: 40px;
-            height: 40px;
-            background: #eef2ff;
-            border-radius: 10px;
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            color: #003366;
-            font-size: 20px;
+            z-index: 2000;
+            transition: opacity 0.3s ease;
         }
-
-        .kpi-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 5px;
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
-
-        .kpi-label {
-            color: #64748b;
-            font-size: 13px;
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--card-border);
+            border-top-color: #4caf50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: var(--loading-text);
+            font-size: 1.2rem;
             font-weight: 500;
         }
-
-        .faelligkeiten-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        
+        .header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 1.5rem 1.5rem;
+            border-radius: 28px;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 18px 25px -10px #1e4a2b70;
         }
-
-        .card-header {
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.3rem;
+        }
+        .header .sub {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .header .ort-hinweis {
+            background: var(--ort-hinweis-bg);
+            color: var(--ort-hinweis-text);
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 0.6rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+        }
+        
+        .year-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1.8rem;
+        }
+        @media (min-width: 600px) {
+            .year-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1000px) {
+            .year-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .month-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 1.2rem 1rem;
+            box-shadow: 0 5px 18px rgba(0,30,0,0.06);
+            border: 1px solid var(--card-border);
+            transition: 0.2s;
+        }
+        .month-card:hover {
+            border-color: #6a9e6a;
+            box-shadow: 0 12px 22px -10px #1e4a2b80;
+        }
+        .month-title {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--month-title);
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .month-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            border-radius: 40px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .training-item {
+            background: var(--item-bg);
+            border-radius: 18px;
+            padding: 0.8rem 0.9rem;
+            margin-bottom: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid var(--item-border);
+            box-shadow: 0 2px 6px rgba(0,30,0,0.05);
+        }
+        .training-item:hover {
+            background: var(--location-bg);
+            border-color: #4caf50;
+            transform: translateX(2px);
+        }
+        .item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 0.3rem;
+            flex-wrap: wrap;
+            gap: 0.3rem;
         }
-
-        .card-header h3 {
-            color: #1e293b;
-            font-size: 18px;
+        .training-type {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--item-type);
+        }
+        .duration-chip {
+            background: #2e7d32;
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
             font-weight: 600;
+            letter-spacing: 0.2px;
         }
-
-        .card-header h3 i {
-            color: #003366;
-            margin-right: 8px;
+        .location {
+            background: var(--location-bg);
+            color: var(--location-text);
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.8rem;
+            margin: 0.3rem 0;
+            font-weight: 500;
         }
-
-        .faelligkeiten-liste {
-            list-style: none;
+        .date-time {
+            font-size: 0.85rem;
+            color: var(--start-badge-text);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.8rem;
         }
-
-        .faelligkeiten-item {
+        .start-badge {
+            background: var(--start-badge-bg);
+            border-radius: 20px;
+            padding: 0.2rem 0.6rem;
+            font-weight: 500;
+            color: var(--start-badge-text);
+        }
+        .spots-row {
             display: flex;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #e2e8f0;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
-
-        .faelligkeiten-item:last-child {
-            border-bottom: none;
-        }
-
-        .faelligkeit-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 12px;
-        }
-
-        .status-rot { background: #dc2626; }
-        .status-gelb { background: #f59e0b; }
-        .status-gruen { background: #10b981; }
-
-        .faelligkeit-info {
+        .bar {
             flex: 1;
-        }
-
-        .faelligkeit-titel {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .faelligkeit-datum {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        .faelligkeit-segment {
-            font-size: 11px;
-            background: #f1f5f9;
-            padding: 3px 8px;
+            height: 6px;
+            background: var(--bar-bg);
             border-radius: 12px;
         }
-
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            overflow-x: auto;
+        .fill {
+            height: 6px;
+            background: var(--fill-bg);
+            border-radius: 12px;
+            width: 0%;
         }
-
+        .spots-text {
+            font-weight: 600;
+            color: var(--spots-text);
+            min-width: 50px;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+        
+        .reg-panel {
+            background: var(--panel-bg);
+            border-radius: 28px;
+            padding: 1.5rem 1.2rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 15px 30px rgba(0, 37, 0, 0.1);
+            border: 1px solid var(--panel-border);
+        }
+        .reg-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (min-width: 700px) {
+            .reg-header {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+        .reg-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--month-title);
+        }
+        .meta-info {
+            background: var(--badge-bg);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            color: var(--badge-text);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        @media (min-width: 500px) {
+            .two-cols {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .field label {
+            font-weight: 600;
+            color: var(--label-color);
+            margin-left: 0.3rem;
+            font-size: 0.9rem;
+        }
+        .field label.optional {
+            color: var(--optional-label);
+            font-weight: 400;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        .field input {
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            padding: 0.7rem 1rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            color: var(--item-type);
+            width: 100%;
+        }
+        .field input:focus {
+            border-color: #4caf50;
+            outline: none;
+            background: var(--card-bg);
+            box-shadow: 0 0 0 3px #8bc34a70;
+        }
+        .field input::placeholder {
+            color: var(--footnote);
+            opacity: 0.7;
+        }
+        .required-hint {
+            color: var(--optional-label);
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+            margin: 1.5rem 0 1.2rem;
+        }
+        .btn {
+            background: transparent;
+            border: 1.8px solid var(--btn-border);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            color: var(--btn-text);
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+            flex: 1 1 auto;
+        }
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            border-color: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            box-shadow: 0 6px 14px #1e4a2b60;
+        }
+        .btn-primary:hover {
+            background: #1e4a2b;
+            transform: scale(1.02);
+        }
+        .btn-warning {
+            background: var(--btn-warning-bg);
+            border-color: var(--btn-warning-bg);
+            color: white;
+        }
+        .btn-warning:hover {
+            background: #e68a00;
+            transform: scale(1.02);
+        }
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            border-color: var(--btn-danger-bg);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b71c1c;
+            transform: scale(1.02);
+        }
+        .btn:hover {
+            background: var(--input-bg);
+        }
+        
+        .attendee-list {
+            margin-top: 1.8rem;
+            border-top: 2px dashed var(--panel-border);
+            padding-top: 1.2rem;
+        }
+        .list-title {
+            display: flex;
+            gap: 1rem;
+            align-items: baseline;
+            margin-bottom: 1rem;
+        }
+        .list-title h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--month-title);
+        }
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 20px;
+            background: transparent;
+            padding: 0;
+            box-shadow: 0 4px 12px rgba(0,40,0,0.15);
+            border: 2px solid #4caf50;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1400px;
+            background: #ffffff;
+            border-radius: 18px;
         }
-
         th {
+            background: #2e7d32;
+            color: white;
+            padding: 0.9rem 0.8rem;
+            font-weight: 600;
+            font-size: 0.95rem;
             text-align: left;
-            padding: 15px 10px;
-            background: #f8fafc;
-            color: #1e293b;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
         }
-
         td {
-            padding: 15px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            color: #334155;
-            font-size: 13px;
-            white-space: nowrap;
+            padding: 0.8rem 0.8rem;
+            border-bottom: 1px solid #c8e6c8;
+            color: #1e4a2b;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
-
-        tr:hover td {
-            background: #f8fafc;
+        tr:nth-child(even) {
+            background-color: #f5fff5;
         }
-
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            display: inline-block;
-            white-space: nowrap;
+        tr:hover {
+            background-color: #e8f5e8;
         }
-
-        .status-aktiv { background: #d1fae5; color: #065f46; }
-        .status-inaktiv { background: #fee2e2; color: #991b1b; }
-        .status-in-reparatur { background: #fed7aa; color: #92400e; }
-
-        .zustand-sehrgut { color: #10b981; font-weight: 600; }
-        .zustand-gut { color: #3b82f6; font-weight: 600; }
-        .zustand-befriedigend { color: #f59e0b; font-weight: 600; }
-        .zustand-prueffaellig { color: #dc2626; font-weight: 600; }
-
-        .pruefverfahren-badge {
-            background: #e9eef2;
-            color: #2c3e50;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            text-align: center;
-            display: inline-block;
+        td strong {
+            font-weight: 700;
+            color: #1e4a2b;
         }
-
+        .action-cell {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
         .action-btn {
             background: none;
             border: none;
-            color: #003366;
-            cursor: pointer;
             padding: 5px 10px;
             border-radius: 5px;
+            cursor: pointer;
             font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            white-space: nowrap;
+        }
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+        .edit-btn:hover {
+            background: #e68a00;
+        }
+        .remove-btn {
+            background: #d32f2f;
+            color: white;
+        }
+        .remove-btn:hover {
+            background: #b71c1c;
+        }
+        .empty-message {
+            background: var(--empty-bg);
+            padding: 1.5rem;
+            border-radius: 30px;
+            color: var(--empty-text);
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .footnote {
+            margin-top: 1rem;
+            color: var(--footnote);
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--panel-bg);
+            border: 2px solid #4caf50;
+            border-radius: 50px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,30,0,0.3);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            padding: 0;
+        }
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--input-bg);
         }
 
-        .action-btn:hover {
-            background: #eef2ff;
-        }
-
-        .modal {
+        /* Modal für Teilnehmer-Bearbeitung */
+        .teilnehmer-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -382,718 +593,612 @@
             right: 0;
             bottom: 0;
             background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 3000;
             justify-content: center;
             align-items: center;
         }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
+        .teilnehmer-modal-content {
+            background: var(--panel-bg);
+            border-radius: 28px;
             width: 90%;
             max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 30px;
+            padding: 2rem;
         }
-
-        .modal-header {
+        .teilnehmer-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
         }
-
-        .modal-header h2 {
-            color: #1e293b;
-            font-size: 24px;
+        .teilnehmer-modal-header h3 {
+            color: var(--month-title);
+            font-size: 1.5rem;
         }
-
         .close-modal {
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 2rem;
             cursor: pointer;
-            color: #64748b;
-        }
-
-        .modal-form {
-            display: grid;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            font-size: 13px;
-            color: #1e293b;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            width: 100%;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #003366;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header-stats {
-                width: 100%;
-                justify-content: space-around;
-            }
+            color: var(--footnote);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="pmu-container">
-        <div class="pmu-header">
-            <div class="header-title">
-                <h1>
-                    <i class="fas fa-clipboard-list"></i>
-                    PMÜ - Prüfmittelüberwachung
-                </h1>
-                <div class="subtitle">
-                    <i class="fas fa-calendar-check"></i>
-                    Zentrale Übersicht aller Prüfmittel und Fristen
-                </div>
-            </div>
-            <div class="header-stats" id="headerStats">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalAnlagen">0</div>
-                    <div class="stat-label">Anlagen gesamt</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="aktivAnlagen">0</div>
-                    <div class="stat-label">Aktiv</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="faelligkeitenCount">0</div>
-                    <div class="stat-label">Fälligkeiten</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="filter-bar">
-            <div class="filter-group">
-                <label><i class="fas fa-filter"></i> Segment</label>
-                <select id="segmentFilter">
-                    <option value="">Alle</option>
-                    <option value="Segment 4">Segment 4</option>
-                    <option value="Segment 6">Segment 6</option>
-                    <option value="Segment 11">Segment 11</option>
-                    <option value="Segment 12">Segment 12</option>
-                    <option value="Segment 14">Segment 14</option>
-                    <option value="Segment 15">Segment 15</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label><i class="fas fa-circle"></i> Status</label>
-                <select id="statusFilter">
-                    <option value="">Alle</option>
-                    <option value="aktiv">Aktiv</option>
-                    <option value="inaktiv">Inaktiv</option>
-                    <option value="in Reparatur">In Reparatur</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label><i class="fas fa-search"></i> Suche</label>
-                <input type="text" id="searchFilter" placeholder="Suchen...">
-            </div>
-            <div class="filter-actions">
-                <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fas fa-plus"></i> Neu
-                </button>
-                <button class="btn" onclick="loadPruefmittel()">
-                    <i class="fas fa-sync-alt"></i> Aktualisieren
-                </button>
-            </div>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="kpi-grid" id="kpiGrid"></div>
-            <div class="faelligkeiten-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Anstehende Prüfungen</h3>
-                    <span id="faelligkeitenCount2">0</span>
-                </div>
-                <div class="faelligkeiten-liste" id="faelligkeitenListe"></div>
-            </div>
-        </div>
-
-        <div class="table-container">
-            <table id="pruefmittelTable">
-                <thead>
-                    <tr>
-                        <th>Equipmentnr.</th>
-                        <th>Bezeichnung</th>
-                        <th>Materialnr.</th>
-                        <th>Seriennummer</th>
-                        <th>Segment</th>
-                        <th>Status</th>
-                        <th>Zustand</th>
-                        <th>Prüfzyklus</th>
-                        <th>Kalibrierstichtag</th>
-                        <th>Standort</th>
-                        <th>Prüfverfahren</th>
-                        <th>Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="12" style="text-align: center;">Daten werden geladen...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Lade Schulungsdaten aus der Cloud...</div>
     </div>
 
-    <div class="modal" id="pruefmittelModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Neues Prüfmittel</h2>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+    <!-- Modal für Teilnehmer-Bearbeitung -->
+    <div class="teilnehmer-modal" id="teilnehmerModal">
+        <div class="teilnehmer-modal-content">
+            <div class="teilnehmer-modal-header">
+                <h3 id="teilnehmerModalTitle">Teilnehmer bearbeiten</h3>
+                <button class="close-modal" onclick="closeTeilnehmerModal()">&times;</button>
             </div>
-            <form id="pruefmittelForm" class="modal-form">
-                <input type="hidden" id="editId">
+            <form id="teilnehmerForm" class="modal-form">
+                <input type="hidden" id="editTrainingId">
+                <input type="hidden" id="editAttendeeIndex">
                 
-                <div class="form-group">
-                    <label>Equipmentnummer *</label>
-                    <input type="text" id="inventarnummer" required placeholder="z.B. 12169257">
+                <div class="field">
+                    <label>Vorname *</label>
+                    <input type="text" id="editVorname" required>
                 </div>
-
-                <div class="form-group">
-                    <label>Bezeichnung *</label>
-                    <input type="text" id="bezeichnung" required placeholder="z.B. Hanjoch TWM22D">
+                
+                <div class="field">
+                    <label>Name *</label>
+                    <input type="text" id="editName" required>
                 </div>
-
-                <div class="form-group">
-                    <label>Materialnummer</label>
-                    <input type="text" id="materialnummer" placeholder="z.B. 070935815-0000">
+                
+                <div class="field">
+                    <label>Personalnummer <span class="optional">(optional)</span></label>
+                    <input type="text" id="editPersonalnummer">
                 </div>
-
-                <div class="form-group">
-                    <label>Seriennummer</label>
-                    <input type="text" id="seriennummer" placeholder="z.B. 094">
+                
+                <div class="field">
+                    <label>Geburtstag <span class="optional">(optional, TT.MM.JJJJ)</span></label>
+                    <input type="text" id="editGeburtstag" placeholder="31.12.1990">
                 </div>
-
-                <div class="form-group">
-                    <label>Segment</label>
-                    <select id="segment">
-                        <option value="">Bitte wählen</option>
-                        <option value="Segment 4">Segment 4</option>
-                        <option value="Segment 6">Segment 6</option>
-                        <option value="Segment 11">Segment 11</option>
-                        <option value="Segment 12">Segment 12</option>
-                        <option value="Segment 14">Segment 14</option>
-                        <option value="Segment 15">Segment 15</option>
-                    </select>
+                
+                <div class="field">
+                    <label>Geburtsort <span class="optional">(optional)</span></label>
+                    <input type="text" id="editGeburtsort" placeholder="Stadt">
                 </div>
-
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="status">
-                        <option value="aktiv">Aktiv</option>
-                        <option value="inaktiv">Inaktiv</option>
-                        <option value="in Reparatur">In Reparatur</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Zustand</label>
-                    <select id="zustand">
-                        <option value="sehr gut">Sehr gut</option>
-                        <option value="gut">Gut</option>
-                        <option value="befriedigend">Befriedigend</option>
-                        <option value="prüffällig">Prüffällig</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Prüfzyklus</label>
-                    <select id="pruefzyklus">
-                        <option value="">Bitte wählen</option>
-                        <option value="90 Tage">90 Tage</option>
-                        <option value="180 Tage">180 Tage</option>
-                        <option value="365 Tage">365 Tage</option>
-                        <option value="730 Tage">730 Tage</option>
-                        <option value="1825 Tage">1825 Tage</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Kalibrierstichtag</label>
-                    <input type="date" id="naechste_kalibrierung">
-                </div>
-
-                <div class="form-group">
-                    <label>Standort</label>
-                    <input type="text" id="standort" placeholder="z.B. Bau 17 - Fluxraum">
-                </div>
-
-                <div class="form-group">
-                    <label>Prüfverfahren</label>
-                    <select id="pruefverfahren">
-                        <option value="">Bitte wählen</option>
-                        <option value="ET">Wirbelstromprüfung (ET)</option>
-                        <option value="MT">Magnetpulverprüfung (MT)</option>
-                        <option value="UT">Ultraschallprüfung (UT)</option>
-                        <option value="Sonstiges">Sonstiges</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Letzte Prüfung</label>
-                    <input type="date" id="letzte_pruefung">
-                </div>
-
-                <div class="form-group">
-                    <label>Nächste Prüfung</label>
-                    <input type="date" id="naechste_pruefung">
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn" onclick="closeModal()">Abbrechen</button>
-                    <button type="submit" class="btn btn-success">Speichern</button>
+                
+                <div class="actions" style="margin-top: 1.5rem;">
+                    <button type="button" class="btn" onclick="closeTeilnehmerModal()">Abbrechen</button>
+                    <button type="submit" class="btn btn-primary">Speichern</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
+    <div class="app" id="app">
+        <div class="header">
+            <h1>🔬 ZfP‑Schulungen 2026</h1>
+            <div class="sub">Wirbelstrom · Ultraschall · Magnetpulver · Nital-Ätzen – max. 11 Plätze</div>
+            <div class="ort-hinweis">🏢 Bau 50, Raum Silber</div>
+        </div>
+
+        <div class="year-grid" id="monthGrid"></div>
+
+        <div class="reg-panel" id="regPanel" style="display: none;">
+            <div class="reg-header">
+                <h2 id="regTitle">Anmeldung</h2>
+                <span class="meta-info" id="regMeta"></span>
+            </div>
+
+            <div class="required-hint">* Nur Name und Vorname sind Pflichtfelder</div>
+
+            <div class="two-cols">
+                <div class="field">
+                    <label>Vorname *</label>
+                    <input id="vorname" placeholder="Max">
+                </div>
+                <div class="field">
+                    <label>Name *</label>
+                    <input id="name" placeholder="Mustermann">
+                </div>
+                <div class="field">
+                    <label>Personalnummer <span class="optional">(optional)</span></label>
+                    <input id="persnr" placeholder="z.B. 87312">
+                </div>
+                <div class="field">
+                    <label>Geburtstag <span class="optional">(optional, TT.MM.JJJJ)</span></label>
+                    <input id="geburtstag" placeholder="31.12.1990">
+                </div>
+                <div class="field">
+                    <label>Geburtsort <span class="optional">(optional)</span></label>
+                    <input id="geburtsort" placeholder="Stadt">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn" id="cancelBtn">← Andere Schulung</button>
+                <button class="btn btn-primary" id="anmeldenBtn">➕ Anmelden</button>
+            </div>
+
+            <div class="attendee-list">
+                <div class="list-title"><h3>📋 Teilnehmerliste</h3><span class="month-badge" id="countBadge">0/11</span></div>
+                <div id="listContainer"></div>
+            </div>
+        </div>
+        <div class="footnote"> · pro Schulung max. 11 Teilnehmer · Start 8:00 · Ende: 14:00 (MT) 16:00 (ET/NE/UT)</div>
+
+        <button class="theme-toggle" id="themeToggle">🌓</button>
     </div>
 
     <script>
-        // Supabase Konfiguration
-        const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-        
-        // Supabase Client initialisieren
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // Globale Variable für die aktuellen Daten
-        let currentPruefmittel = [];
-
-        // Beim Laden der Seite
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM geladen, starte Datenabfrage...');
-            loadPruefmittel();
+        (function() {
+            const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
             
-            // Event-Listener für Filter
-            document.getElementById('segmentFilter').addEventListener('change', filterData);
-            document.getElementById('statusFilter').addEventListener('change', filterData);
-            document.getElementById('searchFilter').addEventListener('input', filterData);
-        });
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Hauptfunktion zum Laden der Daten
-        async function loadPruefmittel() {
-            showLoading();
+            // Theme Management
+            const themeToggle = document.getElementById('themeToggle');
+            const STORAGE_KEY = 'zfp-theme-preference';
             
-            try {
-                console.log('Lade Daten von Supabase...');
-                
-                const { data, error } = await supabaseClient
-                    .from('pruefmittel')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error('Supabase Fehler:', error);
-                    throw error;
+            function loadThemePreference() {
+                const savedTheme = localStorage.getItem(STORAGE_KEY);
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark');
                 }
-                
-                console.log('Geladene Daten:', data);
-                currentPruefmittel = data || [];
-                
-                if (currentPruefmittel.length === 0) {
-                    console.log('Keine Daten gefunden');
-                    document.getElementById('tableBody').innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
+            }
+            
+            function toggleTheme() {
+                if (document.body.classList.contains('dark')) {
+                    document.body.classList.remove('dark');
+                    localStorage.setItem(STORAGE_KEY, 'light');
                 } else {
-                    updateDashboard();
-                    renderTable(currentPruefmittel);
+                    document.body.classList.add('dark');
+                    localStorage.setItem(STORAGE_KEY, 'dark');
+                }
+            }
+            
+            themeToggle.addEventListener('click', toggleTheme);
+            loadThemePreference();
+
+            // Konstanten
+            const MAX = 11;
+            const TRAINING_TYPES = {
+                WIRBELSTROM: 'Wirbelstromprüfung',
+                ULTRASCHALL: 'Ultraschallprüfung',
+                MAGNETPULVER: 'Magnetpulverprüfung',
+                NITAL: 'Nital-Ätzen'
+            };
+            const DURATION = {
+                [TRAINING_TYPES.WIRBELSTROM]: 16,
+                [TRAINING_TYPES.ULTRASCHALL]: 24,
+                [TRAINING_TYPES.MAGNETPULVER]: 12,
+                [TRAINING_TYPES.NITAL]: 8
+            };
+
+            function getEndTime(type) {
+                return type === TRAINING_TYPES.MAGNETPULVER ? '14:00' : '16:00';
+            }
+
+            const monthNames = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+            function durationInfo(type) {
+                const h = DURATION[type] || 0;
+                const days = Math.ceil(h/8);
+                return `${h} Std. (${days} Tag${days>1?'e':''})`;
+            }
+
+            function validateGermanDate(dateStr) {
+                if (!dateStr) return true;
+                const pattern = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+                const match = dateStr.match(pattern);
+                if (!match) return false;
+                
+                const day = parseInt(match[1], 10);
+                const month = parseInt(match[2], 10) - 1;
+                const year = parseInt(match[3], 10);
+                
+                const date = new Date(year, month, day);
+                return date.getDate() === day && 
+                       date.getMonth() === month && 
+                       date.getFullYear() === year;
+            }
+
+            function germanToIsoDate(germanDate) {
+                if (!germanDate) return null;
+                const [day, month, year] = germanDate.split('.');
+                return `${year}-${month}-${day}`;
+            }
+
+            function isoToGermanDate(isoDate) {
+                if (!isoDate) return '';
+                const [year, month, day] = isoDate.split('-');
+                return `${day}.${month}.${year}`;
+            }
+
+            let trainings = [];
+            let selectedId = null;
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const monthGrid = document.getElementById('monthGrid');
+            const regPanel = document.getElementById('regPanel');
+            const regTitle = document.getElementById('regTitle');
+            const regMeta = document.getElementById('regMeta');
+            const countBadge = document.getElementById('countBadge');
+            const listContainer = document.getElementById('listContainer');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const anmeldenBtn = document.getElementById('anmeldenBtn');
+            const vornameInp = document.getElementById('vorname');
+            const nameInp = document.getElementById('name');
+            const persnrInp = document.getElementById('persnr');
+            const geburtstagInp = document.getElementById('geburtstag');
+            const geburtsortInp = document.getElementById('geburtsort');
+
+            // Modal-Elemente
+            const teilnehmerModal = document.getElementById('teilnehmerModal');
+            const editTrainingId = document.getElementById('editTrainingId');
+            const editAttendeeIndex = document.getElementById('editAttendeeIndex');
+            const editVorname = document.getElementById('editVorname');
+            const editName = document.getElementById('editName');
+            const editPersonalnummer = document.getElementById('editPersonalnummer');
+            const editGeburtstag = document.getElementById('editGeburtstag');
+            const editGeburtsort = document.getElementById('editGeburtsort');
+            const teilnehmerForm = document.getElementById('teilnehmerForm');
+
+            async function loadTrainings() {
+                try {
+                    loadingOverlay.classList.remove('hidden');
+                    
+                    const { data, error } = await supabase
+                        .from('trainings')
+                        .select('*')
+                        .order('start_date', { ascending: true });
+
+                    if (error) throw error;
+
+                    trainings = data.map(t => ({
+                        ...t,
+                        attendees: Array.isArray(t.attendees) ? t.attendees : 
+                                  (typeof t.attendees === 'string' ? JSON.parse(t.attendees) : [])
+                    }));
+
+                    trainings.forEach(t => {
+                        if (t.attendees && t.attendees.length) {
+                            t.attendees.forEach(a => {
+                                if (a.geburtstag && a.geburtstag.includes('-')) {
+                                    a.geburtstag = isoToGermanDate(a.geburtstag);
+                                }
+                            });
+                        }
+                    });
+
+                    buildMonthGrid();
+                    
+                    setTimeout(() => {
+                        loadingOverlay.classList.add('hidden');
+                    }, 500);
+                    
+                } catch (err) {
+                    console.error('Fehler beim Laden:', err);
+                    monthGrid.innerHTML = `<div class="empty-message" style="background: #ffebee; color: #c62828;">
+                        ❌ Fehler beim Laden: ${err.message}
+                    </div>`;
+                    loadingOverlay.classList.add('hidden');
+                }
+            }
+
+            function buildMonthGrid() {
+                const months = Array.from({ length: 12 }, (_, i) => {
+                    const monthNum = i + 1;
+                    return {
+                        name: monthNames[i],
+                        month: monthNum,
+                        trainings: trainings.filter(t => {
+                            const d = new Date(t.start_date + 'T12:00:00');
+                            return d.getMonth() + 1 === monthNum;
+                        }).sort((a,b) => new Date(a.start_date) - new Date(b.start_date))
+                    };
+                });
+
+                let html = '';
+                months.forEach(m => {
+                    html += `<div class="month-card"><div class="month-title"><span>${m.name}</span><span class="month-badge">${m.trainings.length}</span></div>`;
+                    if (m.trainings.length === 0) {
+                        html += `<div style="padding:0.7rem; color: var(--footnote);">– keine Schulung –</div>`;
+                    } else {
+                        m.trainings.forEach(t => {
+                            const taken = t.attendees?.length || 0;
+                            const fill = (taken / MAX) * 100;
+                            const endTime = getEndTime(t.type);
+                            html += `
+                                <div class="training-item" data-id="${t.id}">
+                                    <div class="item-header">
+                                        <span class="training-type">${t.type}</span>
+                                        <span class="duration-chip">${durationInfo(t.type)}</span>
+                                    </div>
+                                    <div class="location">📍 ${t.location}</div>
+                                    <div class="date-time">
+                                        <span>📅 ${t.date_str}</span>
+                                        <span class="start-badge">⏰ 8:00 – ${endTime} Uhr</span>
+                                    </div>
+                                    <div class="spots-row">
+                                        <div class="bar"><div class="fill" style="width:${fill}%"></div></div>
+                                        <span class="spots-text">${taken}/${MAX}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                    html += '</div>';
+                });
+                monthGrid.innerHTML = html;
+
+                document.querySelectorAll('.training-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        selectTraining(el.dataset.id);
+                    });
+                });
+            }
+
+            function findTraining(id) {
+                return trainings.find(t => t.id === id);
+            }
+
+            function selectTraining(id) {
+                const training = findTraining(id);
+                if (!training) return;
+                selectedId = id;
+                regPanel.style.display = 'block';
+                regTitle.textContent = `${training.type} – ${training.location}`;
+                const endTime = getEndTime(training.type);
+                regMeta.textContent = `${training.date_str}  |  täglich 8:00–${endTime} Uhr  |  ${durationInfo(training.type)}`;
+                renderAttendeeList(training);
+                vornameInp.value = ''; nameInp.value = ''; persnrInp.value = ''; geburtstagInp.value = ''; geburtsortInp.value = '';
+                regPanel.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function renderAttendeeList(training) {
+                if (!training) { 
+                    if (selectedId) training = findTraining(selectedId); 
+                    else return; 
+                }
+                const attendees = training.attendees || [];
+                countBadge.textContent = `${attendees.length}/${MAX}`;
+                
+                if (attendees.length === 0) {
+                    listContainer.innerHTML = '<div class="empty-message">✗ Noch keine Anmeldungen</div>';
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('Fehler beim Laden:', error);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="12" style="text-align: center; color: red;">Fehler beim Laden: ${error.message}</td></tr>`;
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // Daten filtern
-        function filterData() {
-            const segment = document.getElementById('segmentFilter').value;
-            const status = document.getElementById('statusFilter').value;
-            const search = document.getElementById('searchFilter').value.toLowerCase();
-            
-            let filtered = currentPruefmittel;
-            
-            if (segment) {
-                filtered = filtered.filter(item => item.segment === segment);
-            }
-            
-            if (status) {
-                filtered = filtered.filter(item => item.status === status);
-            }
-            
-            if (search) {
-                filtered = filtered.filter(item => 
-                    (item.inventarnummer && item.inventarnummer.toLowerCase().includes(search)) ||
-                    (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
-                    (item.materialnummer && item.materialnummer.toLowerCase().includes(search)) ||
-                    (item.seriennummer && item.seriennummer.toLowerCase().includes(search))
-                );
-            }
-            
-            renderTable(filtered);
-        }
-
-        // Tabelle rendern
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
-            
-            if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align: center;">Keine Prüfmittel gefunden</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = data.map(item => {
-                const zustandClass = getZustandClass(item.zustand);
-                const pruefverfahren = item.pruefverfahren || '-';
-                const statusClass = item.status === 'in Reparatur' ? 'in-reparatur' : (item.status || 'aktiv');
+                let tab = '<div class="table-wrap"><table><thead><tr><th>Name</th><th>Vorname</th><th>Personalnr</th><th>Geburtstag</th><th>Geburtsort</th><th>Aktionen</th></tr></thead><tbody>';
                 
-                return `
-                    <tr>
-                        <td><strong>${item.inventarnummer || '-'}</strong></td>
-                        <td>${item.bezeichnung || '-'}</td>
-                        <td>${item.materialnummer || '-'}</td>
-                        <td>${item.seriennummer || '-'}</td>
-                        <td>${item.segment || '-'}</td>
-                        <td><span class="status-badge status-${statusClass}">${item.status || 'aktiv'}</span></td>
-                        <td class="${zustandClass}">${item.zustand || '-'}</td>
-                        <td>${item.pruefzyklus || '-'}</td>
-                        <td>${formatDate(item.naechste_kalibrierung)}</td>
-                        <td>${item.standort || '-'}</td>
-                        <td><span class="pruefverfahren-badge">${pruefverfahren}</span></td>
+                attendees.forEach((a, index) => {
+                    tab += `<tr>
+                        <td><strong>${a.name || ''}</strong></td>
+                        <td><strong>${a.vorname || ''}</strong></td>
+                        <td><strong>${a.personalnummer || '-'}</strong></td>
+                        <td><strong>${a.geburtstag || '-'}</strong></td>
+                        <td><strong>${a.geburtsort || '-'}</strong></td>
                         <td>
-                            <button class="action-btn" onclick="editPruefmittel(${item.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn" onclick="deletePruefmittel(${item.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <div class="action-cell">
+                                <button class="action-btn edit-btn" onclick="window.editAttendee('${training.id}', ${index})">
+                                    <i class="fas fa-edit"></i> Bearbeiten
+                                </button>
+                                <button class="action-btn remove-btn" onclick="window.removeAttendee('${training.id}', ${index})">
+                                    <i class="fas fa-trash"></i> Abmelden
+                                </button>
+                            </div>
                         </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Dashboard aktualisieren
-        function updateDashboard() {
-            const total = currentPruefmittel.length;
-            const aktiv = currentPruefmittel.filter(p => p.status === 'aktiv').length;
-            
-            const heute = new Date();
-            const in30Tagen = new Date();
-            in30Tagen.setDate(heute.getDate() + 30);
-            
-            const faelligkeiten = currentPruefmittel.filter(p => {
-                if (!p.naechste_kalibrierung) return false;
-                const datum = new Date(p.naechste_kalibrierung);
-                return datum <= in30Tagen;
-            }).length;
-            
-            document.getElementById('totalAnlagen').textContent = total;
-            document.getElementById('aktivAnlagen').textContent = aktiv;
-            document.getElementById('faelligkeitenCount').textContent = faelligkeiten;
-            document.getElementById('faelligkeitenCount2').textContent = faelligkeiten;
-            
-            renderKpiCards();
-            renderFaelligkeiten();
-        }
-
-        // KPI-Karten rendern
-        function renderKpiCards() {
-            const heute = new Date();
-            const in30Tagen = new Date();
-            in30Tagen.setDate(heute.getDate() + 30);
-            const in7Tagen = new Date();
-            in7Tagen.setDate(heute.getDate() + 7);
-            
-            const faelligkeiten30 = currentPruefmittel.filter(p => {
-                if (!p.naechste_kalibrierung) return false;
-                const datum = new Date(p.naechste_kalibrierung);
-                return datum <= in30Tagen;
-            }).length;
-            
-            const faelligkeiten7 = currentPruefmittel.filter(p => {
-                if (!p.naechste_kalibrierung) return false;
-                const datum = new Date(p.naechste_kalibrierung);
-                return datum <= in7Tagen;
-            }).length;
-            
-            const ueberfaellig = currentPruefmittel.filter(p => {
-                if (!p.naechste_kalibrierung) return false;
-                const datum = new Date(p.naechste_kalibrierung);
-                return datum < heute;
-            }).length;
-            
-            document.getElementById('kpiGrid').innerHTML = `
-                <div class="kpi-card ${ueberfaellig > 0 ? 'danger' : ''}">
-                    <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
-                    <div class="kpi-value">${ueberfaellig}</div>
-                    <div class="kpi-label">Überfällig</div>
-                </div>
-                <div class="kpi-card warning">
-                    <div class="kpi-icon"><i class="fas fa-clock"></i></div>
-                    <div class="kpi-value">${faelligkeiten7}</div>
-                    <div class="kpi-label">In 7 Tagen</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
-                    <div class="kpi-value">${faelligkeiten30}</div>
-                    <div class="kpi-label">In 30 Tagen</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
-                    <div class="kpi-value">${currentPruefmittel.length}</div>
-                    <div class="kpi-label">Gesamt</div>
-                </div>
-            `;
-        }
-
-        // Fälligkeiten-Liste rendern
-        function renderFaelligkeiten() {
-            const heute = new Date();
-            const in30Tagen = new Date();
-            in30Tagen.setDate(heute.getDate() + 30);
-            
-            const faelligkeiten = currentPruefmittel
-                .filter(p => {
-                    if (!p.naechste_kalibrierung) return false;
-                    const datum = new Date(p.naechste_kalibrierung);
-                    return datum <= in30Tagen;
-                })
-                .sort((a, b) => new Date(a.naechste_kalibrierung) - new Date(b.naechste_kalibrierung))
-                .slice(0, 10);
-            
-            const liste = document.getElementById('faelligkeitenListe');
-            
-            if (faelligkeiten.length === 0) {
-                liste.innerHTML = '<div style="text-align: center; color: #64748b; padding: 20px;">Keine anstehenden Kalibrierungen</div>';
-                return;
+                    </tr>`;
+                });
+                
+                tab += '</tbody></table></div>';
+                listContainer.innerHTML = tab;
             }
-            
-            liste.innerHTML = faelligkeiten.map(item => {
-                const datum = new Date(item.naechste_kalibrierung);
-                const diffTage = Math.ceil((datum - heute) / (1000 * 60 * 60 * 24));
-                
-                let statusClass = 'status-gruen';
-                if (diffTage < 0) statusClass = 'status-rot';
-                else if (diffTage < 14) statusClass = 'status-gelb';
-                
-                return `
-                    <div class="faelligkeiten-item">
-                        <div class="faelligkeit-status ${statusClass}"></div>
-                        <div class="faelligkeit-info">
-                            <div class="faelligkeit-titel">${item.inventarnummer} - ${item.bezeichnung}</div>
-                            <div class="faelligkeit-datum">${formatDate(item.naechste_kalibrierung)} (${diffTage < 0 ? 'überfällig' : `in ${diffTage} Tagen`})</div>
-                        </div>
-                        <span class="faelligkeit-segment">${item.segment || '-'}</span>
-                    </div>
-                `;
-            }).join('');
-        }
 
-        // Modal-Funktionen
-        function openAddModal() {
-            document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
-            document.getElementById('pruefmittelForm').reset();
-            document.getElementById('editId').value = '';
-            document.getElementById('pruefmittelModal').style.display = 'flex';
-        }
+            // Teilnehmer bearbeiten - Modal öffnen
+            window.editAttendee = function(trainingId, attendeeIndex) {
+                const training = findTraining(trainingId);
+                if (!training || !training.attendees || !training.attendees[attendeeIndex]) return;
+                
+                const attendee = training.attendees[attendeeIndex];
+                
+                editTrainingId.value = trainingId;
+                editAttendeeIndex.value = attendeeIndex;
+                editVorname.value = attendee.vorname || '';
+                editName.value = attendee.name || '';
+                editPersonalnummer.value = attendee.personalnummer || '';
+                editGeburtstag.value = attendee.geburtstag || '';
+                editGeburtsort.value = attendee.geburtsort || '';
+                
+                teilnehmerModal.style.display = 'flex';
+            };
 
-        function closeModal() {
-            document.getElementById('pruefmittelModal').style.display = 'none';
-        }
+            // Modal schließen
+            window.closeTeilnehmerModal = function() {
+                teilnehmerModal.style.display = 'none';
+            };
 
-        async function editPruefmittel(id) {
-            const item = currentPruefmittel.find(p => p.id === id);
-            if (!item) return;
-            
-            document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
-            document.getElementById('editId').value = item.id;
-            
-            document.getElementById('inventarnummer').value = item.inventarnummer || '';
-            document.getElementById('bezeichnung').value = item.bezeichnung || '';
-            document.getElementById('materialnummer').value = item.materialnummer || '';
-            document.getElementById('seriennummer').value = item.seriennummer || '';
-            document.getElementById('segment').value = item.segment || '';
-            document.getElementById('status').value = item.status || 'aktiv';
-            document.getElementById('zustand').value = item.zustand || 'gut';
-            document.getElementById('pruefzyklus').value = item.pruefzyklus || '';
-            document.getElementById('naechste_kalibrierung').value = item.naechste_kalibrierung || '';
-            document.getElementById('standort').value = item.standort || '';
-            document.getElementById('pruefverfahren').value = item.pruefverfahren || '';
-            document.getElementById('letzte_pruefung').value = item.letzte_pruefung || '';
-            document.getElementById('naechste_pruefung').value = item.naechste_pruefung || '';
-            
-            document.getElementById('pruefmittelModal').style.display = 'flex';
-        }
+            // Teilnehmer aktualisieren
+            teilnehmerForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const trainingId = editTrainingId.value;
+                const index = parseInt(editAttendeeIndex.value);
+                const training = findTraining(trainingId);
+                
+                if (!training || !training.attendees || !training.attendees[index]) return;
+                
+                const vorname = editVorname.value.trim();
+                const name = editName.value.trim();
+                const persnr = editPersonalnummer.value.trim() || null;
+                const geburtstagGerman = editGeburtstag.value.trim() || null;
+                const gebort = editGeburtsort.value.trim() || null;
 
-        async function deletePruefmittel(id) {
-            if (!confirm('Wirklich löschen?')) return;
-            
-            showLoading();
-            
-            try {
-                const { error } = await supabaseClient
-                    .from('pruefmittel')
-                    .delete()
-                    .eq('id', id);
-                
-                if (error) throw error;
-                
-                await loadPruefmittel();
-                
-            } catch (error) {
-                console.error('Fehler:', error);
-                alert('Fehler beim Löschen: ' + error.message);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // Formular-Submit
-        document.getElementById('pruefmittelForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            showLoading();
-            
-            try {
-                const formData = {
-                    inventarnummer: document.getElementById('inventarnummer').value,
-                    bezeichnung: document.getElementById('bezeichnung').value,
-                    materialnummer: document.getElementById('materialnummer').value || null,
-                    seriennummer: document.getElementById('seriennummer').value || null,
-                    segment: document.getElementById('segment').value || null,
-                    status: document.getElementById('status').value,
-                    zustand: document.getElementById('zustand').value,
-                    pruefzyklus: document.getElementById('pruefzyklus').value || null,
-                    naechste_kalibrierung: document.getElementById('naechste_kalibrierung').value || null,
-                    standort: document.getElementById('standort').value || null,
-                    pruefverfahren: document.getElementById('pruefverfahren').value || null,
-                    letzte_pruefung: document.getElementById('letzte_pruefung').value || null,
-                    naechste_pruefung: document.getElementById('naechste_pruefung').value || null
-                };
-                
-                const editId = document.getElementById('editId').value;
-                
-                let result;
-                if (editId) {
-                    result = await supabaseClient
-                        .from('pruefmittel')
-                        .update(formData)
-                        .eq('id', editId);
-                } else {
-                    result = await supabaseClient
-                        .from('pruefmittel')
-                        .insert([formData]);
+                if (!vorname || !name) {
+                    alert('Bitte füllen Sie die Pflichtfelder Name und Vorname aus.');
+                    return;
                 }
+
+                if (geburtstagGerman && !validateGermanDate(geburtstagGerman)) {
+                    alert('Bitte geben Sie das Geburtsdatum im Format TT.MM.JJJJ ein (z.B. 31.12.1990) oder lassen Sie es leer.');
+                    return;
+                }
+
+                // Prüfen auf Doppelung (außer bei sich selbst)
+                const duplicateExists = training.attendees.some((a, i) => 
+                    i !== index && a.name === name && a.vorname === vorname
+                );
                 
-                if (result.error) throw result.error;
+                if (duplicateExists) {
+                    alert(`${vorname} ${name} ist bereits für diese Schulung angemeldet.`);
+                    return;
+                }
+
+                try {
+                    // Attendee aktualisieren
+                    training.attendees[index] = {
+                        vorname,
+                        name
+                    };
+                    
+                    if (persnr) training.attendees[index].personalnummer = persnr;
+                    if (geburtstagGerman) training.attendees[index].geburtstag = geburtstagGerman;
+                    if (gebort) training.attendees[index].geburtsort = gebort;
+
+                    // In Supabase speichern
+                    const { error: updateError } = await supabase
+                        .from('trainings')
+                        .update({ attendees: training.attendees })
+                        .eq('id', trainingId);
+
+                    if (updateError) throw updateError;
+
+                    // UI aktualisieren
+                    buildMonthGrid();
+                    renderAttendeeList(training);
+                    
+                    closeTeilnehmerModal();
+                    
+                } catch (err) {
+                    console.error('Fehler beim Aktualisieren:', err);
+                    alert('Fehler beim Speichern: ' + err.message);
+                }
+            });
+
+            window.removeAttendee = async function(trainingId, attendeeIndex) {
+                const training = findTraining(trainingId);
+                if (!training || !training.attendees || attendeeIndex >= training.attendees.length) return;
                 
-                closeModal();
-                await loadPruefmittel();
+                if (!confirm('Möchten Sie diese Anmeldung wirklich zurückziehen?')) return;
                 
-            } catch (error) {
-                console.error('Fehler:', error);
-                alert('Fehler beim Speichern: ' + error.message);
-            } finally {
-                hideLoading();
+                try {
+                    training.attendees.splice(attendeeIndex, 1);
+                    
+                    const { error: updateError } = await supabase
+                        .from('trainings')
+                        .update({ attendees: training.attendees })
+                        .eq('id', trainingId);
+                    
+                    if (updateError) throw updateError;
+                    
+                    buildMonthGrid();
+                    renderAttendeeList(training);
+                    
+                    alert('Anmeldung erfolgreich zurückgezogen.');
+                    
+                } catch (err) {
+                    console.error('Fehler beim Abmelden:', err);
+                    alert('Fehler beim Abmelden: ' + err.message);
+                    await loadTrainings();
+                }
+            };
+
+            async function anmelden() {
+                if (!selectedId) { alert('Bitte wählen Sie eine Schulung.'); return; }
+                const training = findTraining(selectedId);
+                if (!training) return;
+                
+                const vorname = vornameInp.value.trim();
+                const name = nameInp.value.trim();
+                const persnr = persnrInp.value.trim() || null;
+                const geburtstagGerman = geburtstagInp.value.trim() || null;
+                const gebort = geburtsortInp.value.trim() || null;
+
+                if (!vorname || !name) {
+                    alert('Bitte füllen Sie die Pflichtfelder Name und Vorname aus.');
+                    return;
+                }
+
+                if (geburtstagGerman && !validateGermanDate(geburtstagGerman)) {
+                    alert('Bitte geben Sie das Geburtsdatum im Format TT.MM.JJJJ ein (z.B. 31.12.1990) oder lassen Sie es leer.');
+                    return;
+                }
+
+                if ((training.attendees?.length || 0) >= MAX) {
+                    alert('Maximale Teilnehmerzahl bereits erreicht.');
+                    return;
+                }
+
+                const alreadyRegistered = training.attendees?.some(a => 
+                    a.name === name && a.vorname === vorname
+                );
+                if (alreadyRegistered) {
+                    alert(`${vorname} ${name} ist bereits für diese Schulung angemeldet.`);
+                    return;
+                }
+
+                const newAttendee = { vorname, name };
+                if (persnr) newAttendee.personalnummer = persnr;
+                if (geburtstagGerman) newAttendee.geburtstag = geburtstagGerman;
+                if (gebort) newAttendee.geburtsort = gebort;
+                
+                if (!training.attendees) training.attendees = [];
+                training.attendees.push(newAttendee);
+
+                try {
+                    const { error: updateError } = await supabase
+                        .from('trainings')
+                        .update({ attendees: training.attendees })
+                        .eq('id', selectedId);
+
+                    if (updateError) throw updateError;
+
+                    buildMonthGrid();
+                    renderAttendeeList(training);
+
+                    vornameInp.value = ''; nameInp.value = ''; persnrInp.value = ''; 
+                    geburtstagInp.value = ''; geburtsortInp.value = '';
+
+                    anmeldenBtn.textContent = '✓ Erfolg';
+                    setTimeout(() => anmeldenBtn.innerHTML = '➕ Anmelden', 800);
+
+                } catch (err) {
+                    console.error('Fehler bei Anmeldung:', err);
+                    alert('Fehler beim Speichern: ' + err.message);
+                }
             }
-        });
 
-        // Hilfsfunktionen
-        function formatDate(date) {
-            if (!date) return '-';
-            return new Date(date).toLocaleDateString('de-DE');
-        }
-
-        function getZustandClass(zustand) {
-            switch(zustand) {
-                case 'sehr gut': return 'zustand-sehrgut';
-                case 'gut': return 'zustand-gut';
-                case 'befriedigend': return 'zustand-befriedigend';
-                case 'prüffällig': return 'zustand-prueffaellig';
-                default: return '';
+            function cancelSelection() {
+                selectedId = null;
+                regPanel.style.display = 'none';
             }
-        }
 
-        function showLoading() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-        }
+            cancelBtn.addEventListener('click', cancelSelection);
+            anmeldenBtn.addEventListener('click', (e) => { e.preventDefault(); anmelden(); });
 
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
+            // Modal schließen bei Klick außerhalb
+            window.onclick = function(event) {
+                if (event.target === teilnehmerModal) {
+                    closeTeilnehmerModal();
+                }
+            };
 
-        // Modal schließen bei Klick außerhalb
-        window.onclick = function(event) {
-            const modal = document.getElementById('pruefmittelModal');
-            if (event.target === modal) closeModal();
-        }
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTrainings();
+                regPanel.style.display = 'none';
+            });
+        })();
     </script>
 </body>
 </html>
