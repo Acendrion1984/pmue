@@ -356,6 +356,80 @@
 
     @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
     @media (max-width: 768px) { .header-stats { width: 100%; justify-content: space-around; } }
+
+    /* ===== DRUCK (DIN A4) ===== */
+    .print-header { display: none; }
+
+    @page {
+      size: A4 portrait;
+      margin: 12mm;
+    }
+
+    @media print {
+      body { background: white !important; }
+      .pmu-container { padding: 0 !important; max-width: none !important; }
+
+      .pmu-header,
+      .filter-bar,
+      .dashboard-grid,
+      .modal,
+      .loading-overlay {
+        display: none !important;
+      }
+
+      .table-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        border-radius: 0 !important;
+      }
+
+      .print-header {
+        display: block !important;
+        margin-bottom: 8mm;
+      }
+
+      .print-header .title {
+        font-size: 16pt;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 2mm;
+      }
+
+      .print-header .meta {
+        font-size: 10pt;
+        color: #333;
+      }
+
+      table { min-width: 0 !important; width: 100% !important; }
+      th, td {
+        font-size: 8.5pt !important;
+        padding: 6px 6px !important;
+        border-bottom: 1px solid #ddd !important;
+        white-space: normal !important;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      tr { page-break-inside: avoid; }
+
+      /* Aktionen nicht drucken */
+      th:last-child, td:last-child { display: none !important; }
+
+      .status-badge {
+        border: 1px solid #999 !important;
+        background: transparent !important;
+        color: #000 !important;
+        padding: 2px 6px !important;
+      }
+    }
   </style>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -436,6 +510,9 @@
         <button class="btn" onclick="loadPruefmittel()">
           <i class="fas fa-sync-alt"></i> Aktualisieren
         </button>
+        <button class="btn" onclick="printA4()">
+          <i class="fas fa-print"></i> Drucken (A4)
+        </button>
         <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(this.files[0])">
       </div>
     </div>
@@ -449,6 +526,12 @@
         </div>
         <div class="faelligkeiten-liste" id="faelligkeitenListe"></div>
       </div>
+    </div>
+
+    <!-- Print Header (nur im Druck sichtbar) -->
+    <div class="print-header" id="printHeader">
+      <div class="title">PMÜ – Prüfmittelübersicht</div>
+      <div class="meta" id="printMeta"></div>
     </div>
 
     <div class="table-container">
@@ -577,7 +660,7 @@
 
     let currentPruefmittel = [];
     let currentView = [];
-    let sortState = { key: null, dir: 'asc' }; // dir: 'asc' | 'desc'
+    let sortState = { key: null, dir: 'asc' };
 
     document.addEventListener('DOMContentLoaded', function() {
       loadPruefmittel();
@@ -603,7 +686,7 @@
 
         currentPruefmittel = data || [];
         updateDashboard();
-        filterData(); // rendert Tabelle mit Filter+Sort
+        filterData();
       } catch (error) {
         document.getElementById('tableBody').innerHTML =
           `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
@@ -737,8 +820,11 @@
         11: 'zustand'
       };
 
+      ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
+
       ths.forEach((th, idx) => {
         if (!(idx in colMap)) return;
+
         th.classList.add('sortable');
         th.addEventListener('click', () => {
           const key = colMap[idx];
@@ -748,8 +834,6 @@
         });
       });
 
-      // base text merken
-      ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
       paintSortIndicators();
     }
 
@@ -757,7 +841,6 @@
       const table = document.getElementById('pruefmittelTable');
       const ths = table.querySelectorAll('thead th');
 
-      // colMap wieder lokal (einfach)
       const colMap = {
         0: 'equipment',
         1: 'bezeichnung',
@@ -783,6 +866,30 @@
         if (sortState.key === key) th.textContent = `${base} ${sortState.dir === 'asc' ? '▲' : '▼'}`;
         else th.textContent = base;
       });
+    }
+
+    /* ===== Druckfunktion ===== */
+    function printA4() {
+      const status = document.getElementById('statusFilter')?.value || '';
+      const search = document.getElementById('searchFilter')?.value || '';
+      const sf = document.getElementById('sortierfeldFilter')?.value || '';
+      const ks = document.getElementById('kostenstelleFilter')?.value || '';
+      const fa = document.getElementById('faelligkeitFilter')?.value || '';
+
+      const dt = new Date();
+      const dateStr = dt.toLocaleString('de-DE');
+
+      const parts = [];
+      if (status) parts.push(`Status: ${status}`);
+      if (search) parts.push(`Suche: ${search}`);
+      if (sf) parts.push(`Sortierfeld: ${sf}`);
+      if (ks) parts.push(`Kostenstelle: ${ks}`);
+      if (fa) parts.push(`Fälligkeit: ${fa}`);
+
+      const meta = `Gedruckt am: ${dateStr}` + (parts.length ? ` | Filter: ${parts.join(' | ')}` : '');
+      document.getElementById('printMeta').textContent = meta;
+
+      window.print();
     }
 
     /* ===== Tabelle ===== */
@@ -1117,11 +1224,8 @@
         const editId = document.getElementById('editId').value;
         let result;
 
-        if (editId) {
-          result = await supabaseClient.from('pruefmittel').update(formData).eq('id', editId);
-        } else {
-          result = await supabaseClient.from('pruefmittel').insert([formData]);
-        }
+        if (editId) result = await supabaseClient.from('pruefmittel').update(formData).eq('id', editId);
+        else result = await supabaseClient.from('pruefmittel').insert([formData]);
 
         if (result.error) throw result.error;
 
@@ -1134,7 +1238,6 @@
       }
     });
 
-    /* ===== Helpers ===== */
     function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
     function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
