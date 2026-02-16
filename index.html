@@ -58,7 +58,7 @@
       background: white;
       border-radius: 15px;
       padding: 20px;
-      margin-bottom: 25px;
+      margin-bottom: 18px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       display: flex;
       gap: 20px;
@@ -135,83 +135,45 @@
       border: none;
     }
 
+    /* KPI Kacheln (kompakt) */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 25px;
-      margin-bottom: 25px;
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
       gap: 15px;
+      margin-bottom: 18px;
     }
 
     .kpi-card {
       background: white;
-      padding: 20px;
+      padding: 14px 16px;
       border-radius: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
     }
-    .kpi-card:hover { transform: translateY(-5px); }
+
     .kpi-card.warning { border-left: 4px solid #f59e0b; }
     .kpi-card.danger { border-left: 4px solid #dc2626; }
     .kpi-card.success { border-left: 4px solid #10b981; }
 
     .kpi-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       background: #eef2ff;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 15px;
       color: #003366;
-      font-size: 20px;
+      font-size: 18px;
+      flex: 0 0 auto;
     }
 
-    .kpi-value { font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 5px; }
-    .kpi-label { color: #64748b; font-size: 13px; font-weight: 500; }
-
-    .faelligkeiten-card {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .card-header h3 { color: #1e293b; font-size: 18px; font-weight: 600; }
-    .card-header h3 i { color: #003366; margin-right: 8px; }
-
-    .faelligkeiten-liste { list-style: none; }
-
-    .faelligkeiten-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .faelligkeiten-item:last-child { border-bottom: none; }
-
-    .faelligkeit-status { width: 8px; height: 8px; border-radius: 50%; margin-right: 12px; }
-    .status-rot { background: #dc2626; }
-    .status-gelb { background: #f59e0b; }
-    .status-gruen { background: #10b981; }
-
-    .faelligkeit-info { flex: 1; }
-    .faelligkeit-titel { font-weight: 600; color: #1e293b; }
-    .faelligkeit-datum { font-size: 12px; color: #64748b; }
-    .faelligkeit-segment { font-size: 11px; background: #f1f5f9; padding: 3px 8px; border-radius: 12px; }
+    .kpi-text { display: flex; flex-direction: column; gap: 2px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: #1e293b; line-height: 1.1; }
+    .kpi-label { color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
 
     .table-container {
       background: white;
@@ -221,7 +183,7 @@
       overflow-x: auto;
     }
 
-    table { width: 100%; border-collapse: collapse; min-width: 1800px; }
+    table { width: 100%; border-collapse: collapse; min-width: 1650px; }
 
     th {
       text-align: left;
@@ -243,7 +205,13 @@
       white-space: nowrap;
     }
 
+    /* Zeilenfarbe nach Fälligkeit */
+    tr.row-due-soon td { background: #fff3cd; }
+    tr.row-overdue td { background: #f8d7da; }
+
     tr:hover td { background: #f8fafc; }
+    tr.row-due-soon:hover td { background: #ffe8a1; }
+    tr.row-overdue:hover td { background: #f1b7bd; }
 
     .status-badge {
       padding: 5px 10px;
@@ -254,9 +222,14 @@
       white-space: nowrap;
     }
 
+    /* FERT & LAGE grün */
     .status-FERT { background: #d1fae5; color: #065f46; }
-    .status-LAGE { background: #fee2e2; color: #991b1b; }
+    .status-LAGE { background: #d1fae5; color: #065f46; }
+
+    /* ÜINT */
+    .status-UEINT { background: #fed7aa; color: #92400e; }
     .status-ueINT { background: #fed7aa; color: #92400e; }
+
     .status-ueEXT { background: #fed7aa; color: #92400e; }
     .status-REPA { background: #fef3c7; color: #92400e; }
     .status-DISP { background: #e0e7ff; color: #3730a3; }
@@ -354,16 +327,19 @@
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background: #eef2ff; }
 
-    @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 768px) { .header-stats { width: 100%; justify-content: space-around; } }
-
-    /* ===== DRUCK (DIN A4) ===== */
-    .print-header { display: none; }
-
-    @page {
-      size: A4 portrait;
-      margin: 12mm;
+    @media (max-width: 1200px) {
+      .dashboard-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      table { min-width: 1200px; }
     }
+    @media (max-width: 768px) {
+      .header-stats { width: 100%; justify-content: space-around; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      table { min-width: 1000px; }
+    }
+
+    /* DRUCK */
+    .print-header { display: none; }
+    @page { size: A4 portrait; margin: 12mm; }
 
     @media print {
       body { background: white !important; }
@@ -384,10 +360,7 @@
         border-radius: 0 !important;
       }
 
-      .print-header {
-        display: block !important;
-        margin-bottom: 8mm;
-      }
+      .print-header { display: block !important; margin-bottom: 8mm; }
 
       .print-header .title {
         font-size: 16pt;
@@ -396,10 +369,7 @@
         margin-bottom: 2mm;
       }
 
-      .print-header .meta {
-        font-size: 10pt;
-        color: #333;
-      }
+      .print-header .meta { font-size: 10pt; color: #333; }
 
       table { min-width: 0 !important; width: 100% !important; }
       th, td {
@@ -420,7 +390,6 @@
       tfoot { display: table-footer-group; }
       tr { page-break-inside: avoid; }
 
-      /* Aktionen nicht drucken */
       th:last-child, td:last-child { display: none !important; }
 
       .status-badge {
@@ -429,6 +398,8 @@
         color: #000 !important;
         padding: 2px 6px !important;
       }
+
+      tr.row-due-soon td, tr.row-overdue td { background: transparent !important; }
     }
   </style>
 
@@ -466,7 +437,7 @@
           <option value="">Alle</option>
           <option value="FERT">FERT</option>
           <option value="LAGE">LAGE</option>
-          <option value="ueINT">ueINT</option>
+          <option value="ÜINT">ÜINT</option>
           <option value="ueEXT">ueEXT</option>
           <option value="REPA">REPA</option>
           <option value="DISP">DISP</option>
@@ -481,7 +452,7 @@
 
       <div class="filter-group">
         <label><i class="fas fa-layer-group"></i> Sortierfeld</label>
-        <input type="text" id="sortierfeldFilter" placeholder="z.B. QS GROßLAGER">
+        <input type="text" id="sortierfeldFilter" placeholder="z.B. QS GROSSLAGER">
       </div>
 
       <div class="filter-group">
@@ -517,16 +488,8 @@
       </div>
     </div>
 
-    <div class="dashboard-grid">
-      <div class="kpi-grid" id="kpiGrid"></div>
-      <div class="faelligkeiten-card">
-        <div class="card-header">
-          <h3><i class="fas fa-exclamation-triangle"></i> Anstehende Kalibrierungen</h3>
-          <span id="faelligkeitenCount2">0</span>
-        </div>
-        <div class="faelligkeiten-liste" id="faelligkeitenListe"></div>
-      </div>
-    </div>
+    <!-- KPI Kacheln -->
+    <div class="dashboard-grid" id="kpiGrid"></div>
 
     <!-- Print Header (nur im Druck sichtbar) -->
     <div class="print-header" id="printHeader">
@@ -549,12 +512,11 @@
             <th>Anwenderstat.</th>
             <th>Zyklus</th>
             <th>Kal.-Stichtag</th>
-            <th>Zustand</th>
             <th>Aktionen</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="13" style="text-align:center;">Daten werden geladen...</td></tr>
+          <tr><td colspan="12" style="text-align:center;">Daten werden geladen...</td></tr>
         </tbody>
       </table>
     </div>
@@ -600,17 +562,12 @@
           <select id="anwenderstatus">
             <option value="FERT">FERT</option>
             <option value="LAGE">LAGE</option>
-            <option value="ueINT">ueINT</option>
+            <option value="ÜINT">ÜINT</option>
             <option value="ueEXT">ueEXT</option>
             <option value="REPA">REPA</option>
             <option value="DISP">DISP</option>
             <option value="NAUF">NAUF</option>
           </select>
-        </div>
-
-        <div class="form-group">
-          <label>Zustand</label>
-          <input type="text" id="zustand" placeholder="z.B. sehr gut">
         </div>
 
         <div class="form-group">
@@ -625,7 +582,7 @@
 
         <div class="form-group full-width">
           <label>Sortierfeld</label>
-          <input type="text" id="sortierfeld" placeholder="z.B. QS GROßLAGER (BAU 22)">
+          <input type="text" id="sortierfeld" placeholder="z.B. QS GROSSLAGER (BAU 22)">
         </div>
 
         <div class="form-group">
@@ -674,6 +631,85 @@
       setupTableSorting();
     });
 
+    /* ===== Umlaut-Normalisierung (ae/oe/ue -> ä/ö/ü bzw. Ä/Ö/Ü) ===== */
+    function isAllCapsWord(word) {
+      // "ALL CAPS" = mindestens ein Buchstabe, und alle Buchstaben sind Großbuchstaben
+      // Zahlen/Zeichen stören nicht.
+      const letters = word.replace(/[^A-Za-zÄÖÜäöüß]/g, '');
+      if (!letters) return false;
+      return letters === letters.toUpperCase();
+    }
+
+    function normalizeUmlautsInWord(word) {
+      if (!word) return word;
+      const allCaps = isAllCapsWord(word);
+
+      if (allCaps) {
+        // Großschreibung: AE/OE/UE -> Ä/Ö/Ü (auch gemischt sicherheitshalber)
+        return word
+          .replace(/AE/g, 'Ä').replace(/OE/g, 'Ö').replace(/UE/g, 'Ü')
+          .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
+          .replace(/aE/g, 'Ä').replace(/oE/g, 'Ö').replace(/uE/g, 'Ü')
+          .replace(/ae/g, 'Ä').replace(/oe/g, 'Ö').replace(/ue/g, 'Ü');
+      }
+
+      // normal/mixed/lower: ae/oe/ue -> ä/ö/ü (und führendes Ue/Oe/Ae -> Ü/Ö/Ä)
+      return word
+        .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
+        .replace(/ae/g, 'ä').replace(/oe/g, 'ö').replace(/ue/g, 'ü');
+    }
+
+    function normalizeUmlautsPreserveWordCase(text) {
+      if (text === null || text === undefined) return text;
+      const s = String(text);
+
+      // Wortweise an Leerzeichen; damit bleibt Layout erhalten.
+      // (Falls du auch an "-" "/" etc. trennen willst: sagen, dann erweitere ich es.)
+      return s.split(/(\s+)/).map(token => {
+        // tokens enthält auch die Whitespaces wegen capture-group (\s+)
+        if (/^\s+$/.test(token)) return token;
+        return normalizeUmlautsInWord(token);
+      }).join('');
+    }
+
+    /* ===== Status-Normalisierung ===== */
+    function normalizeStatus(s) {
+      if (!s) return 'FERT';
+      const raw = String(s).trim();
+      const up = raw.toUpperCase();
+      if (up === 'UEINT' || up === 'ÜINT') return 'ÜINT';
+      return up;
+    }
+
+    function statusClassFromNormalized(normalized) {
+      if (normalized === 'ÜINT') return 'UEINT';
+      return normalized;
+    }
+
+    function parseGermanDateToDate(str) {
+      if (!str || typeof str !== 'string') return null;
+      const parts = str.split('.');
+      if (parts.length !== 3) return null;
+      const [dd, mm, yyyy] = parts.map(p => parseInt(p, 10));
+      if (!dd || !mm || !yyyy) return null;
+      const d = new Date(yyyy, mm - 1, dd);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function getDueRowClass(kalibrierstichtag) {
+      const d = parseGermanDateToDate(kalibrierstichtag);
+      if (!d) return '';
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      d.setHours(0,0,0,0);
+
+      const diffDays = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 'row-overdue';
+      if (diffDays <= 30) return 'row-due-soon';
+      return '';
+    }
+
     async function loadPruefmittel() {
       showLoading();
       try {
@@ -684,26 +720,30 @@
 
         if (error) throw error;
 
-        currentPruefmittel = data || [];
+        // Texte direkt nach dem Laden normalisieren (Anzeige + Filter + Suche)
+        currentPruefmittel = (data || []).map(p => ({
+          ...p,
+          equipment: normalizeUmlautsPreserveWordCase(p.equipment),
+          bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
+          material: normalizeUmlautsPreserveWordCase(p.material),
+          seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
+          sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
+          kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
+          hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
+          zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
+          anwenderstatus: normalizeStatus(p.anwenderstatus)
+        }));
+
         updateDashboard();
         filterData();
       } catch (error) {
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+          `<tr><td colspan="12" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
       } finally {
         hideLoading();
       }
-    }
-
-    /* ===== Sort/Filter Helpers ===== */
-    function parseGermanDateToDate(str) {
-      if (!str || typeof str !== 'string') return null;
-      const parts = str.split('.');
-      if (parts.length !== 3) return null;
-      const [dd, mm, yyyy] = parts.map(p => parseInt(p, 10));
-      if (!dd || !mm || !yyyy) return null;
-      const d = new Date(yyyy, mm - 1, dd);
-      return isNaN(d.getTime()) ? null : d;
     }
 
     function compareValues(a, b, dir = 'asc') {
@@ -756,7 +796,7 @@
 
       let filtered = [...currentPruefmittel];
 
-      if (status) filtered = filtered.filter(item => item.anwenderstatus === status);
+      if (status) filtered = filtered.filter(item => normalizeStatus(item.anwenderstatus) === status);
 
       if (search) {
         filtered = filtered.filter(item =>
@@ -771,13 +811,8 @@
         );
       }
 
-      if (sortierfeldSearch) {
-        filtered = filtered.filter(item => (item.sortierfeld || '').toLowerCase().includes(sortierfeldSearch));
-      }
-
-      if (kostenstelleSearch) {
-        filtered = filtered.filter(item => (item.kostenstelle || '').toLowerCase().includes(kostenstelleSearch));
-      }
+      if (sortierfeldSearch) filtered = filtered.filter(item => (item.sortierfeld || '').toLowerCase().includes(sortierfeldSearch));
+      if (kostenstelleSearch) filtered = filtered.filter(item => (item.kostenstelle || '').toLowerCase().includes(kostenstelleSearch));
 
       if (faelligkeit) {
         filtered = filtered.filter(item => {
@@ -816,8 +851,8 @@
         7: 'kostenstelle',
         8: 'anwenderstatus',
         9: 'zyklus',
-        10: 'kalibrierstichtag',
-        11: 'zustand'
+        10: 'kalibrierstichtag'
+        // 11 = Aktionen (nicht sortierbar)
       };
 
       ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
@@ -852,8 +887,7 @@
         7: 'kostenstelle',
         8: 'anwenderstatus',
         9: 'zyklus',
-        10: 'kalibrierstichtag',
-        11: 'zustand'
+        10: 'kalibrierstichtag'
       };
 
       ths.forEach((th, idx) => {
@@ -868,7 +902,6 @@
       });
     }
 
-    /* ===== Druckfunktion ===== */
     function printA4() {
       const status = document.getElementById('statusFilter')?.value || '';
       const search = document.getElementById('searchFilter')?.value || '';
@@ -892,31 +925,32 @@
       window.print();
     }
 
-    /* ===== Tabelle ===== */
     function renderTable(data) {
       const tbody = document.getElementById('tableBody');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
         return;
       }
 
       tbody.innerHTML = data.map(item => {
-        const statusClass = item.anwenderstatus || 'FERT';
+        const statusNormalized = normalizeStatus(item.anwenderstatus);
+        const statusClass = statusClassFromNormalized(statusNormalized);
+        const rowClass = getDueRowClass(item.kalibrierstichtag);
+
         return `
-          <tr>
-            <td><strong>${item.equipment || '-'}</strong></td>
-            <td>${item.bezeichnung || '-'}</td>
-            <td>${item.material || '-'}</td>
-            <td>${item.seriennummer || '-'}</td>
-            <td>${item.hersteller || '-'}</td>
-            <td>${item.typbezeichnung || '-'}</td>
-            <td>${item.sortierfeld || '-'}</td>
-            <td>${item.kostenstelle || '-'}</td>
-            <td><span class="status-badge status-${statusClass}">${item.anwenderstatus || 'FERT'}</span></td>
-            <td>${item.zyklus || '-'}</td>
-            <td>${item.kalibrierstichtag || '-'}</td>
-            <td>${item.zustand || '-'}</td>
+          <tr class="${rowClass}">
+            <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
+            <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
+            <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
+            <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
             <td>
               <button class="action-btn" onclick="editPruefmittel(${item.id})"><i class="fas fa-edit"></i></button>
               <button class="action-btn" onclick="deletePruefmittel(${item.id})"><i class="fas fa-trash"></i></button>
@@ -926,14 +960,13 @@
       }).join('');
     }
 
-    /* ===== Dashboard ===== */
+    /* KPI */
     function updateDashboard() {
       const total = currentPruefmittel.length;
-      const aktiv = currentPruefmittel.filter(p => p.anwenderstatus === 'FERT').length;
+      const aktiv = currentPruefmittel.filter(p => normalizeStatus(p.anwenderstatus) === 'FERT').length;
 
       const heute = new Date();
-      const in30Tagen = new Date();
-      in30Tagen.setDate(heute.getDate() + 30);
+      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
 
       const faelligkeiten = currentPruefmittel.filter(p => {
         const d = parseGermanDateToDate(p.kalibrierstichtag);
@@ -943,10 +976,8 @@
       document.getElementById('totalAnlagen').textContent = total;
       document.getElementById('aktivAnlagen').textContent = aktiv;
       document.getElementById('faelligkeitenCount').textContent = faelligkeiten;
-      document.getElementById('faelligkeitenCount2').textContent = faelligkeiten;
 
       renderKpiCards();
-      renderFaelligkeiten();
     }
 
     function renderKpiCards() {
@@ -954,95 +985,59 @@
       const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
       const in7Tagen = new Date(); in7Tagen.setDate(heute.getDate() + 7);
 
-      const faelligkeiten30 = currentPruefmittel.filter(p => {
+      const in30 = currentPruefmittel.filter(p => {
         const d = parseGermanDateToDate(p.kalibrierstichtag);
         return d ? d <= in30Tagen : false;
       }).length;
 
-      const faelligkeiten7 = currentPruefmittel.filter(p => {
+      const in7 = currentPruefmittel.filter(p => {
         const d = parseGermanDateToDate(p.kalibrierstichtag);
         return d ? d <= in7Tagen : false;
       }).length;
 
-      const ueberfaellig = currentPruefmittel.filter(p => {
+      const overdue = currentPruefmittel.filter(p => {
         const d = parseGermanDateToDate(p.kalibrierstichtag);
         return d ? d < heute : false;
       }).length;
 
+      const total = currentPruefmittel.length;
+
       document.getElementById('kpiGrid').innerHTML = `
-        <div class="kpi-card ${ueberfaellig > 0 ? 'danger' : ''}">
+        <div class="kpi-card ${overdue > 0 ? 'danger' : ''}">
           <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
-          <div class="kpi-value">${ueberfaellig}</div>
-          <div class="kpi-label">Überfällig</div>
+          <div class="kpi-text">
+            <div class="kpi-value">${overdue}</div>
+            <div class="kpi-label">Überfällig</div>
+          </div>
         </div>
+
         <div class="kpi-card warning">
           <div class="kpi-icon"><i class="fas fa-clock"></i></div>
-          <div class="kpi-value">${faelligkeiten7}</div>
-          <div class="kpi-label">In 7 Tagen</div>
+          <div class="kpi-text">
+            <div class="kpi-value">${in7}</div>
+            <div class="kpi-label">In 7 Tagen</div>
+          </div>
         </div>
-        <div class="kpi-card">
+
+        <div class="kpi-card warning">
           <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
-          <div class="kpi-value">${faelligkeiten30}</div>
-          <div class="kpi-label">In 30 Tagen</div>
+          <div class="kpi-text">
+            <div class="kpi-value">${in30}</div>
+            <div class="kpi-label">In 30 Tagen</div>
+          </div>
         </div>
+
         <div class="kpi-card">
           <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
-          <div class="kpi-value">${currentPruefmittel.length}</div>
-          <div class="kpi-label">Gesamt</div>
+          <div class="kpi-text">
+            <div class="kpi-value">${total}</div>
+            <div class="kpi-label">Gesamt</div>
+          </div>
         </div>
       `;
     }
 
-    function renderFaelligkeiten() {
-      const heute = new Date();
-      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
-
-      const faelligkeiten = currentPruefmittel
-        .filter(p => {
-          const d = parseGermanDateToDate(p.kalibrierstichtag);
-          return d ? d <= in30Tagen : false;
-        })
-        .sort((a, b) => {
-          const da = parseGermanDateToDate(a.kalibrierstichtag);
-          const db = parseGermanDateToDate(b.kalibrierstichtag);
-          if (!da && !db) return 0;
-          if (!da) return 1;
-          if (!db) return -1;
-          return da - db;
-        })
-        .slice(0, 10);
-
-      const liste = document.getElementById('faelligkeitenListe');
-      if (faelligkeiten.length === 0) {
-        liste.innerHTML = '<div style="text-align:center;color:#64748b;padding:20px;">Keine anstehenden Kalibrierungen</div>';
-        return;
-      }
-
-      liste.innerHTML = faelligkeiten.map(item => {
-        let diffTage = 0;
-        let statusClass = 'status-gruen';
-
-        const d = parseGermanDateToDate(item.kalibrierstichtag);
-        if (d) {
-          diffTage = Math.ceil((d - heute) / (1000 * 60 * 60 * 24));
-          if (diffTage < 0) statusClass = 'status-rot';
-          else if (diffTage < 14) statusClass = 'status-gelb';
-        }
-
-        return `
-          <div class="faelligkeiten-item">
-            <div class="faelligkeit-status ${statusClass}"></div>
-            <div class="faelligkeit-info">
-              <div class="faelligkeit-titel">${item.equipment || '-'} - ${item.bezeichnung || '-'}</div>
-              <div class="faelligkeit-datum">${item.kalibrierstichtag || '-'} (${diffTage < 0 ? 'überfällig' : `in ${diffTage} Tagen`})</div>
-            </div>
-            <span class="faelligkeit-segment">${item.sortierfeld ? item.sortierfeld.substring(0, 15) : '-'}</span>
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* ===== CSV Import ===== */
+    /* CSV Import (ohne Zustand -> 11 Spalten) */
     async function importCSV(file) {
       if (!file) return;
       showLoading();
@@ -1061,20 +1056,20 @@
           try {
             const values = dataRows[i].split(';').map(v => v.trim());
 
-            if (values.length >= 12) {
+            // NEU: 11 Felder erwartet (ohne Zustand)
+            if (values.length >= 11) {
               const item = {
-                equipment: values[0] || null,
-                bezeichnung: values[1] || null,
-                material: values[2] || null,
-                seriennummer: values[3] || null,
-                kostenstelle: values[4] || null,
-                anwenderstatus: values[5] || 'FERT',
-                zustand: values[6] || null,
-                zyklus: values[7] || null,
-                kalibrierstichtag: values[8] || null,
-                sortierfeld: values[9] || null,
-                hersteller: values[10] || null,
-                typbezeichnung: values[11] || null
+                equipment: normalizeUmlautsPreserveWordCase(values[0] || null),
+                bezeichnung: normalizeUmlautsPreserveWordCase(values[1] || null),
+                material: normalizeUmlautsPreserveWordCase(values[2] || null),
+                seriennummer: normalizeUmlautsPreserveWordCase(values[3] || null),
+                kostenstelle: normalizeUmlautsPreserveWordCase(values[4] || null),
+                anwenderstatus: normalizeStatus(values[5] || 'FERT'),
+                zyklus: normalizeUmlautsPreserveWordCase(values[6] || null),
+                kalibrierstichtag: normalizeUmlautsPreserveWordCase(values[7] || null),
+                sortierfeld: normalizeUmlautsPreserveWordCase(values[8] || null),
+                hersteller: normalizeUmlautsPreserveWordCase(values[9] || null),
+                typbezeichnung: normalizeUmlautsPreserveWordCase(values[10] || null)
               };
 
               if (!item.equipment || !item.bezeichnung) {
@@ -1084,7 +1079,7 @@
 
               importData.push(item);
             } else {
-              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 12, erhalten: ${values.length})`);
+              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 11, erhalten: ${values.length})`);
             }
           } catch (err) {
             errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
@@ -1147,7 +1142,6 @@
       }
     }
 
-    /* ===== Modal CRUD ===== */
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
       document.getElementById('pruefmittelForm').reset();
@@ -1171,8 +1165,7 @@
       document.getElementById('material').value = item.material || '';
       document.getElementById('seriennummer').value = item.seriennummer || '';
       document.getElementById('kostenstelle').value = item.kostenstelle || '';
-      document.getElementById('anwenderstatus').value = item.anwenderstatus || 'FERT';
-      document.getElementById('zustand').value = item.zustand || '';
+      document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
       document.getElementById('zyklus').value = item.zyklus || '';
       document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
       document.getElementById('sortierfeld').value = item.sortierfeld || '';
@@ -1207,18 +1200,17 @@
 
       try {
         const formData = {
-          equipment: document.getElementById('equipment').value,
-          bezeichnung: document.getElementById('bezeichnung').value,
-          material: document.getElementById('material').value || null,
-          seriennummer: document.getElementById('seriennummer').value || null,
-          kostenstelle: document.getElementById('kostenstelle').value || null,
-          anwenderstatus: document.getElementById('anwenderstatus').value,
-          zustand: document.getElementById('zustand').value || null,
-          zyklus: document.getElementById('zyklus').value || null,
-          kalibrierstichtag: document.getElementById('kalibrierstichtag').value || null,
-          sortierfeld: document.getElementById('sortierfeld').value || null,
-          hersteller: document.getElementById('hersteller').value || null,
-          typbezeichnung: document.getElementById('typbezeichnung').value || null
+          equipment: normalizeUmlautsPreserveWordCase(document.getElementById('equipment').value),
+          bezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('bezeichnung').value),
+          material: normalizeUmlautsPreserveWordCase(document.getElementById('material').value || null),
+          seriennummer: normalizeUmlautsPreserveWordCase(document.getElementById('seriennummer').value || null),
+          kostenstelle: normalizeUmlautsPreserveWordCase(document.getElementById('kostenstelle').value || null),
+          anwenderstatus: normalizeStatus(document.getElementById('anwenderstatus').value),
+          zyklus: normalizeUmlautsPreserveWordCase(document.getElementById('zyklus').value || null),
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(document.getElementById('kalibrierstichtag').value || null),
+          sortierfeld: normalizeUmlautsPreserveWordCase(document.getElementById('sortierfeld').value || null),
+          hersteller: normalizeUmlautsPreserveWordCase(document.getElementById('hersteller').value || null),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('typbezeichnung').value || null)
         };
 
         const editId = document.getElementById('editId').value;
