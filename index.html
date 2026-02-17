@@ -6,18 +6,117 @@
   <title>PMÜ - Prüfmittelüberwachung</title>
 
   <style>
+    /* =========================================================
+       THEME SYSTEM (wie Portal)
+       - Light Variablen in :root
+       - Dark Variablen in body.dark-mode
+       ========================================================= */
+    :root{
+      --radius: 14px;
+
+      --bg: #f5f5f7;
+      --fg: #1e293b;
+      --muted: #64748b;
+
+      --card-bg: #ffffff;
+      --card-border: rgba(0,0,0,0.08);
+
+      --border: #e2e8f0;
+
+      --shadow-sm: 0 4px 15px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 20px rgba(0,0,0,0.10);
+
+      /* Header */
+      --header-start: #003366;
+      --header-end: #1a4d8c;
+
+      /* Table */
+      --table-head-bg: #f8fafc;
+      --table-hover: #f8fafc;
+
+      /* Due colors */
+      --due-soon: #fff3cd;
+      --due-soon-hover: #ffe8a1;
+      --overdue: #f8d7da;
+      --overdue-hover: #f1b7bd;
+
+      /* Inputs */
+      --input-bg: #ffffff;
+      --input-fg: #0f172a;
+      --input-border: #e2e8f0;
+      --input-focus: #003366;
+
+      /* Buttons */
+      --btn-bg: #ffffff;
+      --btn-fg: #0f172a;
+      --btn-border: #e2e8f0;
+
+      /* Primary/Success/Warning */
+      --primary-start: #003366;
+      --primary-end: #1a4d8c;
+      --success-start: #059669;
+      --success-end: #10b981;
+      --warning-start: #b45309;
+      --warning-end: #d97706;
+
+      /* Theme toggle */
+      --theme-btn-bg: var(--card-bg);
+      --theme-btn-border: var(--border);
+      --theme-btn-fg: var(--fg);
+    }
+
+    body.dark-mode{
+      --bg: #121212;
+      --fg: #e5e7eb;
+      --muted: #b6bcc6;
+
+      --card-bg: #1e1e1e;
+      --card-border: rgba(255,255,255,0.12);
+
+      --border: rgba(255,255,255,0.10);
+
+      --shadow-sm: 0 6px 18px rgba(0,0,0,0.25);
+      --shadow-md: 0 12px 26px rgba(0,0,0,0.35);
+
+      --table-head-bg: #151515;
+      --table-hover: #202020;
+
+      --due-soon: rgba(245, 158, 11, 0.18);
+      --due-soon-hover: rgba(245, 158, 11, 0.26);
+      --overdue: rgba(220, 38, 38, 0.18);
+      --overdue-hover: rgba(220, 38, 38, 0.26);
+
+      --input-bg: #161616;
+      --input-fg: #e5e7eb;
+      --input-border: #2b2b2b;
+      --input-focus: #60a5fa;
+
+      --btn-bg: #1e1e1e;
+      --btn-fg: #e5e7eb;
+      --btn-border: #2b2b2b;
+
+      --theme-btn-bg: #1e1e1e;
+      --theme-btn-border: #2b2b2b;
+      --theme-btn-fg: #e5e7eb;
+    }
+
+    /* =========================================================
+       ORIGINAL STYLES (leicht an Variablen gekoppelt)
+       ========================================================= */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f7;
+      background: var(--bg);
+      color: var(--fg);
       min-height: 100vh;
+      transition: background-color .25s ease, color .25s ease;
     }
 
     .pmu-container { max-width: 1920px; margin: 0 auto; padding: 10px; }
 
     .pmu-header {
-      background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+      background: linear-gradient(135deg, var(--header-start) 0%, var(--header-end) 100%);
       color: white;
       padding: 25px 30px;
       border-radius: 20px;
@@ -55,11 +154,12 @@
     .stat-label { font-size: 12px; opacity: 0.8; }
 
     .filter-bar {
-      background: white;
+      background: var(--card-bg);
       border-radius: 15px;
       padding: 20px;
       margin-bottom: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--card-border);
       display: flex;
       gap: 20px;
       flex-wrap: wrap;
@@ -70,25 +170,27 @@
     .filter-group label {
       display: block;
       margin-bottom: 8px;
-      color: #1e293b;
+      color: var(--fg);
       font-weight: 600;
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.3px;
     }
-    .filter-group label i { margin-right: 6px; color: #003366; }
+    .filter-group label i { margin-right: 6px; color: var(--header-start); }
 
     .filter-group select, .filter-group input {
       width: 100%;
       padding: 10px 15px;
-      border: 2px solid #e2e8f0;
+      border: 2px solid var(--input-border);
       border-radius: 10px;
       font-size: 14px;
       transition: all 0.2s;
+      background: var(--input-bg);
+      color: var(--input-fg);
     }
     .filter-group select:focus, .filter-group input:focus {
       outline: none;
-      border-color: #003366;
+      border-color: var(--input-focus);
     }
 
     .filter-actions {
@@ -100,7 +202,7 @@
 
     .btn {
       padding: 10px 20px;
-      border: none;
+      border: 2px solid var(--btn-border);
       border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
@@ -109,12 +211,12 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: white;
-      border: 2px solid #e2e8f0;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
       color: white;
       border: none;
     }
@@ -124,13 +226,13 @@
     }
 
     .btn-success {
-      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      background: linear-gradient(135deg, var(--success-start) 0%, var(--success-end) 100%);
       color: white;
       border: none;
     }
 
     .btn-warning {
-      background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+      background: linear-gradient(135deg, var(--warning-start) 0%, var(--warning-end) 100%);
       color: white;
       border: none;
     }
@@ -144,10 +246,11 @@
     }
 
     .kpi-card {
-      background: white;
+      background: var(--card-bg);
       padding: 14px 16px;
       border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -170,16 +273,21 @@
       font-size: 18px;
       flex: 0 0 auto;
     }
+    body.dark-mode .kpi-icon{
+      background: rgba(96,165,250,0.12);
+      color: #60a5fa;
+    }
 
     .kpi-text { display: flex; flex-direction: column; gap: 2px; }
-    .kpi-value { font-size: 22px; font-weight: 800; color: #1e293b; line-height: 1.1; }
-    .kpi-label { color: #64748b; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: var(--fg); line-height: 1.1; }
+    .kpi-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
 
     .table-container {
-      background: white;
+      background: var(--card-bg);
       border-radius: 15px;
       padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--card-border);
       overflow-x: auto;
     }
 
@@ -188,8 +296,8 @@
     th {
       text-align: left;
       padding: 15px 10px;
-      background: #f8fafc;
-      color: #1e293b;
+      background: var(--table-head-bg);
+      color: var(--fg);
       font-weight: 600;
       font-size: 12px;
       text-transform: uppercase;
@@ -199,19 +307,19 @@
 
     td {
       padding: 15px 10px;
-      border-bottom: 1px solid #e2e8f0;
-      color: #334155;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
       font-size: 13px;
       white-space: nowrap;
     }
 
     /* Zeilenfarbe nach Fälligkeit */
-    tr.row-due-soon td { background: #fff3cd; }
-    tr.row-overdue td { background: #f8d7da; }
+    tr.row-due-soon td { background: var(--due-soon); }
+    tr.row-overdue td { background: var(--overdue); }
 
-    tr:hover td { background: #f8fafc; }
-    tr.row-due-soon:hover td { background: #ffe8a1; }
-    tr.row-overdue:hover td { background: #f1b7bd; }
+    tr:hover td { background: var(--table-hover); }
+    tr.row-due-soon:hover td { background: var(--due-soon-hover); }
+    tr.row-overdue:hover td { background: var(--overdue-hover); }
 
     .status-badge {
       padding: 5px 10px;
@@ -235,16 +343,38 @@
     .status-DISP { background: #e0e7ff; color: #3730a3; }
     .status-NAUF { background: #ffe4e6; color: #9f1239; }
 
+    body.dark-mode .status-FERT,
+    body.dark-mode .status-LAGE{
+      background: rgba(16,185,129,0.20);
+      color: #a7f3d0;
+    }
+    body.dark-mode .status-UEINT,
+    body.dark-mode .status-ueINT,
+    body.dark-mode .status-ÜEXT,
+    body.dark-mode .status-REPA{
+      background: rgba(245,158,11,0.20);
+      color: #fde68a;
+    }
+    body.dark-mode .status-DISP{
+      background: rgba(96,165,250,0.18);
+      color: #bfdbfe;
+    }
+    body.dark-mode .status-NAUF{
+      background: rgba(244,63,94,0.18);
+      color: #fecdd3;
+    }
+
     .action-btn {
       background: none;
       border: none;
-      color: #003366;
+      color: var(--header-start);
       cursor: pointer;
       padding: 5px 10px;
       border-radius: 5px;
       font-size: 13px;
     }
-    .action-btn:hover { background: #eef2ff; }
+    .action-btn:hover { background: rgba(96,165,250,0.12); }
+    body.dark-mode .action-btn{ color: #60a5fa; }
 
     .modal {
       display: none;
@@ -255,15 +385,18 @@
       justify-content: center;
       align-items: center;
     }
+    body.dark-mode .modal{ background: rgba(0,0,0,0.7); }
 
     .modal-content {
-      background: white;
+      background: var(--card-bg);
       border-radius: 20px;
       width: 90%;
       max-width: 800px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 30px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-md);
     }
 
     .modal-header {
@@ -273,23 +406,25 @@
       margin-bottom: 25px;
     }
 
-    .modal-header h2 { color: #1e293b; font-size: 24px; }
-    .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
+    .modal-header h2 { color: var(--fg); font-size: 24px; }
+    .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
 
     .modal-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group.full-width { grid-column: span 2; }
 
-    .form-group label { font-weight: 600; font-size: 13px; color: #1e293b; }
+    .form-group label { font-weight: 600; font-size: 13px; color: var(--fg); }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       padding: 10px;
-      border: 2px solid #e2e8f0;
+      border: 2px solid var(--input-border);
       border-radius: 8px;
       font-size: 14px;
       width: 100%;
+      background: var(--input-bg);
+      color: var(--input-fg);
     }
 
     .modal-actions {
@@ -309,13 +444,18 @@
       align-items: center;
       z-index: 2000;
     }
+    body.dark-mode .loading-overlay { background: rgba(0,0,0,0.55); }
 
     .loading-spinner {
       width: 50px; height: 50px;
       border: 5px solid #f3f3f3;
-      border-top: 5px solid #003366;
+      border-top: 5px solid var(--header-start);
       border-radius: 50%;
       animation: spin 1s linear infinite;
+    }
+    body.dark-mode .loading-spinner{
+      border-color: #2b2b2b;
+      border-top-color: #60a5fa;
     }
 
     @keyframes spin {
@@ -325,7 +465,7 @@
 
     /* Sortier-UX */
     th.sortable { cursor: pointer; user-select: none; }
-    th.sortable:hover { background: #eef2ff; }
+    th.sortable:hover { background: rgba(96,165,250,0.10); }
 
     @media (max-width: 1200px) {
       .dashboard-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
@@ -349,7 +489,8 @@
       .filter-bar,
       .dashboard-grid,
       .modal,
-      .loading-overlay {
+      .loading-overlay,
+      .theme-toggle-button {
         display: none !important;
       }
 
@@ -400,6 +541,35 @@
       }
 
       tr.row-due-soon td, tr.row-overdue td { background: transparent !important; }
+    }
+
+    /* ===== Theme Toggle Button (wie Portal) ===== */
+    .theme-toggle-button{
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--theme-btn-bg);
+      border: 2px solid var(--theme-btn-border);
+      color: var(--theme-btn-fg);
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      z-index: 3000;
+    }
+    .theme-toggle-button:hover{
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: var(--shadow-md);
+      border-color: var(--input-focus);
+    }
+    .theme-toggle-button:active{
+      transform: translateY(-1px) scale(0.98);
     }
   </style>
 
@@ -488,10 +658,8 @@
       </div>
     </div>
 
-    <!-- KPI Kacheln -->
     <div class="dashboard-grid" id="kpiGrid"></div>
 
-    <!-- Print Header (nur im Druck sichtbar) -->
     <div class="print-header" id="printHeader">
       <div class="title">PMÜ – Prüfmittelübersicht</div>
       <div class="meta" id="printMeta"></div>
@@ -607,6 +775,9 @@
     <div class="loading-spinner"></div>
   </div>
 
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle-button" id="themeToggleButton" aria-label="Dark/Light Mode umschalten">🌓</button>
+
   <script>
     /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
@@ -633,8 +804,6 @@
 
     /* ===== Umlaut-Normalisierung (ae/oe/ue -> ä/ö/ü bzw. Ä/Ö/Ü) ===== */
     function isAllCapsWord(word) {
-      // "ALL CAPS" = mindestens ein Buchstabe, und alle Buchstaben sind Großbuchstaben
-      // Zahlen/Zeichen stören nicht.
       const letters = word.replace(/[^A-Za-zÄÖÜäöüß]/g, '');
       if (!letters) return false;
       return letters === letters.toUpperCase();
@@ -645,7 +814,6 @@
       const allCaps = isAllCapsWord(word);
 
       if (allCaps) {
-        // Großschreibung: AE/OE/UE -> Ä/Ö/Ü (auch gemischt sicherheitshalber)
         return word
           .replace(/AE/g, 'Ä').replace(/OE/g, 'Ö').replace(/UE/g, 'Ü')
           .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
@@ -653,7 +821,6 @@
           .replace(/ae/g, 'Ä').replace(/oe/g, 'Ö').replace(/ue/g, 'Ü');
       }
 
-      // normal/mixed/lower: ae/oe/ue -> ä/ö/ü (und führendes Ue/Oe/Ae -> Ü/Ö/Ä)
       return word
         .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
         .replace(/ae/g, 'ä').replace(/oe/g, 'ö').replace(/ue/g, 'ü');
@@ -662,11 +829,7 @@
     function normalizeUmlautsPreserveWordCase(text) {
       if (text === null || text === undefined) return text;
       const s = String(text);
-
-      // Wortweise an Leerzeichen; damit bleibt Layout erhalten.
-      // (Falls du auch an "-" "/" etc. trennen willst: sagen, dann erweitere ich es.)
       return s.split(/(\s+)/).map(token => {
-        // tokens enthält auch die Whitespaces wegen capture-group (\s+)
         if (/^\s+$/.test(token)) return token;
         return normalizeUmlautsInWord(token);
       }).join('');
@@ -720,7 +883,6 @@
 
         if (error) throw error;
 
-        // Texte direkt nach dem Laden normalisieren (Anzeige + Filter + Suche)
         currentPruefmittel = (data || []).map(p => ({
           ...p,
           equipment: normalizeUmlautsPreserveWordCase(p.equipment),
@@ -852,7 +1014,6 @@
         8: 'anwenderstatus',
         9: 'zyklus',
         10: 'kalibrierstichtag'
-        // 11 = Aktionen (nicht sortierbar)
       };
 
       ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
@@ -1037,14 +1198,67 @@
       `;
     }
 
-    /* CSV Import (ohne Zustand -> 11 Spalten) */
+    /* =========================
+       CSV Import - ROBUST (Umlaute)
+       - Decode: UTF-8 + fallback windows-1252 (Excel ANSI)
+       - BOM entfernen
+       - CRLF/CR normalisieren
+       - Semikolon CSV Split mit Quotes
+       ========================= */
+
+    function decodeCsvFile(file) {
+      return file.arrayBuffer().then((buf) => {
+        let text = new TextDecoder('utf-8', { fatal: false }).decode(buf);
+        text = text.replace(/^\uFEFF/, '');
+
+        if (text.includes('�')) {
+          text = new TextDecoder('windows-1252', { fatal: false }).decode(buf);
+          text = text.replace(/^\uFEFF/, '');
+        }
+
+        return text;
+      });
+    }
+
+    function splitCsvSemicolon(line) {
+      const out = [];
+      let cur = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+          continue;
+        }
+
+        if (ch === ';' && !inQuotes) {
+          out.push(cur);
+          cur = '';
+          continue;
+        }
+
+        cur += ch;
+      }
+
+      out.push(cur);
+      return out.map(v => v.trim());
+    }
+
     async function importCSV(file) {
       if (!file) return;
       showLoading();
 
       try {
-        const text = await file.text();
-        const lines = text.split('\n');
+        const text = await decodeCsvFile(file);
+
+        const lines = text
+          .replace(/\r\n/g, '\n')
+          .replace(/\r/g, '\n')
+          .split('\n');
+
         const dataRows = lines.slice(1).filter(line => line.trim() !== '');
 
         const importData = [];
@@ -1054,9 +1268,8 @@
 
         for (let i = 0; i < dataRows.length; i++) {
           try {
-            const values = dataRows[i].split(';').map(v => v.trim());
+            const values = splitCsvSemicolon(dataRows[i]);
 
-            // NEU: 11 Felder erwartet (ohne Zustand)
             if (values.length >= 11) {
               const item = {
                 equipment: normalizeUmlautsPreserveWordCase(values[0] || null),
@@ -1237,6 +1450,43 @@
       const modal = document.getElementById('pruefmittelModal');
       if (event.target === modal) closeModal();
     };
+
+    /* =========================================================
+       THEME (Light/Dark) wie Portal
+       - localStorage Persistenz
+       - Sync zwischen Tabs
+       ========================================================= */
+    const THEME_STORAGE_KEY = 'pmue-theme-preference';
+
+    function applyThemeFromStorage() {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+      document.body.classList.toggle('dark-mode', saved === 'dark');
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const next = isDark ? 'light' : 'dark';
+      document.body.classList.toggle('dark-mode', next === 'dark');
+      localStorage.setItem(THEME_STORAGE_KEY, next);
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === THEME_STORAGE_KEY) applyThemeFromStorage();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyThemeFromStorage();
+
+      const btn = document.getElementById('themeToggleButton');
+      if (btn) btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleTheme();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 't' || e.key === 'T') toggleTheme();
+      });
+    });
   </script>
 </body>
 </html>
