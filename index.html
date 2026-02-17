@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PMÜ - Prüfmittelüberwachung</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ===== Light Mode (Default) ===== */
+    :root {
+      --bg: #f5f5f7;
+      --fg: #2b2f33;
+      --muted: #5f6b73;
+      --border: #e5e9ef;
+      --card-bg: #ffffff;
+      --card-border: rgba(0,0,0,0.08);
+      --header-bg: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+      --header-text: #ffffff;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
+      --input-focus: #003366;
+      --shadow: 0 4px 15px rgba(0,0,0,0.05);
+      --table-header-bg: #f8fafc;
+      --table-row-hover: #f8fafc;
+      --status-fert: #d1fae5;
+      --status-fert-text: #065f46;
+      --status-ueint: #fed7aa;
+      --status-ueint-text: #92400e;
+      --status-repa: #fef3c7;
+      --status-repa-text: #92400e;
+      --status-disp: #e0e7ff;
+      --status-disp-text: #3730a3;
+      --status-nauf: #ffe4e6;
+      --status-nauf-text: #9f1239;
+      --due-soon: #fff3cd;
+      --overdue: #f8d7da;
+      --btn-primary: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
+      --btn-success: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      --btn-warning: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+      --kpi-icon-bg: #eef2ff;
+      --kpi-icon-color: #003366;
+    }
+
+    /* ===== Dark Mode ===== */
+    body.dark-mode {
+      --bg: #121212;
+      --fg: #e0e0e0;
+      --muted: #a0a0a0;
+      --border: rgba(255,255,255,0.08);
+      --card-bg: #1e1e1e;
+      --card-border: rgba(255,255,255,0.12);
+      --header-bg: linear-gradient(135deg, #1a2b3c 0%, #2c3e50 100%);
+      --header-text: #ffffff;
+      --input-bg: #2d2d2d;
+      --input-border: #444444;
+      --input-focus: #4a90e2;
+      --shadow: 0 4px 15px rgba(0,0,0,0.3);
+      --table-header-bg: #2d2d2d;
+      --table-row-hover: #333333;
+      --status-fert: #064e3b;
+      --status-fert-text: #a7f3d0;
+      --status-ueint: #78350f;
+      --status-ueint-text: #fde68a;
+      --status-repa: #78350f;
+      --status-repa-text: #fde68a;
+      --status-disp: #1e1b4b;
+      --status-disp-text: #c7d2fe;
+      --status-nauf: #7f1d1d;
+      --status-nauf-text: #fecaca;
+      --due-soon: #422800;
+      --overdue: #4c1d1d;
+      --btn-primary: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+      --btn-success: linear-gradient(135deg, #065f46 0%, #047857 100%);
+      --btn-warning: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+      --kpi-icon-bg: #2d3748;
+      --kpi-icon-color: #4a90e2;
+    }
+
+    .pmu-container { max-width: 1920px; margin: 0 auto; padding: 10px; }
+
+    .pmu-header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 25px 30px;
+      border-radius: 20px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .header-title h1 {
+      font-size: 28px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .header-title .subtitle { opacity: 0.9; font-size: 14px; }
+
+    .header-stats {
+      display: flex;
+      gap: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 15px 25px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 28px; font-weight: 700; }
+    .stat-label { font-size: 12px; opacity: 0.8; }
+
+    .filter-bar {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group { flex: 1 1 200px; }
+    .filter-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--fg);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .filter-group label i { margin-right: 6px; color: var(--kpi-icon-color); }
+
+    .filter-group select, .filter-group input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 2px solid var(--input-border);
+      border-radius: 10px;
+      font-size: 14px;
+      background: var(--input-bg);
+      color: var(--fg);
+      transition: all 0.2s;
+    }
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--input-focus);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-bg);
+      color: var(--fg);
+      border: 2px solid var(--input-border);
+    }
+
+    .btn-primary {
+      background: var(--btn-primary);
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,51,102,0.2);
+    }
+
+    .btn-success {
+      background: var(--btn-success);
+      color: white;
+      border: none;
+    }
+
+    .btn-warning {
+      background: var(--btn-warning);
+      color: white;
+      border: none;
+    }
+
+    /* KPI Kacheln */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      padding: 14px 16px;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 76px;
+    }
+
+    .kpi-card.warning { border-left: 4px solid #f59e0b; }
+    .kpi-card.danger { border-left: 4px solid #dc2626; }
+    .kpi-card.success { border-left: 4px solid #10b981; }
+
+    .kpi-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--kpi-icon-bg);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--kpi-icon-color);
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .kpi-text { display: flex; flex-direction: column; gap: 2px; }
+    .kpi-value { font-size: 22px; font-weight: 800; color: var(--fg); line-height: 1.1; }
+    .kpi-label { color: var(--muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      overflow-x: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 1800px; }
+
+    th {
+      text-align: left;
+      padding: 15px 10px;
+      background: var(--table-header-bg);
+      color: var(--fg);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 15px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    /* Zeilenfarbe nach Fälligkeit */
+    tr.row-due-soon td { background: var(--due-soon); }
+    tr.row-overdue td { background: var(--overdue); }
+
+    tr:hover td { background: var(--table-row-hover); }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .status-FERT { background: var(--status-fert); color: var(--status-fert-text); }
+    .status-LAGE { background: var(--status-fert); color: var(--status-fert-text); }
+    .status-UEINT { background: var(--status-ueint); color: var(--status-ueint-text); }
+    .status-ueINT { background: var(--status-ueint); color: var(--status-ueint-text); }
+    .status-ÜEXT { background: var(--status-ueint); color: var(--status-ueint-text); }
+    .status-REPA { background: var(--status-repa); color: var(--status-repa-text); }
+    .status-DISP { background: var(--status-disp); color: var(--status-disp-text); }
+    .status-NAUF { background: var(--status-nauf); color: var(--status-nauf-text); }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--kpi-icon-color);
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+    .action-btn:hover { background: var(--kpi-icon-bg); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      border: 1px solid var(--card-border);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .modal-header h2 { color: var(--fg); font-size: 24px; }
+    .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); }
+
+    .modal-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full-width { grid-column: span 3; }
+
+    .form-group label { font-weight: 600; font-size: 13px; color: var(--fg); }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px;
+      border: 2px solid var(--input-border);
+      border-radius: 8px;
+      font-size: 14px;
+      width: 100%;
+      background: var(--input-bg);
+      color: var(--fg);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 25px;
+      grid-column: span 3;
+    }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .loading-spinner {
+      width: 50px; height: 50px;
+      border: 5px solid var(--border);
+      border-top: 5px solid var(--kpi-icon-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Sortier-UX */
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { background: var(--kpi-icon-bg); }
+
+    /* Theme Toggle Button */
+    .theme-toggle-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      color: var(--fg);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      transform: scale(1.1);
+      border-color: var(--kpi-icon-color);
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      table { min-width: 1200px; }
+    }
+    @media (max-width: 768px) {
+      .header-stats { width: 100%; justify-content: space-around; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      table { min-width: 1000px; }
+      .theme-toggle-btn { bottom: 10px; right: 10px; width: 40px; height: 40px; font-size: 20px; }
+    }
+
+    /* DRUCK */
+    .print-header { display: none; }
+    @page { size: A4 portrait; margin: 12mm; }
+
+    @media print {
+      body { background: white !important; }
+      .pmu-container { padding: 0 !important; max-width: none !important; }
+
+      .pmu-header,
+      .filter-bar,
+      .dashboard-grid,
+      .modal,
+      .loading-overlay,
+      .theme-toggle-btn {
+        display: none !important;
+      }
+
+      .table-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        overflow: visible !important;
+        border-radius: 0 !important;
+      }
+
+      .print-header { display: block !important; margin-bottom: 8mm; }
+
+      .print-header .title {
+        font-size: 16pt;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 2mm;
+      }
+
+      .print-header .meta { font-size: 10pt; color: #333; }
+
+      table { min-width: 0 !important; width: 100% !important; }
+      th, td {
+        font-size: 8.5pt !important;
+        padding: 6px 6px !important;
+        border-bottom: 1px solid #ddd !important;
+        white-space: normal !important;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      tr { page-break-inside: avoid; }
+
+      th:last-child, td:last-child { display: none !important; }
+
+      .status-badge {
+        border: 1px solid #999 !important;
+        background: transparent !important;
+        color: #000 !important;
+        padding: 2px 6px !important;
+      }
+
+      tr.row-due-soon td, tr.row-overdue td { background: transparent !important; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+
+  <div class="pmu-container">
+    <div class="pmu-header">
+      <div class="header-title">
+        <h1><i class="fas fa-clipboard-list"></i> PMÜ - Prüfmittelüberwachung</h1>
+        <div class="subtitle"><i class="fas fa-calendar-check"></i> Zentrale Übersicht aller Prüfmittel und Fristen</div>
+      </div>
+      <div class="header-stats" id="headerStats">
+        <div class="stat-item">
+          <div class="stat-value" id="totalAnlagen">0</div>
+          <div class="stat-label">Anlagen gesamt</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="aktivAnlagen">0</div>
+          <div class="stat-label">Aktiv (FERT)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="faelligkeitenCount">0</div>
+          <div class="stat-label">Fälligkeiten</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Anwenderstatus</label>
+        <select id="statusFilter">
+          <option value="">Alle</option>
+          <option value="FERT">FERT</option>
+          <option value="LAGE">LAGE</option>
+          <option value="ÜINT">ÜINT</option>
+          <option value="ÜEXT">ÜEXT</option>
+          <option value="REPA">REPA</option>
+          <option value="DISP">DISP</option>
+          <option value="NAUF">NAUF</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label><i class="fas fa-search"></i> Suche</label>
+        <input type="text" id="searchFilter" placeholder="Suchen...">
+      </div>
+
+      <div class="filter-group">
+        <label><i class="fas fa-briefcase"></i> Arbeitsplatz</label>
+        <input type="text" id="arbeitsplatzFilter" placeholder="z.B. BAU 22 / MESSRAUM">
+      </div>
+      
+      <div class="filter-group">
+        <label><i class="fas fa-building"></i> Kostenstelle</label>
+        <input type="text" id="kostenstelleFilter" placeholder="z.B. 0200-84212">
+      </div>
+
+      <div class="filter-group">
+        <label><i class="fas fa-calendar"></i> Fälligkeit</label>
+        <select id="faelligkeitFilter">
+          <option value="">Alle</option>
+          <option value="overdue">Überfällig</option>
+          <option value="7">In 7 Tagen</option>
+          <option value="30">In 30 Tagen</option>
+          <option value="none">Ohne Datum</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fas fa-plus"></i> Neu
+        </button>
+        <button class="btn btn-warning" onclick="document.getElementById('csvFileInput').click()">
+          <i class="fas fa-file-csv"></i> CSV Import
+        </button>
+        <button class="btn" onclick="loadPruefmittel()">
+          <i class="fas fa-sync-alt"></i> Aktualisieren
+        </button>
+        <button class="btn" onclick="printA4()">
+          <i class="fas fa-print"></i> Drucken (A4)
+        </button>
+        <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(this.files[0])">
+      </div>
+    </div>
+
+    <!-- KPI Kacheln -->
+    <div class="dashboard-grid" id="kpiGrid"></div>
+
+    <!-- Print Header (nur im Druck sichtbar) -->
+    <div class="print-header" id="printHeader">
+      <div class="title">PMÜ – Prüfmittelübersicht</div>
+      <div class="meta" id="printMeta"></div>
+    </div>
+
+    <div class="table-container">
+      <table id="pruefmittelTable">
+        <thead>
+          <tr>
+            <th>Equipment</th>
+            <th>Bezeichnung</th>
+            <th>Material</th>
+            <th>Hersteller</th>
+            <th>Typbezeichnung</th>
+            <th>Seriennummer</th>
+            <th>Sortierfeld</th>
+            <th>Kostenstelle</th>
+            <th>Verantw. Arbeitsplatz</th>
+            <th>Anwenderstatus</th>
+            <th>Zyklus</th>
+            <th>Kal.-Stichtag</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="13" style="text-align:center;">Daten werden geladen...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal" id="pruefmittelModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Neues Prüfmittel</h2>
+        <button class="close-modal" onclick="closeModal()">&times;</button>
+      </div>
+
+      <form id="pruefmittelForm" class="modal-form">
+        <input type="hidden" id="editId">
+
+        <div class="form-group">
+          <label>Equipment *</label>
+          <input type="text" id="equipment" required placeholder="z.B. 12065887">
+        </div>
+
+        <div class="form-group">
+          <label>Bezeichnung *</label>
+          <input type="text" id="bezeichnung" required placeholder="z.B. RISSPRUEFGERAET">
+        </div>
+
+        <div class="form-group">
+          <label>Material</label>
+          <input type="text" id="material" placeholder="z.B. 070935637-0000">
+        </div>
+
+        <div class="form-group">
+          <label>Hersteller</label>
+          <input type="text" id="hersteller" placeholder="z.B. Karl Deutsch">
+        </div>
+
+        <div class="form-group">
+          <label>Typbezeichnung</label>
+          <input type="text" id="typbezeichnung" placeholder="z.B. UWE600">
+        </div>
+
+        <div class="form-group">
+          <label>Seriennummer</label>
+          <input type="text" id="seriennummer" placeholder="z.B. 82032">
+        </div>
+
+        <div class="form-group">
+          <label>Sortierfeld</label>
+          <input type="text" id="sortierfeld" placeholder="z.B. QS GROSSLAGER (BAU 22)">
+        </div>
+
+        <div class="form-group">
+          <label>Kostenstelle</label>
+          <input type="text" id="kostenstelle" placeholder="z.B. 0200-84212">
+        </div>
+
+        <div class="form-group">
+          <label>Verantw. Arbeitsplatz</label>
+          <input type="text" id="arbeitsplatz" placeholder="z.B. BAU 22 / MESSRAUM">
+        </div>
+
+        <div class="form-group">
+          <label>Anwenderstatus</label>
+          <select id="anwenderstatus">
+            <option value="FERT">FERT</option>
+            <option value="LAGE">LAGE</option>
+            <option value="ÜINT">ÜINT</option>
+            <option value="ÜEXT">ÜEXT</option>
+            <option value="REPA">REPA</option>
+            <option value="DISP">DISP</option>
+            <option value="NAUF">NAUF</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Zyklus</label>
+          <input type="text" id="zyklus" placeholder="z.B. 365 Tage">
+        </div>
+
+        <div class="form-group">
+          <label>Kal.-Stichtag</label>
+          <input type="text" id="kalibrierstichtag" placeholder="TT.MM.JJJJ">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeModal()">Abbrechen</button>
+          <button type="submit" class="btn btn-success">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script>
+    // ===== THEME MANAGEMENT =====
+    function initTheme() {
+      const savedTheme = localStorage.getItem('pmu-theme') || 'light';
+      const themeIcon = document.getElementById('themeIcon');
+      
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      }
+    }
+
+    function toggleTheme() {
+      const themeIcon = document.getElementById('themeIcon');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      
+      if (isDarkMode) {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('pmu-theme', 'light');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+      } else {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('pmu-theme', 'dark');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      }
+    }
+
+    // Theme beim Laden initialisieren
+    document.addEventListener('DOMContentLoaded', initTheme);
+
+    /* === SUPABASE KONFIGURATION === */
+    const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+    const SUPABASE_PASSWORD = 'ZfPReviewAudit';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentPruefmittel = [];
+    let currentView = [];
+    let sortState = { key: null, dir: 'asc' };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPruefmittel();
+
+      document.getElementById('statusFilter').addEventListener('change', filterData);
+      document.getElementById('searchFilter').addEventListener('input', filterData);
+      document.getElementById('arbeitsplatzFilter').addEventListener('input', filterData);
+      document.getElementById('kostenstelleFilter').addEventListener('input', filterData);
+      document.getElementById('faelligkeitFilter').addEventListener('change', filterData);
+
+      setupTableSorting();
+    });
+
+    // ===== Umlaut-Normalisierung =====
+    function isAllCapsWord(word) {
+      const letters = word.replace(/[^A-Za-zÄÖÜäöüß]/g, '');
+      if (!letters) return false;
+      return letters === letters.toUpperCase();
+    }
+
+    function normalizeUmlautsInWord(word) {
+      if (!word) return word;
+      const allCaps = isAllCapsWord(word);
+
+      if (allCaps) {
+        return word
+          .replace(/AE/g, 'Ä').replace(/OE/g, 'Ö').replace(/UE/g, 'Ü')
+          .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
+          .replace(/aE/g, 'Ä').replace(/oE/g, 'Ö').replace(/uE/g, 'Ü')
+          .replace(/ae/g, 'Ä').replace(/oe/g, 'Ö').replace(/ue/g, 'Ü');
+      }
+
+      return word
+        .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
+        .replace(/ae/g, 'ä').replace(/oe/g, 'ö').replace(/ue/g, 'ü');
+    }
+
+    function normalizeUmlautsPreserveWordCase(text) {
+      if (text === null || text === undefined) return text;
+      const s = String(text);
+      return s.split(/(\s+)/).map(token => {
+        if (/^\s+$/.test(token)) return token;
+        return normalizeUmlautsInWord(token);
+      }).join('');
+    }
+
+    // ===== Status-Normalisierung =====
+    function normalizeStatus(s) {
+      if (!s) return 'FERT';
+      const raw = String(s).trim();
+      const up = raw.toUpperCase();
+      if (up === 'UEINT' || up === 'ÜINT') return 'ÜINT';
+      return up;
+    }
+
+    function statusClassFromNormalized(normalized) {
+      if (normalized === 'ÜINT') return 'UEINT';
+      return normalized;
+    }
+
+    function parseGermanDateToDate(str) {
+      if (!str || typeof str !== 'string') return null;
+      const parts = str.split('.');
+      if (parts.length !== 3) return null;
+      const [dd, mm, yyyy] = parts.map(p => parseInt(p, 10));
+      if (!dd || !mm || !yyyy) return null;
+      const d = new Date(yyyy, mm - 1, dd);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function getDueRowClass(kalibrierstichtag) {
+      const d = parseGermanDateToDate(kalibrierstichtag);
+      if (!d) return '';
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      d.setHours(0,0,0,0);
+
+      const diffDays = Math.ceil((d - today) / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 'row-overdue';
+      if (diffDays <= 30) return 'row-due-soon';
+      return '';
+    }
+
+    async function loadPruefmittel() {
+      showLoading();
+      try {
+        const { data, error } = await supabaseClient
+          .from('pruefmittel')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        currentPruefmittel = (data || []).map(p => ({
+          ...p,
+          equipment: normalizeUmlautsPreserveWordCase(p.equipment),
+          bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
+          material: normalizeUmlautsPreserveWordCase(p.material),
+          seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
+          sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
+          kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
+          arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
+          hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
+          zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
+          anwenderstatus: normalizeStatus(p.anwenderstatus)
+        }));
+
+        updateDashboard();
+        filterData();
+      } catch (error) {
+        document.getElementById('tableBody').innerHTML =
+          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function compareValues(a, b, dir = 'asc') {
+      const mul = dir === 'asc' ? 1 : -1;
+
+      const aEmpty = (a === null || a === undefined || a === '');
+      const bEmpty = (b === null || b === undefined || b === '');
+      if (aEmpty && bEmpty) return 0;
+      if (aEmpty) return 1;
+      if (bEmpty) return -1;
+
+      const aNum = Number(a);
+      const bNum = Number(b);
+      const aIsNum = !isNaN(aNum) && String(a).trim() !== '';
+      const bIsNum = !isNaN(bNum) && String(b).trim() !== '';
+      if (aIsNum && bIsNum) return (aNum - bNum) * mul;
+
+      return String(a).localeCompare(String(b), 'de', { sensitivity: 'base' }) * mul;
+    }
+
+    function sortData(data) {
+      if (!sortState.key) return data;
+      const key = sortState.key;
+      const dir = sortState.dir;
+
+      return [...data].sort((x, y) => {
+        if (key === 'kalibrierstichtag') {
+          const dx = parseGermanDateToDate(x.kalibrierstichtag);
+          const dy = parseGermanDateToDate(y.kalibrierstichtag);
+          const mul = dir === 'asc' ? 1 : -1;
+          if (!dx && !dy) return 0;
+          if (!dx) return 1;
+          if (!dy) return -1;
+          return (dx - dy) * mul;
+        }
+        return compareValues(x[key], y[key], dir);
+      });
+    }
+
+    function filterData() {
+      const status = document.getElementById('statusFilter').value;
+      const search = document.getElementById('searchFilter').value.toLowerCase().trim();
+      const arbeitsplatzSearch = (document.getElementById('arbeitsplatzFilter').value || '').toLowerCase().trim();
+      const kostenstelleSearch = (document.getElementById('kostenstelleFilter').value || '').toLowerCase().trim();
+      const faelligkeit = document.getElementById('faelligkeitFilter').value;
+
+      const heute = new Date();
+      const in7Tagen = new Date(); in7Tagen.setDate(heute.getDate() + 7);
+      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
+
+      let filtered = [...currentPruefmittel];
+
+      if (status) filtered = filtered.filter(item => normalizeStatus(item.anwenderstatus) === status);
+
+      if (search) {
+        filtered = filtered.filter(item =>
+          (item.equipment && item.equipment.toLowerCase().includes(search)) ||
+          (item.bezeichnung && item.bezeichnung.toLowerCase().includes(search)) ||
+          (item.material && item.material.toLowerCase().includes(search)) ||
+          (item.seriennummer && item.seriennummer.toLowerCase().includes(search)) ||
+          (item.sortierfeld && item.sortierfeld.toLowerCase().includes(search)) ||
+          (item.kostenstelle && item.kostenstelle.toLowerCase().includes(search)) ||
+          (item.arbeitsplatz && item.arbeitsplatz.toLowerCase().includes(search)) ||
+          (item.hersteller && item.hersteller.toLowerCase().includes(search)) ||
+          (item.typbezeichnung && item.typbezeichnung.toLowerCase().includes(search))
+        );
+      }
+
+      if (arbeitsplatzSearch) filtered = filtered.filter(item => (item.arbeitsplatz || '').toLowerCase().includes(arbeitsplatzSearch));
+      if (kostenstelleSearch) filtered = filtered.filter(item => (item.kostenstelle || '').toLowerCase().includes(kostenstelleSearch));
+
+      if (faelligkeit) {
+        filtered = filtered.filter(item => {
+          const d = parseGermanDateToDate(item.kalibrierstichtag);
+
+          if (faelligkeit === 'none') return !d;
+          if (!d) return false;
+
+          if (faelligkeit === 'overdue') return d < heute;
+          if (faelligkeit === '7') return d <= in7Tagen;
+          if (faelligkeit === '30') return d <= in30Tagen;
+
+          return true;
+        });
+      }
+
+      filtered = sortData(filtered);
+
+      currentView = filtered;
+      renderTable(currentView);
+      paintSortIndicators();
+    }
+
+    function setupTableSorting() {
+      const table = document.getElementById('pruefmittelTable');
+      const ths = table.querySelectorAll('thead th');
+
+      const colMap = {
+        0: 'equipment',
+        1: 'bezeichnung',
+        2: 'material',
+        3: 'hersteller',
+        4: 'typbezeichnung',
+        5: 'seriennummer',
+        6: 'sortierfeld',
+        7: 'kostenstelle',
+        8: 'arbeitsplatz',
+        9: 'anwenderstatus',
+        10: 'zyklus',
+        11: 'kalibrierstichtag'
+      };
+
+      ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
+
+      ths.forEach((th, idx) => {
+        if (!(idx in colMap)) return;
+
+        th.classList.add('sortable');
+        th.addEventListener('click', () => {
+          const key = colMap[idx];
+          if (sortState.key === key) sortState.dir = (sortState.dir === 'asc') ? 'desc' : 'asc';
+          else { sortState.key = key; sortState.dir = 'asc'; }
+          filterData();
+        });
+      });
+
+      paintSortIndicators();
+    }
+
+    function paintSortIndicators() {
+      const table = document.getElementById('pruefmittelTable');
+      const ths = table.querySelectorAll('thead th');
+
+      const colMap = {
+        0: 'equipment',
+        1: 'bezeichnung',
+        2: 'material',
+        3: 'hersteller',
+        4: 'typbezeichnung',
+        5: 'seriennummer',
+        6: 'sortierfeld',
+        7: 'kostenstelle',
+        8: 'arbeitsplatz',
+        9: 'anwenderstatus',
+        10: 'zyklus',
+        11: 'kalibrierstichtag'
+      };
+
+      ths.forEach((th, idx) => {
+        const base = th.getAttribute('data-base-text') || th.textContent.replace(/[\s▲▼]+$/g, '').trim();
+        th.setAttribute('data-base-text', base);
+
+        if (!(idx in colMap)) { th.textContent = base; return; }
+        const key = colMap[idx];
+
+        if (sortState.key === key) th.textContent = `${base} ${sortState.dir === 'asc' ? '▲' : '▼'}`;
+        else th.textContent = base;
+      });
+    }
+
+    function printA4() {
+      const status = document.getElementById('statusFilter')?.value || '';
+      const search = document.getElementById('searchFilter')?.value || '';
+      const sf = document.getElementById('sortierfeldFilter')?.value || '';
+      const ks = document.getElementById('kostenstelleFilter')?.value || '';
+      const fa = document.getElementById('faelligkeitFilter')?.value || '';
+
+      const dt = new Date();
+      const dateStr = dt.toLocaleString('de-DE');
+
+      const parts = [];
+      if (status) parts.push(`Status: ${status}`);
+      if (search) parts.push(`Suche: ${search}`);
+      if (sf) parts.push(`Sortierfeld: ${sf}`);
+      if (ks) parts.push(`Kostenstelle: ${ks}`);
+      if (fa) parts.push(`Fälligkeit: ${fa}`);
+
+      const meta = `Gedruckt am: ${dateStr}` + (parts.length ? ` | Filter: ${parts.join(' | ')}` : '');
+      document.getElementById('printMeta').textContent = meta;
+
+      window.print();
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('tableBody');
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(item => {
+        const statusNormalized = normalizeStatus(item.anwenderstatus);
+        const statusClass = statusClassFromNormalized(statusNormalized);
+        const rowClass = getDueRowClass(item.kalibrierstichtag);
+
+        return `
+          <tr class="${rowClass}">
+            <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
+            <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.arbeitsplatz || '-') || '-'}</td>
+            <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
+            <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
+            <td>
+              <button class="action-btn" onclick="editPruefmittel(${item.id})"><i class="fas fa-edit"></i></button>
+              <button class="action-btn" onclick="deletePruefmittel(${item.id})"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    /* KPI */
+    function updateDashboard() {
+      const total = currentPruefmittel.length;
+      const aktiv = currentPruefmittel.filter(p => normalizeStatus(p.anwenderstatus) === 'FERT').length;
+
+      const heute = new Date();
+      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
+
+      const faelligkeiten = currentPruefmittel.filter(p => {
+        const d = parseGermanDateToDate(p.kalibrierstichtag);
+        return d ? d <= in30Tagen : false;
+      }).length;
+
+      document.getElementById('totalAnlagen').textContent = total;
+      document.getElementById('aktivAnlagen').textContent = aktiv;
+      document.getElementById('faelligkeitenCount').textContent = faelligkeiten;
+
+      renderKpiCards();
+    }
+
+    function renderKpiCards() {
+      const heute = new Date();
+      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
+      const in7Tagen = new Date(); in7Tagen.setDate(heute.getDate() + 7);
+
+      const in30 = currentPruefmittel.filter(p => {
+        const d = parseGermanDateToDate(p.kalibrierstichtag);
+        return d ? d <= in30Tagen : false;
+      }).length;
+
+      const in7 = currentPruefmittel.filter(p => {
+        const d = parseGermanDateToDate(p.kalibrierstichtag);
+        return d ? d <= in7Tagen : false;
+      }).length;
+
+      const overdue = currentPruefmittel.filter(p => {
+        const d = parseGermanDateToDate(p.kalibrierstichtag);
+        return d ? d < heute : false;
+      }).length;
+
+      const total = currentPruefmittel.length;
+
+      document.getElementById('kpiGrid').innerHTML = `
+        <div class="kpi-card ${overdue > 0 ? 'danger' : ''}">
+          <div class="kpi-icon"><i class="fas fa-exclamation-circle"></i></div>
+          <div class="kpi-text">
+            <div class="kpi-value">${overdue}</div>
+            <div class="kpi-label">Überfällig</div>
+          </div>
+        </div>
+
+        <div class="kpi-card warning">
+          <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+          <div class="kpi-text">
+            <div class="kpi-value">${in7}</div>
+            <div class="kpi-label">In 7 Tagen</div>
+          </div>
+        </div>
+
+        <div class="kpi-card warning">
+          <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="kpi-text">
+            <div class="kpi-value">${in30}</div>
+            <div class="kpi-label">In 30 Tagen</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="kpi-text">
+            <div class="kpi-value">${total}</div>
+            <div class="kpi-label">Gesamt</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function importCSV(file) {
+      if (!file) return;
+      showLoading();
+
+      try {
+        const text = await file.text();
+        const cleanText = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
+        const lines = cleanText.split('\n');
+        const headers = lines[0].split(';').map(h => h.trim());
+        const dataRows = lines.slice(1).filter(line => line.trim() !== '');
+
+        const importData = [];
+        const errors = [];
+        let updates = 0;
+        let inserts = 0;
+
+        for (let i = 0; i < dataRows.length; i++) {
+          try {
+            const values = dataRows[i].split(';').map(v => v.trim());
+            
+            if (values.length >= 12) {
+              const item = {
+                equipment: values[0] || null,
+                bezeichnung: values[1] || null,
+                material: values[2] || null,
+                hersteller: values[3] || null,
+                typbezeichnung: values[4] || null,
+                seriennummer: values[5] || null,
+                sortierfeld: values[6] || null,
+                kostenstelle: values[7] || null,
+                arbeitsplatz: values[8] || null,
+                anwenderstatus: values[9] || 'FERT',
+                zyklus: values[10] || null,
+                kalibrierstichtag: values[11] || null
+              };
+
+              if (!item.equipment || !item.bezeichnung) {
+                errors.push(`Zeile ${i + 2}: Equipment und Bezeichnung sind Pflichtfelder`);
+                continue;
+              }
+
+              if (item.anwenderstatus) {
+                item.anwenderstatus = item.anwenderstatus.toUpperCase();
+              }
+
+              importData.push(item);
+            } else {
+              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 12, erhalten: ${values.length})`);
+            }
+          } catch (err) {
+            errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
+          }
+        }
+
+        if (importData.length > 0) {
+          for (const item of importData) {
+            try {
+              const { data: existing, error: checkError } = await supabaseClient
+                .from('pruefmittel')
+                .select('id')
+                .eq('equipment', item.equipment)
+                .maybeSingle();
+
+              if (checkError) {
+                errors.push(`Fehler bei Prüfung von ${item.equipment}: ${checkError.message}`);
+                continue;
+              }
+
+              if (existing) {
+                const { error: updateError } = await supabaseClient
+                  .from('pruefmittel')
+                  .update(item)
+                  .eq('id', existing.id);
+
+                if (updateError) errors.push(`Fehler beim Aktualisieren von ${item.equipment}: ${updateError.message}`);
+                else updates++;
+              } else {
+                const { error: insertError } = await supabaseClient
+                  .from('pruefmittel')
+                  .insert([item]);
+
+                if (insertError) errors.push(`Fehler beim Einfügen von ${item.equipment}: ${insertError.message}`);
+                else inserts++;
+              }
+            } catch (err) {
+              errors.push(`Fehler bei Verarbeitung von ${item.equipment}: ${err.message}`);
+            }
+          }
+
+          let message = `Import abgeschlossen:\n`;
+          message += `✅ ${inserts} neue Datensätze eingefügt\n`;
+          message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
+          
+          if (errors.length > 0) {
+            message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
+            if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
+          }
+          
+          alert(message);
+          await loadPruefmittel();
+        } else {
+          alert('Keine gültigen Daten zum Importieren gefunden.\n' + errors.join('\n'));
+        }
+      } catch (error) {
+        alert('Fehler beim CSV-Import: ' + error.message);
+      } finally {
+        hideLoading();
+        document.getElementById('csvFileInput').value = '';
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
+      document.getElementById('pruefmittelForm').reset();
+      document.getElementById('editId').value = '';
+      document.getElementById('pruefmittelModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('pruefmittelModal').style.display = 'none';
+    }
+
+    async function editPruefmittel(id) {
+      const item = currentPruefmittel.find(p => p.id === id);
+      if (!item) return;
+
+      document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
+      document.getElementById('editId').value = item.id;
+
+      document.getElementById('equipment').value = item.equipment || '';
+      document.getElementById('bezeichnung').value = item.bezeichnung || '';
+      document.getElementById('material').value = item.material || '';
+      document.getElementById('hersteller').value = item.hersteller || '';
+      document.getElementById('typbezeichnung').value = item.typbezeichnung || '';
+      document.getElementById('seriennummer').value = item.seriennummer || '';
+      document.getElementById('sortierfeld').value = item.sortierfeld || '';
+      document.getElementById('kostenstelle').value = item.kostenstelle || '';
+      document.getElementById('arbeitsplatz').value = item.arbeitsplatz || '';
+      document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
+      document.getElementById('zyklus').value = item.zyklus || '';
+      document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
+
+      document.getElementById('pruefmittelModal').style.display = 'flex';
+    }
+
+    async function deletePruefmittel(id) {
+      if (!confirm('Wirklich löschen?')) return;
+
+      showLoading();
+      try {
+        const { error } = await supabaseClient
+          .from('pruefmittel')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        await loadPruefmittel();
+      } catch (error) {
+        alert('Fehler beim Löschen: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    }
+
+    document.getElementById('pruefmittelForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      showLoading();
+
+      try {
+        const formData = {
+          equipment: normalizeUmlautsPreserveWordCase(document.getElementById('equipment').value),
+          bezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('bezeichnung').value),
+          material: normalizeUmlautsPreserveWordCase(document.getElementById('material').value || null),
+          hersteller: normalizeUmlautsPreserveWordCase(document.getElementById('hersteller').value || null),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('typbezeichnung').value || null),
+          seriennummer: normalizeUmlautsPreserveWordCase(document.getElementById('seriennummer').value || null),
+          sortierfeld: normalizeUmlautsPreserveWordCase(document.getElementById('sortierfeld').value || null),
+          kostenstelle: normalizeUmlautsPreserveWordCase(document.getElementById('kostenstelle').value || null),
+          arbeitsplatz: normalizeUmlautsPreserveWordCase(document.getElementById('arbeitsplatz').value || null),
+          anwenderstatus: normalizeStatus(document.getElementById('anwenderstatus').value),
+          zyklus: normalizeUmlautsPreserveWordCase(document.getElementById('zyklus').value || null),
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(document.getElementById('kalibrierstichtag').value || null)
+        };
+
+        const editId = document.getElementById('editId').value;
+        let result;
+
+        if (editId) result = await supabaseClient.from('pruefmittel').update(formData).eq('id', editId);
+        else result = await supabaseClient.from('pruefmittel').insert([formData]);
+
+        if (result.error) throw result.error;
+
+        closeModal();
+        await loadPruefmittel();
+      } catch (error) {
+        alert('Fehler beim Speichern: ' + error.message);
+      } finally {
+        hideLoading();
+      }
+    });
+
+    function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('pruefmittelModal');
+      if (event.target === modal) closeModal();
+    };
+  </script>
+</body>
+</html>
