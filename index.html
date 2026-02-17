@@ -16,20 +16,50 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* ===== Light Mode (Default) ===== */
+    /* ===== Design-Variablen für Light Mode (aus ZfP-Portal übernommen) ===== */
     :root {
-      --bg: #f5f5f7;
+      --radius: 14px;
+      --shadow-sm: 0 6px 18px rgba(0,0,0,0.08);
+      --shadow-md: 0 12px 26px rgba(0,0,0,0.12);
+      --shadow-lg: 0 20px 42px rgba(0,0,0,0.16);
+      
+      /* Light Mode Colors */
+      --bg: #f7f8fa;
       --fg: #2b2f33;
       --muted: #5f6b73;
       --border: #e5e9ef;
       --card-bg: #ffffff;
       --card-border: rgba(0,0,0,0.08);
+      
+      /* Hero */
+      --hero-start: rgba(52,152,219,0.08);
+      --hero-end: rgba(46,204,113,0.06);
+      --hero-border: rgba(52,152,219,0.18);
+      --hero-text: #2c3e50;
+      
+      /* Button */
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+      --button-text: #ffffff;
+      --button-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      
+      /* Loading */
+      --loading-bg: #ffffff;
+      --loading-border: #f3f3f3;
+      --loading-spinner: #3498db;
+      
+      /* Header */
+      --header-border: #2c3e50;
+      --header-text: #2c3e50;
+      
+      /* Input */
+      --input-border: #d1d5db;
+      --input-focus: #3498db;
+      
+      /* PMÜ-spezifische Variablen (angepasst) */
       --header-bg: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
       --header-text: #ffffff;
       --input-bg: #ffffff;
-      --input-border: #e2e8f0;
-      --input-focus: #003366;
-      --shadow: 0 4px 15px rgba(0,0,0,0.05);
       --table-header-bg: #f8fafc;
       --table-row-hover: #f8fafc;
       --status-fert: #d1fae5;
@@ -49,22 +79,52 @@
       --btn-warning: linear-gradient(135deg, #b45309 0%, #d97706 100%);
       --kpi-icon-bg: #eef2ff;
       --kpi-icon-color: #003366;
+      --shadow: var(--shadow-sm);
     }
 
-    /* ===== Dark Mode ===== */
+    /* ===== Dark Mode Variablen (aus ZfP-Portal übernommen) ===== */
     body.dark-mode {
       --bg: #121212;
       --fg: #e0e0e0;
-      --muted: #a0a0a0;
+      --muted: #c2c7cc;
       --border: rgba(255,255,255,0.08);
       --card-bg: #1e1e1e;
       --card-border: rgba(255,255,255,0.12);
+      
+      /* Hero */
+      --hero-start: rgba(52,152,219,0.10);
+      --hero-end: rgba(46,204,113,0.08);
+      --hero-border: rgba(52,152,219,0.22);
+      --hero-text: #ffffff;
+      
+      /* Button */
+      --button-bg: #3498db;
+      --button-hover: #2980b9;
+      --button-text: #ffffff;
+      --button-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      
+      /* Loading */
+      --loading-bg: #1e1e1e;
+      --loading-border: #2d2d2d;
+      --loading-spinner: #3498db;
+      
+      /* Header */
+      --header-border: #444444;
+      --header-text: #ffffff;
+      
+      /* Shadows */
+      --shadow-sm: 0 6px 18px rgba(0,0,0,0.25);
+      --shadow-md: 0 12px 26px rgba(0,0,0,0.35);
+      --shadow-lg: 0 20px 42px rgba(0,0,0,0.45);
+      
+      /* Input */
+      --input-border: #444444;
+      --input-focus: #3498db;
+      
+      /* PMÜ-spezifische Dark Mode Variablen */
       --header-bg: linear-gradient(135deg, #1a2b3c 0%, #2c3e50 100%);
       --header-text: #ffffff;
       --input-bg: #2d2d2d;
-      --input-border: #444444;
-      --input-focus: #4a90e2;
-      --shadow: 0 4px 15px rgba(0,0,0,0.3);
       --table-header-bg: #2d2d2d;
       --table-row-hover: #333333;
       --status-fert: #064e3b;
@@ -84,6 +144,7 @@
       --btn-warning: linear-gradient(135deg, #92400e 0%, #b45309 100%);
       --kpi-icon-bg: #2d3748;
       --kpi-icon-color: #4a90e2;
+      --shadow: var(--shadow-md);
     }
 
     .pmu-container { max-width: 1920px; margin: 0 auto; padding: 10px; }
@@ -92,9 +153,10 @@
       background: var(--header-bg);
       color: var(--header-text);
       padding: 25px 30px;
-      border-radius: 20px;
+      border-radius: var(--radius);
       margin-bottom: 25px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--hero-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -109,16 +171,17 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 8px;
+      color: var(--header-text);
     }
 
-    .header-title .subtitle { opacity: 0.9; font-size: 14px; }
+    .header-title .subtitle { opacity: 0.9; font-size: 14px; color: var(--muted); }
 
     .header-stats {
       display: flex;
       gap: 20px;
       background: rgba(255,255,255,0.1);
       padding: 15px 25px;
-      border-radius: 15px;
+      border-radius: var(--radius);
       backdrop-filter: blur(10px);
     }
 
@@ -128,7 +191,7 @@
 
     .filter-bar {
       background: var(--card-bg);
-      border-radius: 15px;
+      border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 18px;
       box-shadow: var(--shadow);
@@ -155,7 +218,7 @@
       width: 100%;
       padding: 10px 15px;
       border: 2px solid var(--input-border);
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 14px;
       background: var(--input-bg);
       color: var(--fg);
@@ -164,6 +227,7 @@
     .filter-group select:focus, .filter-group input:focus {
       outline: none;
       border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
     }
 
     .filter-actions {
@@ -176,7 +240,7 @@
     .btn {
       padding: 10px 20px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -196,7 +260,7 @@
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0,51,102,0.2);
+      box-shadow: var(--button-shadow);
     }
 
     .btn-success {
@@ -222,7 +286,7 @@
     .kpi-card {
       background: var(--card-bg);
       padding: 14px 16px;
-      border-radius: 15px;
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
       border: 1px solid var(--card-border);
       display: flex;
@@ -254,7 +318,7 @@
 
     .table-container {
       background: var(--card-bg);
-      border-radius: 15px;
+      border-radius: var(--radius);
       padding: 20px;
       box-shadow: var(--shadow);
       border: 1px solid var(--card-border);
@@ -322,21 +386,23 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: var(--modal-overlay);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(5px);
     }
 
     .modal-content {
       background: var(--card-bg);
-      border-radius: 20px;
+      border-radius: var(--radius);
       width: 90%;
       max-width: 900px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 30px;
       border: 1px solid var(--card-border);
+      box-shadow: var(--shadow-lg);
     }
 
     .modal-header {
@@ -379,16 +445,17 @@
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
+      background: var(--modal-overlay);
       justify-content: center;
       align-items: center;
       z-index: 2000;
+      backdrop-filter: blur(5px);
     }
 
     .loading-spinner {
       width: 50px; height: 50px;
-      border: 5px solid var(--border);
-      border-top: 5px solid var(--kpi-icon-color);
+      border: 5px solid var(--loading-border);
+      border-top: 5px solid var(--loading-spinner);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -402,7 +469,7 @@
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background: var(--kpi-icon-bg); }
 
-    /* Theme Toggle Button */
+    /* Theme Toggle Button - Identisch mit Portal */
     .theme-toggle-btn {
       position: fixed;
       bottom: 20px;
@@ -418,14 +485,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow-md);
       z-index: 9999;
       transition: all 0.3s ease;
     }
 
     .theme-toggle-btn:hover {
-      transform: scale(1.1);
-      border-color: var(--kpi-icon-color);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--button-bg);
+    }
+
+    .theme-toggle-btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    /* Modal Overlay Variable */
+    :root {
+      --modal-overlay: rgba(0,0,0,0.5);
+    }
+    
+    body.dark-mode {
+      --modal-overlay: rgba(0,0,0,0.7);
     }
 
     @media (max-width: 1200px) {
@@ -512,7 +593,7 @@
 
 <body>
   <!-- Theme Toggle Button -->
-  <button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">
+  <button class="theme-toggle-btn" id="themeToggle">
     <i class="fas fa-moon" id="themeIcon"></i>
   </button>
 
@@ -722,41 +803,75 @@
   </div>
 
   <script>
-    // ===== THEME MANAGEMENT =====
-    function initTheme() {
-      const savedTheme = localStorage.getItem('pmu-theme') || 'light';
-      const themeIcon = document.getElementById('themeIcon');
-      
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-      } else {
-        document.body.classList.remove('dark-mode');
-        themeIcon.classList.remove('fa-sun');
-        themeIcon.classList.add('fa-moon');
-      }
+    // ===== SYNCHRONISIERTES THEME MANAGEMENT aus dem ZfP-Portal =====
+    const THEME_STORAGE_KEY = 'pmu-theme-preference';
+
+    // Theme initialisieren
+    function initPortalTheme() {
+        const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+        const themeIcon = document.getElementById('themeIcon');
+        
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
     }
 
-    function toggleTheme() {
-      const themeIcon = document.getElementById('themeIcon');
-      const isDarkMode = document.body.classList.contains('dark-mode');
-      
-      if (isDarkMode) {
-        document.body.classList.remove('dark-mode');
-        localStorage.setItem('pmu-theme', 'light');
-        themeIcon.classList.remove('fa-sun');
-        themeIcon.classList.add('fa-moon');
-      } else {
-        document.body.classList.add('dark-mode');
-        localStorage.setItem('pmu-theme', 'dark');
-        themeIcon.classList.remove('fa-moon');
-        themeIcon.classList.add('fa-sun');
-      }
+    // Theme umschalten
+    function togglePortalTheme() {
+        const themeIcon = document.getElementById('themeIcon');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        
+        if (isDarkMode) {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem(THEME_STORAGE_KEY, 'light');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        } else {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+        
+        // Andere Tabs benachrichtigen
+        localStorage.setItem('theme_timestamp', Date.now().toString());
     }
 
-    // Theme beim Laden initialisieren
-    document.addEventListener('DOMContentLoaded', initTheme);
+    // Auf Änderungen von anderen Tabs reagieren
+    window.addEventListener('storage', function(e) {
+        if (e.key === THEME_STORAGE_KEY) {
+            const newTheme = e.newValue;
+            
+            if (newTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').classList.remove('fa-moon');
+                document.getElementById('themeIcon').classList.add('fa-sun');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('themeIcon').classList.remove('fa-sun');
+                document.getElementById('themeIcon').classList.add('fa-moon');
+            }
+        }
+    });
+
+    // Theme-Toggle Button Event-Listener
+    document.addEventListener('DOMContentLoaded', function() {
+        initPortalTheme();
+        
+        const themeButton = document.getElementById('themeToggle');
+        if (themeButton) {
+            themeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                togglePortalTheme();
+            });
+        }
+    });
 
     /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
