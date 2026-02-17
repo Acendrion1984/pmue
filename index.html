@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
@@ -709,40 +709,51 @@
     }
 
     async function loadPruefmittel() {
-      showLoading();
-      try {
-        const { data, error } = await supabaseClient
-          .from('pruefmittel')
-          .select('*')
-          .order('created_at', { ascending: false });
+  showLoading();
+  try {
+    const pageSize = 1000;
+    let from = 0;
+    let all = [];
 
-        if (error) throw error;
+    while (true) {
+      const { data, error } = await supabaseClient
+        .from('pruefmittel')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(from, from + pageSize - 1);
 
-        currentPruefmittel = (data || []).map(p => ({
-          ...p,
-          equipment: normalizeUmlautsPreserveWordCase(p.equipment),
-          bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
-          material: normalizeUmlautsPreserveWordCase(p.material),
-          seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
-          sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
-          kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
-          arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
-          hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
-          typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
-          zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
-          kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
-          anwenderstatus: normalizeStatus(p.anwenderstatus)
-        }));
+      if (error) throw error;
 
-        updateDashboard();
-        filterData();
-      } catch (error) {
-        document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
-      } finally {
-        hideLoading();
-      }
+      all = all.concat(data || []);
+      if (!data || data.length < pageSize) break; // fertig
+      from += pageSize;
     }
+
+    currentPruefmittel = (all || []).map(p => ({
+      ...p,
+      equipment: normalizeUmlautsPreserveWordCase(p.equipment),
+      bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
+      material: normalizeUmlautsPreserveWordCase(p.material),
+      seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
+      sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
+      kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
+      arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
+      hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
+      typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
+      zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
+      kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
+      anwenderstatus: normalizeStatus(p.anwenderstatus)
+    }));
+
+    updateDashboard();
+    filterData();
+  } catch (error) {
+    document.getElementById('tableBody').innerHTML =
+      `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+  } finally {
+    hideLoading();
+  }
+}
 
     function compareValues(a, b, dir = 'asc') {
       const mul = dir === 'asc' ? 1 : -1;
