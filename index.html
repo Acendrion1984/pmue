@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
@@ -450,11 +450,10 @@
         <input type="text" id="searchFilter" placeholder="Suchen...">
       </div>
 
-      <div class="filter-group">
-        <label><i class="fas fa-layer-group"></i> Sortierfeld</label>
-        <input type="text" id="sortierfeldFilter" placeholder="z.B. QS GROSSLAGER">
-      </div>
-
+<div class="filter-group">
+  <label><i class="fas fa-briefcase"></i> Arbeitsplatz</label>
+  <input type="text" id="arbeitsplatzFilter" placeholder="z.B. BAU 22 / MESSRAUM">
+</div>
       <div class="filter-group">
         <label><i class="fas fa-building"></i> Kostenstelle</label>
         <input type="text" id="kostenstelleFilter" placeholder="z.B. 0200-84212">
@@ -630,7 +629,7 @@
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
       document.getElementById('searchFilter').addEventListener('input', filterData);
-      document.getElementById('sortierfeldFilter').addEventListener('input', filterData);
+      document.getElementById('arbeitsplatzFilter').addEventListener('input', filterData);
       document.getElementById('kostenstelleFilter').addEventListener('input', filterData);
       document.getElementById('faelligkeitFilter').addEventListener('change', filterData);
 
@@ -709,51 +708,40 @@
     }
 
     async function loadPruefmittel() {
-  showLoading();
-  try {
-    const pageSize = 1000;
-    let from = 0;
-    let all = [];
+      showLoading();
+      try {
+        const { data, error } = await supabaseClient
+          .from('pruefmittel')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-    while (true) {
-      const { data, error } = await supabaseClient
-        .from('pruefmittel')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(from, from + pageSize - 1);
+        if (error) throw error;
 
-      if (error) throw error;
+        currentPruefmittel = (data || []).map(p => ({
+          ...p,
+          equipment: normalizeUmlautsPreserveWordCase(p.equipment),
+          bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
+          material: normalizeUmlautsPreserveWordCase(p.material),
+          seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
+          sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
+          kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
+          arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
+          hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
+          zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
+          anwenderstatus: normalizeStatus(p.anwenderstatus)
+        }));
 
-      all = all.concat(data || []);
-      if (!data || data.length < pageSize) break; // fertig
-      from += pageSize;
+        updateDashboard();
+        filterData();
+      } catch (error) {
+        document.getElementById('tableBody').innerHTML =
+          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+      } finally {
+        hideLoading();
+      }
     }
-
-    currentPruefmittel = (all || []).map(p => ({
-      ...p,
-      equipment: normalizeUmlautsPreserveWordCase(p.equipment),
-      bezeichnung: normalizeUmlautsPreserveWordCase(p.bezeichnung),
-      material: normalizeUmlautsPreserveWordCase(p.material),
-      seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
-      sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
-      kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
-      arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
-      hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
-      typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
-      zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
-      kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
-      anwenderstatus: normalizeStatus(p.anwenderstatus)
-    }));
-
-    updateDashboard();
-    filterData();
-  } catch (error) {
-    document.getElementById('tableBody').innerHTML =
-      `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
-  } finally {
-    hideLoading();
-  }
-}
 
     function compareValues(a, b, dir = 'asc') {
       const mul = dir === 'asc' ? 1 : -1;
@@ -795,7 +783,7 @@
     function filterData() {
       const status = document.getElementById('statusFilter').value;
       const search = document.getElementById('searchFilter').value.toLowerCase().trim();
-      const sortierfeldSearch = (document.getElementById('sortierfeldFilter').value || '').toLowerCase().trim();
+      const arbeitsplatzSearch = (document.getElementById('arbeitsplatzFilter').value || '').toLowerCase().trim();
       const kostenstelleSearch = (document.getElementById('kostenstelleFilter').value || '').toLowerCase().trim();
       const faelligkeit = document.getElementById('faelligkeitFilter').value;
 
@@ -821,7 +809,7 @@
         );
       }
 
-      if (sortierfeldSearch) filtered = filtered.filter(item => (item.sortierfeld || '').toLowerCase().includes(sortierfeldSearch));
+      if (arbeitsplatzSearch) filtered = filtered.filter(item => (item.arbeitsplatz || '').toLowerCase().includes(arbeitsplatzSearch));
       if (kostenstelleSearch) filtered = filtered.filter(item => (item.kostenstelle || '').toLowerCase().includes(kostenstelleSearch));
 
       if (faelligkeit) {
