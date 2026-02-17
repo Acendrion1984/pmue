@@ -183,7 +183,7 @@
       overflow-x: auto;
     }
 
-    table { width: 100%; border-collapse: collapse; min-width: 1650px; }
+    table { width: 100%; border-collapse: collapse; min-width: 1800px; }
 
     th {
       text-align: left;
@@ -260,7 +260,7 @@
       background: white;
       border-radius: 20px;
       width: 90%;
-      max-width: 800px;
+      max-width: 900px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 30px;
@@ -276,9 +276,9 @@
     .modal-header h2 { color: #1e293b; font-size: 24px; }
     .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; }
 
-    .modal-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+    .modal-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
     .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group.full-width { grid-column: span 2; }
+    .form-group.full-width { grid-column: span 3; }
 
     .form-group label { font-weight: 600; font-size: 13px; color: #1e293b; }
 
@@ -297,7 +297,7 @@
       justify-content: flex-end;
       gap: 15px;
       margin-top: 25px;
-      grid-column: span 2;
+      grid-column: span 3;
     }
 
     .loading-overlay {
@@ -504,19 +504,20 @@
             <th>Equipment</th>
             <th>Bezeichnung</th>
             <th>Material</th>
-            <th>Herst/SerialNr</th>
             <th>Hersteller</th>
-            <th>Typbezeichng</th>
+            <th>Typbezeichnung</th>
+            <th>Seriennummer</th>
             <th>Sortierfeld</th>
             <th>Kostenstelle</th>
-            <th>Anwenderstat.</th>
+            <th>Verantw. Arbeitsplatz</th>
+            <th>Anwenderstatus</th>
             <th>Zyklus</th>
             <th>Kal.-Stichtag</th>
             <th>Aktionen</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="12" style="text-align:center;">Daten werden geladen...</td></tr>
+          <tr><td colspan="13" style="text-align:center;">Daten werden geladen...</td></tr>
         </tbody>
       </table>
     </div>
@@ -548,13 +549,33 @@
         </div>
 
         <div class="form-group">
-          <label>Herst/SerialNr</label>
+          <label>Hersteller</label>
+          <input type="text" id="hersteller" placeholder="z.B. Karl Deutsch">
+        </div>
+
+        <div class="form-group">
+          <label>Typbezeichnung</label>
+          <input type="text" id="typbezeichnung" placeholder="z.B. UWE600">
+        </div>
+
+        <div class="form-group">
+          <label>Seriennummer</label>
           <input type="text" id="seriennummer" placeholder="z.B. 82032">
+        </div>
+
+        <div class="form-group">
+          <label>Sortierfeld</label>
+          <input type="text" id="sortierfeld" placeholder="z.B. QS GROSSLAGER (BAU 22)">
         </div>
 
         <div class="form-group">
           <label>Kostenstelle</label>
           <input type="text" id="kostenstelle" placeholder="z.B. 0200-84212">
+        </div>
+
+        <div class="form-group">
+          <label>Verantw. Arbeitsplatz</label>
+          <input type="text" id="arbeitsplatz" placeholder="z.B. BAU 22 / MESSRAUM">
         </div>
 
         <div class="form-group">
@@ -578,21 +599,6 @@
         <div class="form-group">
           <label>Kal.-Stichtag</label>
           <input type="text" id="kalibrierstichtag" placeholder="TT.MM.JJJJ">
-        </div>
-
-        <div class="form-group full-width">
-          <label>Sortierfeld</label>
-          <input type="text" id="sortierfeld" placeholder="z.B. QS GROSSLAGER (BAU 22)">
-        </div>
-
-        <div class="form-group">
-          <label>Hersteller</label>
-          <input type="text" id="hersteller" placeholder="z.B. Karl Deutsch">
-        </div>
-
-        <div class="form-group">
-          <label>Typbezeichnung</label>
-          <input type="text" id="typbezeichnung" placeholder="z.B. UWE600">
         </div>
 
         <div class="modal-actions">
@@ -633,8 +639,6 @@
 
     /* ===== Umlaut-Normalisierung (ae/oe/ue -> ä/ö/ü bzw. Ä/Ö/Ü) ===== */
     function isAllCapsWord(word) {
-      // "ALL CAPS" = mindestens ein Buchstabe, und alle Buchstaben sind Großbuchstaben
-      // Zahlen/Zeichen stören nicht.
       const letters = word.replace(/[^A-Za-zÄÖÜäöüß]/g, '');
       if (!letters) return false;
       return letters === letters.toUpperCase();
@@ -645,7 +649,6 @@
       const allCaps = isAllCapsWord(word);
 
       if (allCaps) {
-        // Großschreibung: AE/OE/UE -> Ä/Ö/Ü (auch gemischt sicherheitshalber)
         return word
           .replace(/AE/g, 'Ä').replace(/OE/g, 'Ö').replace(/UE/g, 'Ü')
           .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
@@ -653,7 +656,6 @@
           .replace(/ae/g, 'Ä').replace(/oe/g, 'Ö').replace(/ue/g, 'Ü');
       }
 
-      // normal/mixed/lower: ae/oe/ue -> ä/ö/ü (und führendes Ue/Oe/Ae -> Ü/Ö/Ä)
       return word
         .replace(/Ae/g, 'Ä').replace(/Oe/g, 'Ö').replace(/Ue/g, 'Ü')
         .replace(/ae/g, 'ä').replace(/oe/g, 'ö').replace(/ue/g, 'ü');
@@ -662,11 +664,7 @@
     function normalizeUmlautsPreserveWordCase(text) {
       if (text === null || text === undefined) return text;
       const s = String(text);
-
-      // Wortweise an Leerzeichen; damit bleibt Layout erhalten.
-      // (Falls du auch an "-" "/" etc. trennen willst: sagen, dann erweitere ich es.)
       return s.split(/(\s+)/).map(token => {
-        // tokens enthält auch die Whitespaces wegen capture-group (\s+)
         if (/^\s+$/.test(token)) return token;
         return normalizeUmlautsInWord(token);
       }).join('');
@@ -720,7 +718,6 @@
 
         if (error) throw error;
 
-        // Texte direkt nach dem Laden normalisieren (Anzeige + Filter + Suche)
         currentPruefmittel = (data || []).map(p => ({
           ...p,
           equipment: normalizeUmlautsPreserveWordCase(p.equipment),
@@ -729,6 +726,7 @@
           seriennummer: normalizeUmlautsPreserveWordCase(p.seriennummer),
           sortierfeld: normalizeUmlautsPreserveWordCase(p.sortierfeld),
           kostenstelle: normalizeUmlautsPreserveWordCase(p.kostenstelle),
+          arbeitsplatz: normalizeUmlautsPreserveWordCase(p.arbeitsplatz),
           hersteller: normalizeUmlautsPreserveWordCase(p.hersteller),
           typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
           zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
@@ -740,7 +738,7 @@
         filterData();
       } catch (error) {
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="12" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
       } finally {
         hideLoading();
       }
@@ -806,6 +804,7 @@
           (item.seriennummer && item.seriennummer.toLowerCase().includes(search)) ||
           (item.sortierfeld && item.sortierfeld.toLowerCase().includes(search)) ||
           (item.kostenstelle && item.kostenstelle.toLowerCase().includes(search)) ||
+          (item.arbeitsplatz && item.arbeitsplatz.toLowerCase().includes(search)) ||
           (item.hersteller && item.hersteller.toLowerCase().includes(search)) ||
           (item.typbezeichnung && item.typbezeichnung.toLowerCase().includes(search))
         );
@@ -844,15 +843,15 @@
         0: 'equipment',
         1: 'bezeichnung',
         2: 'material',
-        3: 'seriennummer',
-        4: 'hersteller',
-        5: 'typbezeichnung',
+        3: 'hersteller',
+        4: 'typbezeichnung',
+        5: 'seriennummer',
         6: 'sortierfeld',
         7: 'kostenstelle',
-        8: 'anwenderstatus',
-        9: 'zyklus',
-        10: 'kalibrierstichtag'
-        // 11 = Aktionen (nicht sortierbar)
+        8: 'arbeitsplatz',
+        9: 'anwenderstatus',
+        10: 'zyklus',
+        11: 'kalibrierstichtag'
       };
 
       ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
@@ -880,14 +879,15 @@
         0: 'equipment',
         1: 'bezeichnung',
         2: 'material',
-        3: 'seriennummer',
-        4: 'hersteller',
-        5: 'typbezeichnung',
+        3: 'hersteller',
+        4: 'typbezeichnung',
+        5: 'seriennummer',
         6: 'sortierfeld',
         7: 'kostenstelle',
-        8: 'anwenderstatus',
-        9: 'zyklus',
-        10: 'kalibrierstichtag'
+        8: 'arbeitsplatz',
+        9: 'anwenderstatus',
+        10: 'zyklus',
+        11: 'kalibrierstichtag'
       };
 
       ths.forEach((th, idx) => {
@@ -929,7 +929,7 @@
       const tbody = document.getElementById('tableBody');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
         return;
       }
 
@@ -943,11 +943,12 @@
             <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
             <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.arbeitsplatz || '-') || '-'}</td>
             <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
             <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
             <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
@@ -1037,145 +1038,117 @@
       `;
     }
 
-async function importCSV(file) {
-  if (!file) return;
-  showLoading();
+    async function importCSV(file) {
+      if (!file) return;
+      showLoading();
 
-  try {
-    // Wichtig: CSV mit UTF-8 Encoding lesen
-    const text = await file.text();
-    
-    // UTF-8 BOM entfernen falls vorhanden
-    const cleanText = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
-    
-    const lines = cleanText.split('\n');
-    
-    // Erste Zeile ist Header
-    const headers = lines[0].split(';').map(h => h.trim());
-    const dataRows = lines.slice(1).filter(line => line.trim() !== '');
-
-    const importData = [];
-    const errors = [];
-    let updates = 0;
-    let inserts = 0;
-
-    for (let i = 0; i < dataRows.length; i++) {
       try {
-        const values = dataRows[i].split(';').map(v => v.trim());
-        
-        // Jetzt 11 Spalten!
-        if (values.length >= 11) {
-          const item = {
-            equipment: values[0] || null,                    // Spalte 1: Equipment
-            bezeichnung: values[1] || null,                  // Spalte 2: Bezeichnung
-            material: values[2] || null,                      // Spalte 3: Material
-            hersteller: values[3] || null,                    // Spalte 4: Hersteller
-            typbezeichnung: values[4] || null,                // Spalte 5: Typbezeichng
-            seriennummer: values[5] || null,                  // Spalte 6: HerstSerialNr
-            sortierfeld: values[6] || null,                   // Spalte 7: Sortierfeld
-            kostenstelle: values[7] || null,                  // Spalte 8: Kostenstelle
-            anwenderstatus: values[8] || 'FERT',              // Spalte 9: Anwenderstat.
-            zyklus: values[9] || null,                        // Spalte 10: Zyklus
-            kalibrierstichtag: values[10] || null             // Spalte 11: Kal.-Stichtag
-          };
+        const text = await file.text();
+        const cleanText = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
+        const lines = cleanText.split('\n');
+        const headers = lines[0].split(';').map(h => h.trim());
+        const dataRows = lines.slice(1).filter(line => line.trim() !== '');
 
-          // Pflichtfelder prüfen
-          if (!item.equipment || !item.bezeichnung) {
-            errors.push(`Zeile ${i + 2}: Equipment und Bezeichnung sind Pflichtfelder`);
-            continue;
+        const importData = [];
+        const errors = [];
+        let updates = 0;
+        let inserts = 0;
+
+        for (let i = 0; i < dataRows.length; i++) {
+          try {
+            const values = dataRows[i].split(';').map(v => v.trim());
+            
+            if (values.length >= 12) {  // Jetzt 12 Spalten!
+              const item = {
+                equipment: values[0] || null,
+                bezeichnung: values[1] || null,
+                material: values[2] || null,
+                hersteller: values[3] || null,      // Korrigiert: Hersteller aus Spalte 4
+                typbezeichnung: values[4] || null,   // Korrigiert: Typ aus Spalte 5
+                seriennummer: values[5] || null,
+                sortierfeld: values[6] || null,
+                kostenstelle: values[7] || null,
+                arbeitsplatz: values[8] || null,     // NEU: Arbeitsplatz aus Spalte 9
+                anwenderstatus: values[9] || 'FERT',
+                zyklus: values[10] || null,
+                kalibrierstichtag: values[11] || null
+              };
+
+              if (!item.equipment || !item.bezeichnung) {
+                errors.push(`Zeile ${i + 2}: Equipment und Bezeichnung sind Pflichtfelder`);
+                continue;
+              }
+
+              if (item.anwenderstatus) {
+                item.anwenderstatus = item.anwenderstatus.toUpperCase();
+              }
+
+              importData.push(item);
+            } else {
+              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 12, erhalten: ${values.length})`);
+            }
+          } catch (err) {
+            errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
+          }
+        }
+
+        if (importData.length > 0) {
+          for (const item of importData) {
+            try {
+              const { data: existing, error: checkError } = await supabaseClient
+                .from('pruefmittel')
+                .select('id')
+                .eq('equipment', item.equipment)
+                .maybeSingle();
+
+              if (checkError) {
+                errors.push(`Fehler bei Prüfung von ${item.equipment}: ${checkError.message}`);
+                continue;
+              }
+
+              if (existing) {
+                const { error: updateError } = await supabaseClient
+                  .from('pruefmittel')
+                  .update(item)
+                  .eq('id', existing.id);
+
+                if (updateError) errors.push(`Fehler beim Aktualisieren von ${item.equipment}: ${updateError.message}`);
+                else updates++;
+              } else {
+                const { error: insertError } = await supabaseClient
+                  .from('pruefmittel')
+                  .insert([item]);
+
+                if (insertError) errors.push(`Fehler beim Einfügen von ${item.equipment}: ${insertError.message}`);
+                else inserts++;
+              }
+            } catch (err) {
+              errors.push(`Fehler bei Verarbeitung von ${item.equipment}: ${err.message}`);
+            }
           }
 
-          // Status normalisieren (GROẞSCHREIBUNG)
-          if (item.anwenderstatus) {
-            item.anwenderstatus = item.anwenderstatus.toUpperCase();
+          let message = `Import abgeschlossen:\n`;
+          message += `✅ ${inserts} neue Datensätze eingefügt\n`;
+          message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
+          
+          if (errors.length > 0) {
+            message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
+            if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
           }
-
-          // Debug für erste Zeile
-          if (i === 0) {
-            console.log('Erster importierter Datensatz:', {
-              equipment: item.equipment,
-              bezeichnung: item.bezeichnung,
-              material: item.material,
-              hersteller: item.hersteller,
-              typbezeichnung: item.typbezeichnung,
-              seriennummer: item.seriennummer,
-              sortierfeld: item.sortierfeld,
-              kostenstelle: item.kostenstelle,
-              anwenderstatus: item.anwenderstatus,
-              zyklus: item.zyklus,
-              kalibrierstichtag: item.kalibrierstichtag
-            });
-          }
-
-          importData.push(item);
+          
+          alert(message);
+          await loadPruefmittel();
         } else {
-          errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 11, erhalten: ${values.length})`);
+          alert('Keine gültigen Daten zum Importieren gefunden.\n' + errors.join('\n'));
         }
-      } catch (err) {
-        errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
+      } catch (error) {
+        alert('Fehler beim CSV-Import: ' + error.message);
+      } finally {
+        hideLoading();
+        document.getElementById('csvFileInput').value = '';
       }
     }
 
-    if (importData.length > 0) {
-      for (const item of importData) {
-        try {
-          // Prüfen ob Equipment bereits existiert
-          const { data: existing, error: checkError } = await supabaseClient
-            .from('pruefmittel')
-            .select('id')
-            .eq('equipment', item.equipment)
-            .maybeSingle();
-
-          if (checkError) {
-            errors.push(`Fehler bei Prüfung von ${item.equipment}: ${checkError.message}`);
-            continue;
-          }
-
-          if (existing) {
-            // Update
-            const { error: updateError } = await supabaseClient
-              .from('pruefmittel')
-              .update(item)
-              .eq('id', existing.id);
-
-            if (updateError) errors.push(`Fehler beim Aktualisieren von ${item.equipment}: ${updateError.message}`);
-            else updates++;
-          } else {
-            // Insert
-            const { error: insertError } = await supabaseClient
-              .from('pruefmittel')
-              .insert([item]);
-
-            if (insertError) errors.push(`Fehler beim Einfügen von ${item.equipment}: ${insertError.message}`);
-            else inserts++;
-          }
-        } catch (err) {
-          errors.push(`Fehler bei Verarbeitung von ${item.equipment}: ${err.message}`);
-        }
-      }
-
-      // Zusammenfassung anzeigen
-      let message = `Import abgeschlossen:\n`;
-      message += `✅ ${inserts} neue Datensätze eingefügt\n`;
-      message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
-      
-      if (errors.length > 0) {
-        message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
-        if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
-      }
-      
-      alert(message);
-      await loadPruefmittel();
-    } else {
-      alert('Keine gültigen Daten zum Importieren gefunden.\n' + errors.join('\n'));
-    }
-  } catch (error) {
-    alert('Fehler beim CSV-Import: ' + error.message);
-  } finally {
-    hideLoading();
-    document.getElementById('csvFileInput').value = '';
-  }
-}
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
       document.getElementById('pruefmittelForm').reset();
@@ -1197,14 +1170,15 @@ async function importCSV(file) {
       document.getElementById('equipment').value = item.equipment || '';
       document.getElementById('bezeichnung').value = item.bezeichnung || '';
       document.getElementById('material').value = item.material || '';
+      document.getElementById('hersteller').value = item.hersteller || '';
+      document.getElementById('typbezeichnung').value = item.typbezeichnung || '';
       document.getElementById('seriennummer').value = item.seriennummer || '';
+      document.getElementById('sortierfeld').value = item.sortierfeld || '';
       document.getElementById('kostenstelle').value = item.kostenstelle || '';
+      document.getElementById('arbeitsplatz').value = item.arbeitsplatz || '';
       document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
       document.getElementById('zyklus').value = item.zyklus || '';
       document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
-      document.getElementById('sortierfeld').value = item.sortierfeld || '';
-      document.getElementById('hersteller').value = item.hersteller || '';
-      document.getElementById('typbezeichnung').value = item.typbezeichnung || '';
 
       document.getElementById('pruefmittelModal').style.display = 'flex';
     }
@@ -1237,14 +1211,15 @@ async function importCSV(file) {
           equipment: normalizeUmlautsPreserveWordCase(document.getElementById('equipment').value),
           bezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('bezeichnung').value),
           material: normalizeUmlautsPreserveWordCase(document.getElementById('material').value || null),
+          hersteller: normalizeUmlautsPreserveWordCase(document.getElementById('hersteller').value || null),
+          typbezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('typbezeichnung').value || null),
           seriennummer: normalizeUmlautsPreserveWordCase(document.getElementById('seriennummer').value || null),
+          sortierfeld: normalizeUmlautsPreserveWordCase(document.getElementById('sortierfeld').value || null),
           kostenstelle: normalizeUmlautsPreserveWordCase(document.getElementById('kostenstelle').value || null),
+          arbeitsplatz: normalizeUmlautsPreserveWordCase(document.getElementById('arbeitsplatz').value || null),
           anwenderstatus: normalizeStatus(document.getElementById('anwenderstatus').value),
           zyklus: normalizeUmlautsPreserveWordCase(document.getElementById('zyklus').value || null),
-          kalibrierstichtag: normalizeUmlautsPreserveWordCase(document.getElementById('kalibrierstichtag').value || null),
-          sortierfeld: normalizeUmlautsPreserveWordCase(document.getElementById('sortierfeld').value || null),
-          hersteller: normalizeUmlautsPreserveWordCase(document.getElementById('hersteller').value || null),
-          typbezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('typbezeichnung').value || null)
+          kalibrierstichtag: normalizeUmlautsPreserveWordCase(document.getElementById('kalibrierstichtag').value || null)
         };
 
         const editId = document.getElementById('editId').value;
