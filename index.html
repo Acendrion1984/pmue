@@ -1037,111 +1037,125 @@
       `;
     }
 
-    /* CSV Import (ohne Zustand -> 11 Spalten) */
-    async function importCSV(file) {
-      if (!file) return;
-      showLoading();
+async function importCSV(file) {
+  if (!file) return;
+  showLoading();
 
+  try {
+    const text = await file.text();
+    const lines = text.split('\n');
+    
+    // Erste Zeile ist Header
+    const headers = lines[0].split(';').map(h => h.trim());
+    const dataRows = lines.slice(1).filter(line => line.trim() !== '');
+
+    console.log('Header gefunden:', headers); // Zum Debuggen
+
+    const importData = [];
+    const errors = [];
+    let updates = 0;
+    let inserts = 0;
+
+    for (let i = 0; i < dataRows.length; i++) {
       try {
-        const text = await file.text();
-        const lines = text.split('\n');
-        const dataRows = lines.slice(1).filter(line => line.trim() !== '');
+        const values = dataRows[i].split(';').map(v => v.trim());
+        
+        // Korrekte Zuordnung basierend auf Ihrer Bestätigung
+        if (values.length >= 10) {
+          const item = {
+            equipment: normalizeUmlautsPreserveWordCase(values[0] || null),        // Spalte 1: Equipment
+            bezeichnung: normalizeUmlautsPreserveWordCase(values[1] || null),      // Spalte 2: Bezeichnung
+            material: normalizeUmlautsPreserveWordCase(values[2] || null),         // Spalte 3: Material
+            hersteller: normalizeUmlautsPreserveWordCase(values[3] || null),       // Spalte 4: Hersteller
+            seriennummer: normalizeUmlautsPreserveWordCase(values[4] || null),     // Spalte 5: Herst/SerialNr
+            kostenstelle: normalizeUmlautsPreserveWordCase(values[5] || null),     // Spalte 6: Kostenstelle
+            sortierfeld: normalizeUmlautsPreserveWordCase(values[6] || null),      // Spalte 7: Sortierfeld
+            anwenderstatus: normalizeStatus(values[7] || 'FERT'),                  // Spalte 8: Anwenderstat.
+            typbezeichnung: normalizeUmlautsPreserveWordCase(values[8] || null),   // Spalte 9: Typbezeichng
+            kalibrierstichtag: normalizeUmlautsPreserveWordCase(values[9] || null), // Spalte 10: Kal.-Stichtag
+            zyklus: null // Nicht in CSV vorhanden
+          };
 
-        const importData = [];
-        const errors = [];
-        let updates = 0;
-        let inserts = 0;
-
-        for (let i = 0; i < dataRows.length; i++) {
-          try {
-            const values = dataRows[i].split(';').map(v => v.trim());
-
-            // NEU: 11 Felder erwartet (ohne Zustand)
-            if (values.length >= 11) {
-              const item = {
-                equipment: normalizeUmlautsPreserveWordCase(values[0] || null),
-                bezeichnung: normalizeUmlautsPreserveWordCase(values[1] || null),
-                material: normalizeUmlautsPreserveWordCase(values[2] || null),
-                seriennummer: normalizeUmlautsPreserveWordCase(values[3] || null),
-                kostenstelle: normalizeUmlautsPreserveWordCase(values[4] || null),
-                anwenderstatus: normalizeStatus(values[5] || 'FERT'),
-                zyklus: normalizeUmlautsPreserveWordCase(values[6] || null),
-                kalibrierstichtag: normalizeUmlautsPreserveWordCase(values[7] || null),
-                sortierfeld: normalizeUmlautsPreserveWordCase(values[8] || null),
-                hersteller: normalizeUmlautsPreserveWordCase(values[9] || null),
-                typbezeichnung: normalizeUmlautsPreserveWordCase(values[10] || null)
-              };
-
-              if (!item.equipment || !item.bezeichnung) {
-                errors.push(`Zeile ${i + 2}: Equipment und Bezeichnung sind Pflichtfelder`);
-                continue;
-              }
-
-              importData.push(item);
-            } else {
-              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 11, erhalten: ${values.length})`);
-            }
-          } catch (err) {
-            errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
-          }
-        }
-
-        if (importData.length > 0) {
-          for (const item of importData) {
-            try {
-              const { data: existing, error: checkError } = await supabaseClient
-                .from('pruefmittel')
-                .select('id')
-                .eq('equipment', item.equipment)
-                .maybeSingle();
-
-              if (checkError) {
-                errors.push(`Fehler bei Prüfung von ${item.equipment}: ${checkError.message}`);
-                continue;
-              }
-
-              if (existing) {
-                const { error: updateError } = await supabaseClient
-                  .from('pruefmittel')
-                  .update(item)
-                  .eq('id', existing.id);
-
-                if (updateError) errors.push(`Fehler beim Aktualisieren von ${item.equipment}: ${updateError.message}`);
-                else updates++;
-              } else {
-                const { error: insertError } = await supabaseClient
-                  .from('pruefmittel')
-                  .insert([item]);
-
-                if (insertError) errors.push(`Fehler beim Einfügen von ${item.equipment}: ${insertError.message}`);
-                else inserts++;
-              }
-            } catch (err) {
-              errors.push(`Fehler bei Verarbeitung von ${item.equipment}: ${err.message}`);
-            }
+          // Pflichtfelder prüfen
+          if (!item.equipment || !item.bezeichnung) {
+            errors.push(`Zeile ${i + 2}: Equipment und Bezeichnung sind Pflichtfelder`);
+            continue;
           }
 
-          let message = `Import abgeschlossen:\n`;
-          message += `✅ ${inserts} neue Datensätze eingefügt\n`;
-          message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
-          if (errors.length > 0) {
-            message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
-            if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
+          // Debug für erste Zeile
+          if (i === 0) {
+            console.log('Erster importierter Datensatz:', item);
           }
-          alert(message);
 
-          await loadPruefmittel();
+          importData.push(item);
         } else {
-          alert('Keine gültigen Daten zum Importieren gefunden.\n' + errors.join('\n'));
+          errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 10, erhalten: ${values.length})`);
         }
-      } catch (error) {
-        alert('Fehler beim CSV-Import: ' + error.message);
-      } finally {
-        hideLoading();
-        document.getElementById('csvFileInput').value = '';
+      } catch (err) {
+        errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
       }
     }
 
+    if (importData.length > 0) {
+      for (const item of importData) {
+        try {
+          // Prüfen ob Equipment bereits existiert
+          const { data: existing, error: checkError } = await supabaseClient
+            .from('pruefmittel')
+            .select('id')
+            .eq('equipment', item.equipment)
+            .maybeSingle();
+
+          if (checkError) {
+            errors.push(`Fehler bei Prüfung von ${item.equipment}: ${checkError.message}`);
+            continue;
+          }
+
+          if (existing) {
+            // Update
+            const { error: updateError } = await supabaseClient
+              .from('pruefmittel')
+              .update(item)
+              .eq('id', existing.id);
+
+            if (updateError) errors.push(`Fehler beim Aktualisieren von ${item.equipment}: ${updateError.message}`);
+            else updates++;
+          } else {
+            // Insert
+            const { error: insertError } = await supabaseClient
+              .from('pruefmittel')
+              .insert([item]);
+
+            if (insertError) errors.push(`Fehler beim Einfügen von ${item.equipment}: ${insertError.message}`);
+            else inserts++;
+          }
+        } catch (err) {
+          errors.push(`Fehler bei Verarbeitung von ${item.equipment}: ${err.message}`);
+        }
+      }
+
+      // Zusammenfassung anzeigen
+      let message = `Import abgeschlossen:\n`;
+      message += `✅ ${inserts} neue Datensätze eingefügt\n`;
+      message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
+      
+      if (errors.length > 0) {
+        message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
+        if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
+      }
+      
+      alert(message);
+      await loadPruefmittel();
+    } else {
+      alert('Keine gültigen Daten zum Importieren gefunden.\n' + errors.join('\n'));
+    }
+  } catch (error) {
+    alert('Fehler beim CSV-Import: ' + error.message);
+  } finally {
+    hideLoading();
+    document.getElementById('csvFileInput').value = '';
+  }
+}
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Neues Prüfmittel';
       document.getElementById('pruefmittelForm').reset();
