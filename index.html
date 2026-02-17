@@ -1042,14 +1042,17 @@ async function importCSV(file) {
   showLoading();
 
   try {
+    // Wichtig: CSV mit UTF-8 Encoding lesen
     const text = await file.text();
-    const lines = text.split('\n');
+    
+    // UTF-8 BOM entfernen falls vorhanden
+    const cleanText = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
+    
+    const lines = cleanText.split('\n');
     
     // Erste Zeile ist Header
     const headers = lines[0].split(';').map(h => h.trim());
     const dataRows = lines.slice(1).filter(line => line.trim() !== '');
-
-    console.log('Header gefunden:', headers); // Zum Debuggen
 
     const importData = [];
     const errors = [];
@@ -1060,20 +1063,20 @@ async function importCSV(file) {
       try {
         const values = dataRows[i].split(';').map(v => v.trim());
         
-        // Korrekte Zuordnung basierend auf Ihrer Bestätigung
-        if (values.length >= 10) {
+        // Jetzt 11 Spalten!
+        if (values.length >= 11) {
           const item = {
-            equipment: normalizeUmlautsPreserveWordCase(values[0] || null),        // Spalte 1: Equipment
-            bezeichnung: normalizeUmlautsPreserveWordCase(values[1] || null),      // Spalte 2: Bezeichnung
-            material: normalizeUmlautsPreserveWordCase(values[2] || null),         // Spalte 3: Material
-            hersteller: normalizeUmlautsPreserveWordCase(values[3] || null),       // Spalte 4: Hersteller
-            seriennummer: normalizeUmlautsPreserveWordCase(values[4] || null),     // Spalte 5: Herst/SerialNr
-            kostenstelle: normalizeUmlautsPreserveWordCase(values[5] || null),     // Spalte 6: Kostenstelle
-            sortierfeld: normalizeUmlautsPreserveWordCase(values[6] || null),      // Spalte 7: Sortierfeld
-            anwenderstatus: normalizeStatus(values[7] || 'FERT'),                  // Spalte 8: Anwenderstat.
-            typbezeichnung: normalizeUmlautsPreserveWordCase(values[8] || null),   // Spalte 9: Typbezeichng
-            kalibrierstichtag: normalizeUmlautsPreserveWordCase(values[9] || null), // Spalte 10: Kal.-Stichtag
-            zyklus: null // Nicht in CSV vorhanden
+            equipment: values[0] || null,                    // Spalte 1: Equipment
+            bezeichnung: values[1] || null,                  // Spalte 2: Bezeichnung
+            material: values[2] || null,                      // Spalte 3: Material
+            hersteller: values[3] || null,                    // Spalte 4: Hersteller
+            typbezeichnung: values[4] || null,                // Spalte 5: Typbezeichng
+            seriennummer: values[5] || null,                  // Spalte 6: HerstSerialNr
+            sortierfeld: values[6] || null,                   // Spalte 7: Sortierfeld
+            kostenstelle: values[7] || null,                  // Spalte 8: Kostenstelle
+            anwenderstatus: values[8] || 'FERT',              // Spalte 9: Anwenderstat.
+            zyklus: values[9] || null,                        // Spalte 10: Zyklus
+            kalibrierstichtag: values[10] || null             // Spalte 11: Kal.-Stichtag
           };
 
           // Pflichtfelder prüfen
@@ -1082,14 +1085,31 @@ async function importCSV(file) {
             continue;
           }
 
+          // Status normalisieren (GROẞSCHREIBUNG)
+          if (item.anwenderstatus) {
+            item.anwenderstatus = item.anwenderstatus.toUpperCase();
+          }
+
           // Debug für erste Zeile
           if (i === 0) {
-            console.log('Erster importierter Datensatz:', item);
+            console.log('Erster importierter Datensatz:', {
+              equipment: item.equipment,
+              bezeichnung: item.bezeichnung,
+              material: item.material,
+              hersteller: item.hersteller,
+              typbezeichnung: item.typbezeichnung,
+              seriennummer: item.seriennummer,
+              sortierfeld: item.sortierfeld,
+              kostenstelle: item.kostenstelle,
+              anwenderstatus: item.anwenderstatus,
+              zyklus: item.zyklus,
+              kalibrierstichtag: item.kalibrierstichtag
+            });
           }
 
           importData.push(item);
         } else {
-          errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 10, erhalten: ${values.length})`);
+          errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 11, erhalten: ${values.length})`);
         }
       } catch (err) {
         errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
