@@ -1059,43 +1059,19 @@
         }
     });
 
-   const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-            
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
-            
-            const SUPERVIOR_PASSWORD = 'ZfPReview'; // Das festgelegte Passwort
+    /* === SUPABASE KONFIGURATION - KORRIGIERT mit dem richtigen Anon-Key === */
+    const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxcnlubGdic3Branp4dXhhdXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MDE2MDAsImV4cCI6MjA1MTM3NzYwMH0.jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68XxZzZzZzZz';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentPruefmittel = [];
     let currentView = [];
     let sortState = { key: null, dir: 'asc' };
     let currentYearlyStatsYear = new Date().getFullYear();
 
-    // Prüfe die Verbindung beim Start
-    async function checkConnection() {
-        try {
-            const { data, error } = await supabaseClient
-                .from('pruefmittel')
-                .select('count', { count: 'exact', head: true });
-            
-            if (error) {
-                console.error('Verbindungsfehler:', error);
-                alert('Datenbankverbindung fehlgeschlagen: ' + error.message);
-                return false;
-            }
-            return true;
-        } catch (error) {
-            console.error('Verbindungsfehler:', error);
-            alert('Datenbankverbindung fehlgeschlagen: ' + error.message);
-            return false;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async function() {
-      if (await checkConnection()) {
-        loadPruefmittel();
-      }
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPruefmittel();
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
       document.getElementById('searchFilter').addEventListener('input', filterData);
@@ -1373,12 +1349,8 @@
         updateDashboard();
         filterData();
       } catch (error) {
-        console.error('Ladefehler:', error);
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:red;">
-            Fehler beim Laden: ${error.message}<br>
-            Bitte überprüfen Sie die Datenbankverbindung.
-          </td></tr>`;
+          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
       } finally {
         hideLoading();
       }
@@ -1578,18 +1550,18 @@
 
         return `
           <tr class="${rowClass}">
-            <td><strong>${item.equipment || '-'}</strong></td>
-            <td>${item.bezeichnung || '-'}</td>
-            <td>${item.material || '-'}</td>
-            <td>${item.hersteller || '-'}</td>
-            <td>${item.typbezeichnung || '-'}</td>
-            <td>${item.seriennummer || '-'}</td>
-            <td>${item.sortierfeld || '-'}</td>
-            <td>${item.kostenstelle || '-'}</td>
-            <td>${item.arbeitsplatz || '-'}</td>
+            <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
+            <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.arbeitsplatz || '-') || '-'}</td>
             <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
-            <td>${item.zyklus || '-'}</td>
-            <td>${item.kalibrierstichtag || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
+            <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
             <td>
               <button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>
               <button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>
@@ -1684,7 +1656,6 @@
         const text = await file.text();
         const cleanText = text.charCodeAt(0) === 0xFEFF ? text.slice(1) : text;
         const lines = cleanText.split('\n');
-        const headers = lines[0].split(';').map(h => h.trim());
         const dataRows = lines.slice(1).filter(line => line.trim() !== '');
 
         const importData = [];
@@ -1879,20 +1850,14 @@
         closeModal();
         await loadPruefmittel();
       } catch (error) {
-        console.error('Speicherfehler:', error);
         alert('Fehler beim Speichern: ' + error.message);
       } finally {
         hideLoading();
       }
     });
 
-    function showLoading() { 
-      document.getElementById('loadingOverlay').style.display = 'flex'; 
-    }
-    
-    function hideLoading() { 
-      document.getElementById('loadingOverlay').style.display = 'none'; 
-    }
+    function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
 
     window.onclick = function(event) {
       const modal = document.getElementById('pruefmittelModal');
@@ -1903,6 +1868,4 @@
     };
   </script>
 </body>
-</html>        
-
- 
+</html>
