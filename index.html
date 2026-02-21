@@ -275,6 +275,12 @@
       border: none;
     }
 
+    .btn-info {
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: white;
+      border: none;
+    }
+
     /* KPI Kacheln */
     .dashboard-grid {
       display: grid;
@@ -464,6 +470,39 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* Debug Bereich */
+    .debug-panel {
+      background: var(--card-bg);
+      border: 2px solid #f59e0b;
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 18px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    .debug-panel h3 {
+      color: #f59e0b;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .debug-content {
+      background: var(--bg);
+      padding: 10px;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .debug-success { color: #10b981; }
+    .debug-error { color: #ef4444; }
 
     /* Sortier-UX */
     th.sortable { cursor: pointer; user-select: none; }
@@ -690,7 +729,8 @@
       .dashboard-grid,
       .modal,
       .loading-overlay,
-      .theme-toggle-btn {
+      .theme-toggle-btn,
+      .debug-panel {
         display: none !important;
       }
 
@@ -776,6 +816,22 @@
       </div>
     </div>
 
+    <!-- Debug Panel -->
+    <div class="debug-panel" id="debugPanel">
+      <h3>
+        <i class="fas fa-bug"></i> Debug-Informationen
+        <button class="btn" style="padding: 2px 10px; font-size: 11px;" onclick="testSupabaseConnection()">
+          <i class="fas fa-sync-alt"></i> Test
+        </button>
+        <button class="btn" style="padding: 2px 10px; font-size: 11px;" onclick="checkTableStructure()">
+          <i class="fas fa-table"></i> Tabellenstruktur
+        </button>
+      </h3>
+      <div class="debug-content" id="debugContent">
+        <span class="debug-success">✅ Bereit zum Testen...</span>
+      </div>
+    </div>
+
     <div class="filter-bar">
       <div class="filter-group">
         <label><i class="fas fa-filter"></i> Anwenderstatus</label>
@@ -823,6 +879,9 @@
         </button>
         <button class="btn btn-warning" onclick="document.getElementById('csvFileInput').click()">
           <i class="fas fa-file-csv"></i> CSV Import
+        </button>
+        <button class="btn btn-info" onclick="exportAllData()">
+          <i class="fas fa-download"></i> CSV Export
         </button>
         <button class="btn" onclick="loadPruefmittel()">
           <i class="fas fa-sync-alt"></i> Aktualisieren
@@ -1059,7 +1118,7 @@
         }
     });
 
-    /* === SUPABASE KONFIGURATION - KORRIGIERT mit dem richtigen Anon-Key === */
+    /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxcnlubGdic3Branp4dXhhdXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MDE2MDAsImV4cCI6MjA1MTM3NzYwMH0.jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68XxZzZzZzZz';
 
@@ -1070,7 +1129,65 @@
     let sortState = { key: null, dir: 'asc' };
     let currentYearlyStatsYear = new Date().getFullYear();
 
-    document.addEventListener('DOMContentLoaded', function() {
+    // Debug-Funktion
+    function addDebugMessage(message, isError = false) {
+        const debugContent = document.getElementById('debugContent');
+        const timestamp = new Date().toLocaleTimeString();
+        const color = isError ? 'debug-error' : 'debug-success';
+        debugContent.innerHTML += `<div><span class="${color}">[${timestamp}]</span> ${message}</div>`;
+        debugContent.scrollTop = debugContent.scrollHeight;
+    }
+
+    // Supabase Verbindung testen
+    async function testSupabaseConnection() {
+        addDebugMessage('🔄 Teste Supabase Verbindung...');
+        try {
+            const { data, error } = await supabaseClient
+                .from('pruefmittel')
+                .select('count', { count: 'exact', head: true });
+            
+            if (error) {
+                addDebugMessage(`❌ Verbindungsfehler: ${error.message}`, true);
+                return false;
+            }
+            addDebugMessage('✅ Verbindung erfolgreich!');
+            return true;
+        } catch (error) {
+            addDebugMessage(`❌ Fehler: ${error.message}`, true);
+            return false;
+        }
+    }
+
+    // Tabellenstruktur prüfen
+    async function checkTableStructure() {
+        addDebugMessage('🔄 Prüfe Tabellenstruktur...');
+        try {
+            // Versuche einen einzelnen Datensatz zu holen
+            const { data, error } = await supabaseClient
+                .from('pruefmittel')
+                .select('*')
+                .limit(1);
+            
+            if (error) {
+                addDebugMessage(`❌ Tabelle nicht gefunden: ${error.message}`, true);
+                return;
+            }
+            
+            if (data && data.length > 0) {
+                const columns = Object.keys(data[0]).join(', ');
+                addDebugMessage(`✅ Tabelle 'pruefmittel' hat Spalten: ${columns}`);
+                addDebugMessage(`✅ Beispiel-Datensatz gefunden!`);
+            } else {
+                addDebugMessage(`⚠️ Tabelle 'pruefmittel' existiert, aber ist leer`, true);
+            }
+        } catch (error) {
+            addDebugMessage(`❌ Fehler: ${error.message}`, true);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      addDebugMessage('🚀 App gestartet');
+      await testSupabaseConnection();
       loadPruefmittel();
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
@@ -1140,13 +1257,10 @@
     }
 
     function parseCycleToDays(cycleStr) {
-      if (!cycleStr) return 365; // Standardzyklus 365 Tage
-      
+      if (!cycleStr) return 365;
       const str = String(cycleStr).toLowerCase();
-      // Extrahiere die erste Zahl aus dem String
       const match = str.match(/\d+/);
       if (!match) return 365;
-      
       const days = parseInt(match[0], 10);
       return days > 0 ? days : 365;
     }
@@ -1165,13 +1279,76 @@
       return '';
     }
 
-    // ===== Intelligente Jahresbelastungsberechnung =====
+    // ===== CSV Export Funktion =====
+    function exportAllData() {
+      if (currentPruefmittel.length === 0) {
+        alert('Keine Daten zum Exportieren vorhanden!');
+        return;
+      }
+
+      // CSV Header
+      const headers = [
+        'Equipment',
+        'Bezeichnung',
+        'Material',
+        'Hersteller',
+        'Typbezeichnung',
+        'Seriennummer',
+        'Sortierfeld',
+        'Kostenstelle',
+        'Arbeitsplatz',
+        'Anwenderstatus',
+        'Zyklus',
+        'Kalibrierstichtag'
+      ];
+
+      // Daten in CSV konvertieren
+      const csvRows = [];
+      csvRows.push(headers.join(';'));
+
+      currentPruefmittel.forEach(item => {
+        const row = [
+          item.equipment || '',
+          item.bezeichnung || '',
+          item.material || '',
+          item.hersteller || '',
+          item.typbezeichnung || '',
+          item.seriennummer || '',
+          item.sortierfeld || '',
+          item.kostenstelle || '',
+          item.arbeitsplatz || '',
+          item.anwenderstatus || 'FERT',
+          item.zyklus || '',
+          item.kalibrierstichtag || ''
+        ];
+        csvRows.push(row.join(';'));
+      });
+
+      // CSV Datei erstellen und downloaden
+      const csvString = csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      const date = new Date();
+      const dateStr = date.toISOString().split('T')[0];
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `pruefmittel_export_${dateStr}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      addDebugMessage(`✅ ${currentPruefmittel.length} Datensätze exportiert`);
+    }
+
+    // ===== Jahresbelastungsberechnung =====
     function calculateYearlyLoad(targetYear) {
-      // Monatliche Zählung für das Zieljahr
       const monthlyLoad = Array(12).fill(0);
       const monthlyDetails = Array(12).fill().map(() => []);
       
-      // Für jede Anlage die zukünftigen Kalibrierungen berechnen
       currentPruefmittel.forEach(item => {
         const startDate = parseGermanDateToDate(item.kalibrierstichtag);
         if (!startDate) return;
@@ -1179,13 +1356,9 @@
         const cycleDays = parseCycleToDays(item.zyklus);
         const cycleMs = cycleDays * 24 * 60 * 60 * 1000;
         
-        // Startdatum als Date-Objekt (Anfang des Tages)
         let currentDate = new Date(startDate);
-        
-        // Begrenze die Vorausberechnung auf maximal 5 Jahre in die Zukunft
         const maxDate = new Date(targetYear + 2, 11, 31);
         
-        // Gehe vorwärts für zukünftige Kalibrierungen
         while (currentDate <= maxDate) {
           const year = currentDate.getFullYear();
           const month = currentDate.getMonth();
@@ -1199,12 +1372,9 @@
             });
           }
           
-          // Nächster Zyklus
           currentDate = new Date(currentDate.getTime() + cycleMs);
         }
         
-        // Gehe auch rückwärts für Zyklen vor dem Startdatum
-        // (für Anlagen, die bereits mehrfach kalibriert wurden)
         let pastDate = new Date(startDate.getTime() - cycleMs);
         while (pastDate.getFullYear() <= targetYear + 1) {
           const year = pastDate.getFullYear();
@@ -1220,11 +1390,10 @@
           }
           
           pastDate = new Date(pastDate.getTime() - cycleMs);
-          if (pastDate.getFullYear() < targetYear - 5) break; // Begrenzung auf 5 Jahre zurück
+          if (pastDate.getFullYear() < targetYear - 5) break;
         }
       });
       
-      // Sortiere die Details nach Datum
       monthlyDetails.forEach(monthArray => {
         monthArray.sort((a, b) => {
           const dateA = parseGermanDateToDate(a.date);
@@ -1253,18 +1422,15 @@
       const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
       const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
       
-      // Monatsnamen
       const monthNames = [
         'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
       ];
       
-      // Heutiges Datum für Hervorhebung
       const today = new Date();
       const currentMonth = today.getMonth();
       const currentYear = today.getFullYear();
       
-      // Grid befüllen
       const grid = document.getElementById('yearlyStatsGrid');
       grid.innerHTML = monthlyLoad.map((count, index) => {
         const isCurrentMonth = (year === currentYear && index === currentMonth);
@@ -1281,16 +1447,14 @@
         `;
       }).join('');
       
-      // Gesamt anzeigen
       document.getElementById('yearlyTotal').innerHTML = `
         <div class="total-label">Kalibrierungen im Jahr ${year}</div>
         <div class="total-value">${totalForYear}</div>
         <div style="margin-top: 10px; color: var(--muted); font-size: 14px;">
-          basierend auf ${currentPruefmittel.length} Prüfmitteln mit ${year === currentYear ? 'aktuellen' : 'prognostizierten'} Zyklen
+          basierend auf ${currentPruefmittel.length} Prüfmitteln
         </div>
       `;
       
-      // Details für Monate mit hoher Belastung anzeigen
       const highLoadMonths = monthlyLoad
         .map((count, index) => ({ count, index }))
         .filter(m => m.count > 5)
@@ -1319,16 +1483,27 @@
       document.getElementById('yearlyStatsModal').style.display = 'none';
     }
 
-    // ===== Bestehende Funktionen =====
+    // ===== Hauptfunktionen =====
     async function loadPruefmittel() {
       showLoading();
+      addDebugMessage('🔄 Lade Daten von Supabase...');
+      
       try {
         const { data, error } = await supabaseClient
           .from('pruefmittel')
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          addDebugMessage(`❌ Supabase Fehler: ${error.message}`, true);
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          addDebugMessage('⚠️ Keine Daten in der Tabelle "pruefmittel" gefunden', true);
+        } else {
+          addDebugMessage(`✅ ${data.length} Datensätze geladen`);
+        }
 
         currentPruefmittel = (data || []).map(p => ({
           ...p,
@@ -1349,8 +1524,12 @@
         updateDashboard();
         filterData();
       } catch (error) {
+        addDebugMessage(`❌ Kritischer Fehler: ${error.message}`, true);
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+          `<tr><td colspan="13" style="text-align:center;color:red;">
+            Fehler beim Laden: ${error.message}<br>
+            Bitte prüfen Sie die Debug-Informationen oben.
+          </td></tr>`;
       } finally {
         hideLoading();
       }
@@ -1550,18 +1729,18 @@
 
         return `
           <tr class="${rowClass}">
-            <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
-            <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.arbeitsplatz || '-') || '-'}</td>
+            <td><strong>${item.equipment || '-'}</strong></td>
+            <td>${item.bezeichnung || '-'}</td>
+            <td>${item.material || '-'}</td>
+            <td>${item.hersteller || '-'}</td>
+            <td>${item.typbezeichnung || '-'}</td>
+            <td>${item.seriennummer || '-'}</td>
+            <td>${item.sortierfeld || '-'}</td>
+            <td>${item.kostenstelle || '-'}</td>
+            <td>${item.arbeitsplatz || '-'}</td>
             <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
-            <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
+            <td>${item.zyklus || '-'}</td>
+            <td>${item.kalibrierstichtag || '-'}</td>
             <td>
               <button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>
               <button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>
