@@ -1059,19 +1059,43 @@
         }
     });
 
-    /* === SUPABASE KONFIGURATION === */
-    const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+   const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            
+            
+            const SUPERVIOR_PASSWORD = 'Supervisor'; // Das festgelegte Passwort
 
     let currentPruefmittel = [];
     let currentView = [];
     let sortState = { key: null, dir: 'asc' };
     let currentYearlyStatsYear = new Date().getFullYear();
 
-    document.addEventListener('DOMContentLoaded', function() {
-      loadPruefmittel();
+    // Prüfe die Verbindung beim Start
+    async function checkConnection() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('pruefmittel')
+                .select('count', { count: 'exact', head: true });
+            
+            if (error) {
+                console.error('Verbindungsfehler:', error);
+                alert('Datenbankverbindung fehlgeschlagen: ' + error.message);
+                return false;
+            }
+            return true;
+        } catch (error) {
+            console.error('Verbindungsfehler:', error);
+            alert('Datenbankverbindung fehlgeschlagen: ' + error.message);
+            return false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      if (await checkConnection()) {
+        loadPruefmittel();
+      }
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
       document.getElementById('searchFilter').addEventListener('input', filterData);
@@ -1185,8 +1209,7 @@
         // Begrenze die Vorausberechnung auf maximal 5 Jahre in die Zukunft
         const maxDate = new Date(targetYear + 2, 11, 31);
         
-        // Gehe rückwärts, um auch vergangene Kalibrierungen zu erfassen,
-        // die in das Zieljahr fallen würden (wenn der Zyklus regelmäßig war)
+        // Gehe vorwärts für zukünftige Kalibrierungen
         while (currentDate <= maxDate) {
           const year = currentDate.getFullYear();
           const month = currentDate.getMonth();
@@ -1350,8 +1373,12 @@
         updateDashboard();
         filterData();
       } catch (error) {
+        console.error('Ladefehler:', error);
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:red;">Fehler beim Laden: ${error.message}</td></tr>`;
+          `<tr><td colspan="13" style="text-align:center;color:red;">
+            Fehler beim Laden: ${error.message}<br>
+            Bitte überprüfen Sie die Datenbankverbindung.
+          </td></tr>`;
       } finally {
         hideLoading();
       }
@@ -1518,7 +1545,6 @@
     function printA4() {
       const status = document.getElementById('statusFilter')?.value || '';
       const search = document.getElementById('searchFilter')?.value || '';
-      const sf = document.getElementById('sortierfeldFilter')?.value || '';
       const ks = document.getElementById('kostenstelleFilter')?.value || '';
       const fa = document.getElementById('faelligkeitFilter')?.value || '';
 
@@ -1528,7 +1554,6 @@
       const parts = [];
       if (status) parts.push(`Status: ${status}`);
       if (search) parts.push(`Suche: ${search}`);
-      if (sf) parts.push(`Sortierfeld: ${sf}`);
       if (ks) parts.push(`Kostenstelle: ${ks}`);
       if (fa) parts.push(`Fälligkeit: ${fa}`);
 
@@ -1553,21 +1578,21 @@
 
         return `
           <tr class="${rowClass}">
-            <td><strong>${normalizeUmlautsPreserveWordCase(item.equipment || '-') || '-'}</strong></td>
-            <td>${normalizeUmlautsPreserveWordCase(item.bezeichnung || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.material || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.hersteller || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.typbezeichnung || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.seriennummer || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.sortierfeld || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.kostenstelle || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.arbeitsplatz || '-') || '-'}</td>
+            <td><strong>${item.equipment || '-'}</strong></td>
+            <td>${item.bezeichnung || '-'}</td>
+            <td>${item.material || '-'}</td>
+            <td>${item.hersteller || '-'}</td>
+            <td>${item.typbezeichnung || '-'}</td>
+            <td>${item.seriennummer || '-'}</td>
+            <td>${item.sortierfeld || '-'}</td>
+            <td>${item.kostenstelle || '-'}</td>
+            <td>${item.arbeitsplatz || '-'}</td>
             <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
-            <td>${normalizeUmlautsPreserveWordCase(item.zyklus || '-') || '-'}</td>
-            <td>${normalizeUmlautsPreserveWordCase(item.kalibrierstichtag || '-') || '-'}</td>
+            <td>${item.zyklus || '-'}</td>
+            <td>${item.kalibrierstichtag || '-'}</td>
             <td>
-              <button class="action-btn" onclick="editPruefmittel(${item.id})"><i class="fas fa-edit"></i></button>
-              <button class="action-btn" onclick="deletePruefmittel(${item.id})"><i class="fas fa-trash"></i></button>
+              <button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>
+              <button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>
             </td>
           </tr>
         `;
@@ -1625,7 +1650,7 @@
           </div>
         </div>
 
-        <div class="kpi-card warning">
+        <div class="kpi-card ${in7 > 0 ? 'warning' : ''}">
           <div class="kpi-icon"><i class="fas fa-clock"></i></div>
           <div class="kpi-text">
             <div class="kpi-value">${in7}</div>
@@ -1633,7 +1658,7 @@
           </div>
         </div>
 
-        <div class="kpi-card warning">
+        <div class="kpi-card ${in30 > 0 ? 'warning' : ''}">
           <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
           <div class="kpi-text">
             <div class="kpi-value">${in30}</div>
@@ -1821,39 +1846,53 @@
 
       try {
         const formData = {
-          equipment: normalizeUmlautsPreserveWordCase(document.getElementById('equipment').value),
-          bezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('bezeichnung').value),
-          material: normalizeUmlautsPreserveWordCase(document.getElementById('material').value || null),
-          hersteller: normalizeUmlautsPreserveWordCase(document.getElementById('hersteller').value || null),
-          typbezeichnung: normalizeUmlautsPreserveWordCase(document.getElementById('typbezeichnung').value || null),
-          seriennummer: normalizeUmlautsPreserveWordCase(document.getElementById('seriennummer').value || null),
-          sortierfeld: normalizeUmlautsPreserveWordCase(document.getElementById('sortierfeld').value || null),
-          kostenstelle: normalizeUmlautsPreserveWordCase(document.getElementById('kostenstelle').value || null),
-          arbeitsplatz: normalizeUmlautsPreserveWordCase(document.getElementById('arbeitsplatz').value || null),
+          equipment: document.getElementById('equipment').value,
+          bezeichnung: document.getElementById('bezeichnung').value,
+          material: document.getElementById('material').value || null,
+          hersteller: document.getElementById('hersteller').value || null,
+          typbezeichnung: document.getElementById('typbezeichnung').value || null,
+          seriennummer: document.getElementById('seriennummer').value || null,
+          sortierfeld: document.getElementById('sortierfeld').value || null,
+          kostenstelle: document.getElementById('kostenstelle').value || null,
+          arbeitsplatz: document.getElementById('arbeitsplatz').value || null,
           anwenderstatus: normalizeStatus(document.getElementById('anwenderstatus').value),
-          zyklus: normalizeUmlautsPreserveWordCase(document.getElementById('zyklus').value || null),
-          kalibrierstichtag: normalizeUmlautsPreserveWordCase(document.getElementById('kalibrierstichtag').value || null)
+          zyklus: document.getElementById('zyklus').value || null,
+          kalibrierstichtag: document.getElementById('kalibrierstichtag').value || null
         };
 
         const editId = document.getElementById('editId').value;
         let result;
 
-        if (editId) result = await supabaseClient.from('pruefmittel').update(formData).eq('id', editId);
-        else result = await supabaseClient.from('pruefmittel').insert([formData]);
+        if (editId) {
+          result = await supabaseClient
+            .from('pruefmittel')
+            .update(formData)
+            .eq('id', editId);
+        } else {
+          result = await supabaseClient
+            .from('pruefmittel')
+            .insert([formData]);
+        }
 
         if (result.error) throw result.error;
 
         closeModal();
         await loadPruefmittel();
       } catch (error) {
+        console.error('Speicherfehler:', error);
         alert('Fehler beim Speichern: ' + error.message);
       } finally {
         hideLoading();
       }
     });
 
-    function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
-    function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+    function showLoading() { 
+      document.getElementById('loadingOverlay').style.display = 'flex'; 
+    }
+    
+    function hideLoading() { 
+      document.getElementById('loadingOverlay').style.display = 'none'; 
+    }
 
     window.onclick = function(event) {
       const modal = document.getElementById('pruefmittelModal');
@@ -1864,4 +1903,6 @@
     };
   </script>
 </body>
-</html>
+</html>        
+
+ 
