@@ -471,39 +471,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Debug Bereich */
-    .debug-panel {
-      background: var(--card-bg);
-      border: 2px solid #f59e0b;
-      border-radius: var(--radius);
-      padding: 15px;
-      margin-bottom: 18px;
-      font-family: monospace;
-      font-size: 12px;
-    }
-
-    .debug-panel h3 {
-      color: #f59e0b;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .debug-content {
-      background: var(--bg);
-      padding: 10px;
-      border-radius: 8px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .debug-success { color: #10b981; }
-    .debug-error { color: #ef4444; }
-
     /* Sortier-UX */
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background: var(--kpi-icon-bg); }
@@ -729,8 +696,7 @@
       .dashboard-grid,
       .modal,
       .loading-overlay,
-      .theme-toggle-btn,
-      .debug-panel {
+      .theme-toggle-btn {
         display: none !important;
       }
 
@@ -813,22 +779,6 @@
           <div class="stat-value" id="faelligkeitenCount">0</div>
           <div class="stat-label">Fälligkeiten</div>
         </div>
-      </div>
-    </div>
-
-    <!-- Debug Panel -->
-    <div class="debug-panel" id="debugPanel">
-      <h3>
-        <i class="fas fa-bug"></i> Debug-Informationen
-        <button class="btn" style="padding: 2px 10px; font-size: 11px;" onclick="testSupabaseConnection()">
-          <i class="fas fa-sync-alt"></i> Test
-        </button>
-        <button class="btn" style="padding: 2px 10px; font-size: 11px;" onclick="checkTableStructure()">
-          <i class="fas fa-table"></i> Tabellenstruktur
-        </button>
-      </h3>
-      <div class="debug-content" id="debugContent">
-        <span class="debug-success">✅ Bereit zum Testen...</span>
       </div>
     </div>
 
@@ -1118,76 +1068,18 @@
         }
     });
 
-        (function() {
-            const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-            
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    /* === SUPABASE KONFIGURATION - JETZT MIT IHREM KEY === */
+    const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentPruefmittel = [];
     let currentView = [];
     let sortState = { key: null, dir: 'asc' };
     let currentYearlyStatsYear = new Date().getFullYear();
 
-    // Debug-Funktion
-    function addDebugMessage(message, isError = false) {
-        const debugContent = document.getElementById('debugContent');
-        const timestamp = new Date().toLocaleTimeString();
-        const color = isError ? 'debug-error' : 'debug-success';
-        debugContent.innerHTML += `<div><span class="${color}">[${timestamp}]</span> ${message}</div>`;
-        debugContent.scrollTop = debugContent.scrollHeight;
-    }
-
-    // Supabase Verbindung testen
-    async function testSupabaseConnection() {
-        addDebugMessage('🔄 Teste Supabase Verbindung...');
-        try {
-            const { data, error } = await supabaseClient
-                .from('pruefmittel')
-                .select('count', { count: 'exact', head: true });
-            
-            if (error) {
-                addDebugMessage(`❌ Verbindungsfehler: ${error.message}`, true);
-                return false;
-            }
-            addDebugMessage('✅ Verbindung erfolgreich!');
-            return true;
-        } catch (error) {
-            addDebugMessage(`❌ Fehler: ${error.message}`, true);
-            return false;
-        }
-    }
-
-    // Tabellenstruktur prüfen
-    async function checkTableStructure() {
-        addDebugMessage('🔄 Prüfe Tabellenstruktur...');
-        try {
-            // Versuche einen einzelnen Datensatz zu holen
-            const { data, error } = await supabaseClient
-                .from('pruefmittel')
-                .select('*')
-                .limit(1);
-            
-            if (error) {
-                addDebugMessage(`❌ Tabelle nicht gefunden: ${error.message}`, true);
-                return;
-            }
-            
-            if (data && data.length > 0) {
-                const columns = Object.keys(data[0]).join(', ');
-                addDebugMessage(`✅ Tabelle 'pruefmittel' hat Spalten: ${columns}`);
-                addDebugMessage(`✅ Beispiel-Datensatz gefunden!`);
-            } else {
-                addDebugMessage(`⚠️ Tabelle 'pruefmittel' existiert, aber ist leer`, true);
-            }
-        } catch (error) {
-            addDebugMessage(`❌ Fehler: ${error.message}`, true);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', async function() {
-      addDebugMessage('🚀 App gestartet');
-      await testSupabaseConnection();
+    document.addEventListener('DOMContentLoaded', function() {
       loadPruefmittel();
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
@@ -1340,8 +1232,6 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      addDebugMessage(`✅ ${currentPruefmittel.length} Datensätze exportiert`);
     }
 
     // ===== Jahresbelastungsberechnung =====
@@ -1486,7 +1376,6 @@
     // ===== Hauptfunktionen =====
     async function loadPruefmittel() {
       showLoading();
-      addDebugMessage('🔄 Lade Daten von Supabase...');
       
       try {
         const { data, error } = await supabaseClient
@@ -1494,16 +1383,7 @@
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (error) {
-          addDebugMessage(`❌ Supabase Fehler: ${error.message}`, true);
-          throw error;
-        }
-
-        if (!data || data.length === 0) {
-          addDebugMessage('⚠️ Keine Daten in der Tabelle "pruefmittel" gefunden', true);
-        } else {
-          addDebugMessage(`✅ ${data.length} Datensätze geladen`);
-        }
+        if (error) throw error;
 
         currentPruefmittel = (data || []).map(p => ({
           ...p,
@@ -1524,11 +1404,9 @@
         updateDashboard();
         filterData();
       } catch (error) {
-        addDebugMessage(`❌ Kritischer Fehler: ${error.message}`, true);
         document.getElementById('tableBody').innerHTML =
           `<tr><td colspan="13" style="text-align:center;color:red;">
-            Fehler beim Laden: ${error.message}<br>
-            Bitte prüfen Sie die Debug-Informationen oben.
+            Fehler beim Laden: ${error.message}
           </td></tr>`;
       } finally {
         hideLoading();
