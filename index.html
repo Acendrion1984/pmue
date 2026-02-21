@@ -27,6 +27,35 @@
       --bg: #f7f8fa;
       --fg: #2b2f33;
       --muted: #5f6b73;
+      --border: #e5e9ef;<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PMÜ - Prüfmittelüberwachung</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* ===== Design-Variablen für Light Mode ===== */
+    :root {
+      --radius: 14px;
+      --shadow-sm: 0 6px 18px rgba(0,0,0,0.08);
+      --shadow-md: 0 12px 26px rgba(0,0,0,0.12);
+      --shadow-lg: 0 20px 42px rgba(0,0,0,0.16);
+      
+      /* Light Mode Colors */
+      --bg: #f7f8fa;
+      --fg: #2b2f33;
+      --muted: #5f6b73;
       --border: #e5e9ef;
       --card-bg: #ffffff;
       --card-border: rgba(0,0,0,0.08);
@@ -1068,7 +1097,7 @@
         }
     });
 
-    /* === SUPABASE KONFIGURATION - JETZT MIT IHREM KEY === */
+    /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
 
@@ -1080,6 +1109,7 @@
     let currentYearlyStatsYear = new Date().getFullYear();
 
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('App gestartet');
       loadPruefmittel();
 
       document.getElementById('statusFilter').addEventListener('change', filterData);
@@ -1178,7 +1208,6 @@
         return;
       }
 
-      // CSV Header
       const headers = [
         'Equipment',
         'Bezeichnung',
@@ -1194,7 +1223,6 @@
         'Kalibrierstichtag'
       ];
 
-      // Daten in CSV konvertieren
       const csvRows = [];
       csvRows.push(headers.join(';'));
 
@@ -1216,7 +1244,6 @@
         csvRows.push(row.join(';'));
       });
 
-      // CSV Datei erstellen und downloaden
       const csvString = csvRows.join('\n');
       const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -1592,6 +1619,7 @@
       window.print();
     }
 
+    // ===== WICHTIG: Korrigierte renderTable Funktion =====
     function renderTable(data) {
       const tbody = document.getElementById('tableBody');
 
@@ -1600,35 +1628,81 @@
         return;
       }
 
-      tbody.innerHTML = data.map(item => {
+      let html = '';
+      
+      for (let i = 0; i < data.length; i++) {
+        const item = data[i];
         const statusNormalized = normalizeStatus(item.anwenderstatus);
         const statusClass = statusClassFromNormalized(statusNormalized);
         const rowClass = getDueRowClass(item.kalibrierstichtag);
-
-        return `
-          <tr class="${rowClass}">
-            <td><strong>${item.equipment || '-'}</strong></td>
-            <td>${item.bezeichnung || '-'}</td>
-            <td>${item.material || '-'}</td>
-            <td>${item.hersteller || '-'}</td>
-            <td>${item.typbezeichnung || '-'}</td>
-            <td>${item.seriennummer || '-'}</td>
-            <td>${item.sortierfeld || '-'}</td>
-            <td>${item.kostenstelle || '-'}</td>
-            <td>${item.arbeitsplatz || '-'}</td>
-            <td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>
-            <td>${item.zyklus || '-'}</td>
-            <td>${item.kalibrierstichtag || '-'}</td>
-            <td>
-              <button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>
-              <button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+        
+        html += `<tr class="${rowClass}">`;
+        html += `<td><strong>${item.equipment || '-'}</strong></td>`;
+        html += `<td>${item.bezeichnung || '-'}</td>`;
+        html += `<td>${item.material || '-'}</td>`;
+        html += `<td>${item.hersteller || '-'}</td>`;
+        html += `<td>${item.typbezeichnung || '-'}</td>`;
+        html += `<td>${item.seriennummer || '-'}</td>`;
+        html += `<td>${item.sortierfeld || '-'}</td>`;
+        html += `<td>${item.kostenstelle || '-'}</td>`;
+        html += `<td>${item.arbeitsplatz || '-'}</td>`;
+        html += `<td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>`;
+        html += `<td>${item.zyklus || '-'}</td>`;
+        html += `<td>${item.kalibrierstichtag || '-'}</td>`;
+        html += `<td>`;
+        // WICHTIG: So wird die ID korrekt übergeben
+        html += `<button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>`;
+        html += `<button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>`;
+        html += `</td>`;
+        html += `</tr>`;
+      }
+      
+      tbody.innerHTML = html;
     }
 
-    /* KPI */
+    // ===== WICHTIG: Korrigierte editPruefmittel Funktion =====
+    async function editPruefmittel(id) {
+      console.log('Edit clicked with ID:', id);
+      
+      // Prüfen ob ID existiert
+      if (!id) {
+        alert('Fehler: Keine ID übergeben');
+        return;
+      }
+      
+      // Prüfmittel in der Liste suchen
+      const item = currentPruefmittel.find(p => p.id == id);
+      if (!item) {
+        alert('Fehler: Prüfmittel nicht gefunden');
+        return;
+      }
+
+      console.log('Editing item:', item);
+
+      // Modal-Titel ändern
+      document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
+      
+      // ID setzen
+      document.getElementById('editId').value = item.id;
+
+      // Formular mit Daten füllen
+      document.getElementById('equipment').value = item.equipment || '';
+      document.getElementById('bezeichnung').value = item.bezeichnung || '';
+      document.getElementById('material').value = item.material || '';
+      document.getElementById('hersteller').value = item.hersteller || '';
+      document.getElementById('typbezeichnung').value = item.typbezeichnung || '';
+      document.getElementById('seriennummer').value = item.seriennummer || '';
+      document.getElementById('sortierfeld').value = item.sortierfeld || '';
+      document.getElementById('kostenstelle').value = item.kostenstelle || '';
+      document.getElementById('arbeitsplatz').value = item.arbeitsplatz || '';
+      document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
+      document.getElementById('zyklus').value = item.zyklus || '';
+      document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
+
+      // Modal öffnen
+      document.getElementById('pruefmittelModal').style.display = 'flex';
+    }
+
     function updateDashboard() {
       const total = currentPruefmittel.length;
       const aktiv = currentPruefmittel.filter(p => normalizeStatus(p.anwenderstatus) === 'FERT').length;
@@ -1826,29 +1900,6 @@
       document.getElementById('pruefmittelModal').style.display = 'none';
     }
 
-    async function editPruefmittel(id) {
-      const item = currentPruefmittel.find(p => p.id === id);
-      if (!item) return;
-
-      document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
-      document.getElementById('editId').value = item.id;
-
-      document.getElementById('equipment').value = item.equipment || '';
-      document.getElementById('bezeichnung').value = item.bezeichnung || '';
-      document.getElementById('material').value = item.material || '';
-      document.getElementById('hersteller').value = item.hersteller || '';
-      document.getElementById('typbezeichnung').value = item.typbezeichnung || '';
-      document.getElementById('seriennummer').value = item.seriennummer || '';
-      document.getElementById('sortierfeld').value = item.sortierfeld || '';
-      document.getElementById('kostenstelle').value = item.kostenstelle || '';
-      document.getElementById('arbeitsplatz').value = item.arbeitsplatz || '';
-      document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
-      document.getElementById('zyklus').value = item.zyklus || '';
-      document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
-
-      document.getElementById('pruefmittelModal').style.display = 'flex';
-    }
-
     async function deletePruefmittel(id) {
       if (!confirm('Wirklich löschen?')) return;
 
@@ -1923,6 +1974,19 @@
       const yearlyModal = document.getElementById('yearlyStatsModal');
       if (event.target === yearlyModal) closeYearlyStatsModal();
     };
+
+    // Globale Funktionen für onclick verfügbar machen
+    window.editPruefmittel = editPruefmittel;
+    window.deletePruefmittel = deletePruefmittel;
+    window.openAddModal = openAddModal;
+    window.closeModal = closeModal;
+    window.exportAllData = exportAllData;
+    window.showYearlyStats = showYearlyStats;
+    window.changeYear = changeYear;
+    window.closeYearlyStatsModal = closeYearlyStatsModal;
+    window.printA4 = printA4;
+    window.importCSV = importCSV;
+    window.loadPruefmittel = loadPruefmittel;
   </script>
 </body>
 </html>
