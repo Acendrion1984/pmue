@@ -1118,11 +1118,11 @@
         }
     });
 
-    /* === SUPABASE KONFIGURATION === */
-    const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxcnlubGdic3Branp4dXhhdXZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MDE2MDAsImV4cCI6MjA1MTM3NzYwMH0.jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68XxZzZzZzZz';
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        (function() {
+            const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentPruefmittel = [];
     let currentView = [];
