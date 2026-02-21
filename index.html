@@ -16,7 +16,7 @@
       transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    /* ===== Design-Variablen für Light Mode (aus ZfP-Portal übernommen) ===== */
+    /* ===== Design-Variablen für Light Mode ===== */
     :root {
       --radius: 14px;
       --shadow-sm: 0 6px 18px rgba(0,0,0,0.08);
@@ -56,7 +56,7 @@
       --input-border: #d1d5db;
       --input-focus: #3498db;
       
-      /* PMÜ-spezifische Variablen (angepasst) */
+      /* PMÜ-spezifische Variablen */
       --header-bg: linear-gradient(135deg, #003366 0%, #1a4d8c 100%);
       --header-text: #ffffff;
       --input-bg: #ffffff;
@@ -82,7 +82,7 @@
       --shadow: var(--shadow-sm);
     }
 
-    /* ===== Dark Mode Variablen (aus ZfP-Portal übernommen) ===== */
+    /* ===== Dark Mode Variablen ===== */
     body.dark-mode {
       --bg: #121212;
       --fg: #e0e0e0;
@@ -397,7 +397,7 @@
       background: var(--card-bg);
       border-radius: var(--radius);
       width: 90%;
-      max-width: 900px;
+      max-width: 1200px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 30px;
@@ -469,7 +469,7 @@
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background: var(--kpi-icon-bg); }
 
-    /* Theme Toggle Button - Identisch mit Portal */
+    /* Theme Toggle Button */
     .theme-toggle-btn {
       position: fixed;
       bottom: 20px;
@@ -509,13 +509,170 @@
       --modal-overlay: rgba(0,0,0,0.7);
     }
 
+    /* Jahresbelastung Styles */
+    .year-selector {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .year-nav-btn {
+      background: var(--kpi-icon-bg);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--kpi-icon-color);
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .year-nav-btn:hover {
+      background: var(--kpi-icon-color);
+      color: white;
+    }
+
+    .year-display {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--fg);
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .yearly-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .yearly-stat-card {
+      background: var(--kpi-icon-bg);
+      padding: 15px;
+      border-radius: var(--radius);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .yearly-stat-card.highlight {
+      background: linear-gradient(135deg, var(--kpi-icon-bg) 0%, var(--kpi-icon-color) 100%);
+      color: white;
+    }
+
+    .yearly-stat-card.highlight .count {
+      color: white;
+    }
+
+    .yearly-stat-card .month {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 8px;
+    }
+
+    .yearly-stat-card.highlight .month {
+      color: white;
+    }
+
+    .yearly-stat-card .count {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--kpi-icon-color);
+    }
+
+    .yearly-stat-card .count.small {
+      font-size: 24px;
+    }
+
+    .yearly-stat-card .cycle-info {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .yearly-stat-card.highlight .cycle-info {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .yearly-total {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+
+    .yearly-total .total-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .yearly-total .total-value {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--kpi-icon-color);
+    }
+
+    .yearly-details {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .details-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 10px;
+    }
+
+    .details-list {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 13px;
+    }
+
+    .details-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .details-item:last-child {
+      border-bottom: none;
+    }
+
+    .details-item .equipment {
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .details-item .date {
+      color: var(--muted);
+    }
+
     @media (max-width: 1200px) {
       .dashboard-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      .yearly-stats-grid { grid-template-columns: repeat(3, 1fr); }
       table { min-width: 1200px; }
     }
     @media (max-width: 768px) {
       .header-stats { width: 100%; justify-content: space-around; }
       .dashboard-grid { grid-template-columns: 1fr; }
+      .yearly-stats-grid { grid-template-columns: repeat(2, 1fr); }
       table { min-width: 1000px; }
       .theme-toggle-btn { bottom: 10px; right: 10px; width: 40px; height: 40px; font-size: 20px; }
     }
@@ -670,6 +827,9 @@
         <button class="btn" onclick="loadPruefmittel()">
           <i class="fas fa-sync-alt"></i> Aktualisieren
         </button>
+        <button class="btn" onclick="showYearlyStats()">
+          <i class="fas fa-chart-bar"></i> Jahresbelastung
+        </button>
         <button class="btn" onclick="printA4()">
           <i class="fas fa-print"></i> Drucken (A4)
         </button>
@@ -712,6 +872,7 @@
     </div>
   </div>
 
+  <!-- Prüfmittel Modal -->
   <div class="modal" id="pruefmittelModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -782,7 +943,7 @@
 
         <div class="form-group">
           <label>Zyklus</label>
-          <input type="text" id="zyklus" placeholder="z.B. 365 Tage">
+          <input type="text" id="zyklus" placeholder="z.B. 365 Tage, 180 Tage, 90 Tage">
         </div>
 
         <div class="form-group">
@@ -798,12 +959,38 @@
     </div>
   </div>
 
+  <!-- Jahresbelastung Modal -->
+  <div class="modal" id="yearlyStatsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-calendar-alt"></i> Jahresbelastung</h2>
+        <button class="close-modal" onclick="closeYearlyStatsModal()">&times;</button>
+      </div>
+      
+      <div class="year-selector">
+        <button class="year-nav-btn" onclick="changeYear(-1)"><i class="fas fa-chevron-left"></i></button>
+        <span class="year-display" id="yearlyYear">2026</span>
+        <button class="year-nav-btn" onclick="changeYear(1)"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      
+      <div id="yearlyStatsContent">
+        <div class="yearly-stats-grid" id="yearlyStatsGrid"></div>
+        <div class="yearly-total" id="yearlyTotal"></div>
+        <div class="yearly-details" id="yearlyDetails"></div>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn" onclick="closeYearlyStatsModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
   </div>
 
   <script>
-    // ===== SYNCHRONISIERTES THEME MANAGEMENT aus dem ZfP-Portal =====
+    // ===== SYNCHRONISIERTES THEME MANAGEMENT =====
     const THEME_STORAGE_KEY = 'pmu-theme-preference';
 
     // Theme initialisieren
@@ -839,7 +1026,6 @@
             themeIcon.classList.add('fa-sun');
         }
         
-        // Andere Tabs benachrichtigen
         localStorage.setItem('theme_timestamp', Date.now().toString());
     }
 
@@ -876,13 +1062,13 @@
     /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_jkkaIcAKxMhkXSdnJY1Oiw_U-xPWr68';
-    const SUPABASE_PASSWORD = 'ZfPReviewAudit';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentPruefmittel = [];
     let currentView = [];
     let sortState = { key: null, dir: 'asc' };
+    let currentYearlyStatsYear = new Date().getFullYear();
 
     document.addEventListener('DOMContentLoaded', function() {
       loadPruefmittel();
@@ -953,6 +1139,18 @@
       return isNaN(d.getTime()) ? null : d;
     }
 
+    function parseCycleToDays(cycleStr) {
+      if (!cycleStr) return 365; // Standardzyklus 365 Tage
+      
+      const str = String(cycleStr).toLowerCase();
+      // Extrahiere die erste Zahl aus dem String
+      const match = str.match(/\d+/);
+      if (!match) return 365;
+      
+      const days = parseInt(match[0], 10);
+      return days > 0 ? days : 365;
+    }
+
     function getDueRowClass(kalibrierstichtag) {
       const d = parseGermanDateToDate(kalibrierstichtag);
       if (!d) return '';
@@ -967,6 +1165,162 @@
       return '';
     }
 
+    // ===== Intelligente Jahresbelastungsberechnung =====
+    function calculateYearlyLoad(targetYear) {
+      // Monatliche Zählung für das Zieljahr
+      const monthlyLoad = Array(12).fill(0);
+      const monthlyDetails = Array(12).fill().map(() => []);
+      
+      // Für jede Anlage die zukünftigen Kalibrierungen berechnen
+      currentPruefmittel.forEach(item => {
+        const startDate = parseGermanDateToDate(item.kalibrierstichtag);
+        if (!startDate) return;
+        
+        const cycleDays = parseCycleToDays(item.zyklus);
+        const cycleMs = cycleDays * 24 * 60 * 60 * 1000;
+        
+        // Startdatum als Date-Objekt (Anfang des Tages)
+        let currentDate = new Date(startDate);
+        
+        // Begrenze die Vorausberechnung auf maximal 5 Jahre in die Zukunft
+        const maxDate = new Date(targetYear + 2, 11, 31);
+        
+        // Gehe rückwärts, um auch vergangene Kalibrierungen zu erfassen,
+        // die in das Zieljahr fallen würden (wenn der Zyklus regelmäßig war)
+        while (currentDate <= maxDate) {
+          const year = currentDate.getFullYear();
+          const month = currentDate.getMonth();
+          
+          if (year === targetYear) {
+            monthlyLoad[month]++;
+            monthlyDetails[month].push({
+              equipment: item.equipment || '-',
+              bezeichnung: item.bezeichnung || '-',
+              date: currentDate.toLocaleDateString('de-DE')
+            });
+          }
+          
+          // Nächster Zyklus
+          currentDate = new Date(currentDate.getTime() + cycleMs);
+        }
+        
+        // Gehe auch rückwärts für Zyklen vor dem Startdatum
+        // (für Anlagen, die bereits mehrfach kalibriert wurden)
+        let pastDate = new Date(startDate.getTime() - cycleMs);
+        while (pastDate.getFullYear() <= targetYear + 1) {
+          const year = pastDate.getFullYear();
+          const month = pastDate.getMonth();
+          
+          if (year === targetYear) {
+            monthlyLoad[month]++;
+            monthlyDetails[month].push({
+              equipment: item.equipment || '-',
+              bezeichnung: item.bezeichnung || '-',
+              date: pastDate.toLocaleDateString('de-DE')
+            });
+          }
+          
+          pastDate = new Date(pastDate.getTime() - cycleMs);
+          if (pastDate.getFullYear() < targetYear - 5) break; // Begrenzung auf 5 Jahre zurück
+        }
+      });
+      
+      // Sortiere die Details nach Datum
+      monthlyDetails.forEach(monthArray => {
+        monthArray.sort((a, b) => {
+          const dateA = parseGermanDateToDate(a.date);
+          const dateB = parseGermanDateToDate(b.date);
+          return dateA - dateB;
+        });
+      });
+      
+      return { monthlyLoad, monthlyDetails };
+    }
+
+    // ===== Jahresbelastung anzeigen =====
+    function showYearlyStats() {
+      updateYearlyStats(currentYearlyStatsYear);
+      document.getElementById('yearlyStatsModal').style.display = 'flex';
+    }
+
+    function changeYear(delta) {
+      currentYearlyStatsYear += delta;
+      updateYearlyStats(currentYearlyStatsYear);
+    }
+
+    function updateYearlyStats(year) {
+      document.getElementById('yearlyYear').textContent = year;
+      
+      const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
+      const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
+      
+      // Monatsnamen
+      const monthNames = [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+      ];
+      
+      // Heutiges Datum für Hervorhebung
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      // Grid befüllen
+      const grid = document.getElementById('yearlyStatsGrid');
+      grid.innerHTML = monthlyLoad.map((count, index) => {
+        const isCurrentMonth = (year === currentYear && index === currentMonth);
+        const details = monthlyDetails[index];
+        const cycleInfo = details.length > 0 ? 
+          `${details.length} Geräte` : '';
+        
+        return `
+          <div class="yearly-stat-card ${isCurrentMonth ? 'highlight' : ''}">
+            <div class="month">${monthNames[index]}</div>
+            <div class="count ${count === 0 ? 'small' : ''}">${count}</div>
+            ${cycleInfo ? `<div class="cycle-info">${cycleInfo}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+      
+      // Gesamt anzeigen
+      document.getElementById('yearlyTotal').innerHTML = `
+        <div class="total-label">Kalibrierungen im Jahr ${year}</div>
+        <div class="total-value">${totalForYear}</div>
+        <div style="margin-top: 10px; color: var(--muted); font-size: 14px;">
+          basierend auf ${currentPruefmittel.length} Prüfmitteln mit ${year === currentYear ? 'aktuellen' : 'prognostizierten'} Zyklen
+        </div>
+      `;
+      
+      // Details für Monate mit hoher Belastung anzeigen
+      const highLoadMonths = monthlyLoad
+        .map((count, index) => ({ count, index }))
+        .filter(m => m.count > 5)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3);
+      
+      if (highLoadMonths.length > 0) {
+        const detailsHtml = `
+          <div class="details-title">📋 Top-Belastungsmonate:</div>
+          <div class="details-list">
+            ${highLoadMonths.map(m => `
+              <div class="details-item">
+                <span class="equipment">${monthNames[m.index]}</span>
+                <span class="date">${m.count} Kalibrierungen</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        document.getElementById('yearlyDetails').innerHTML = detailsHtml;
+      } else {
+        document.getElementById('yearlyDetails').innerHTML = '';
+      }
+    }
+
+    function closeYearlyStatsModal() {
+      document.getElementById('yearlyStatsModal').style.display = 'none';
+    }
+
+    // ===== Bestehende Funktionen =====
     async function loadPruefmittel() {
       showLoading();
       try {
@@ -1504,6 +1858,9 @@
     window.onclick = function(event) {
       const modal = document.getElementById('pruefmittelModal');
       if (event.target === modal) closeModal();
+      
+      const yearlyModal = document.getElementById('yearlyStatsModal');
+      if (event.target === yearlyModal) closeYearlyStatsModal();
     };
   </script>
 </body>
