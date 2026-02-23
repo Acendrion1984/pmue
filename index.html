@@ -6,6 +6,14 @@
   <title>PMÜ - Prüfmittelüberwachung</title>
 
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PMÜ - Prüfmittelüberwachung</title>
+
+  <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
@@ -45,6 +53,7 @@
       --shadow-md: 0 12px 26px rgba(0,0,0,0.12);
       --shadow-lg: 0 20px 42px rgba(0,0,0,0.16);
       --modal-overlay: rgba(0,0,0,0.5);
+      --shadow: var(--shadow-sm);
     }
 
     [data-theme="dark"] {
@@ -80,6 +89,7 @@
       --text-on-badge: #ffffff;
       --kw-group-bg: #2d3748;
       --modal-overlay: rgba(0,0,0,0.8);
+      --shadow: var(--shadow-sm);
     }
 
     body {
@@ -110,14 +120,8 @@
       height: 50px;
     }
 
-    .theme-toggle:hover {
-      transform: scale(1.1);
-    }
-
-    .theme-toggle i {
-      font-size: 24px;
-      color: var(--text-primary);
-    }
+    .theme-toggle:hover { transform: scale(1.1); }
+    .theme-toggle i { font-size: 24px; color: var(--text-primary); }
 
     .pmu-container { max-width: 1920px; margin: 0 auto; padding: 10px; }
 
@@ -201,12 +205,7 @@
       box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
     }
 
-    .filter-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    .filter-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
     .btn {
       padding: 10px 20px;
@@ -224,38 +223,16 @@
       border: 2px solid var(--border-color);
     }
 
-    .btn-primary {
-      background: var(--btn-primary);
-      color: white;
-      border: none;
-    }
-    .btn-primary:hover {
-      background: var(--btn-primary-hover);
-    }
+    .btn-primary { background: var(--btn-primary); color: white; border: none; }
+    .btn-primary:hover { background: var(--btn-primary-hover); }
 
-    .btn-success {
-      background: var(--btn-success);
-      color: white;
-      border: none;
-    }
-    .btn-success:hover {
-      background: var(--btn-success-hover);
-    }
+    .btn-success { background: var(--btn-success); color: white; border: none; }
+    .btn-success:hover { background: var(--btn-success-hover); }
 
-    .btn-warning {
-      background: var(--btn-warning);
-      color: white;
-      border: none;
-    }
-    .btn-warning:hover {
-      background: var(--btn-warning-hover);
-    }
+    .btn-warning { background: var(--btn-warning); color: white; border: none; }
+    .btn-warning:hover { background: var(--btn-warning-hover); }
 
-    .btn-info {
-      background: var(--btn-primary);
-      color: white;
-      border: none;
-    }
+    .btn-info { background: var(--btn-primary); color: white; border: none; }
 
     /* KPI Kacheln */
     .dashboard-grid {
@@ -744,7 +721,7 @@
         <label><i class="fas fa-briefcase"></i> Arbeitsplatz</label>
         <input type="text" id="arbeitsplatzFilter" placeholder="z.B. BAU 22 / MESSRAUM">
       </div>
-      
+
       <div class="filter-group">
         <label><i class="fas fa-building"></i> Kostenstelle</label>
         <input type="text" id="kostenstelleFilter" placeholder="z.B. 0200-84212">
@@ -809,11 +786,12 @@
             <th>Anwenderstatus</th>
             <th>Zyklus</th>
             <th>Kal.-Stichtag</th>
+            <th>Kalibrierdatum</th>
             <th>Aktionen</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr><td colspan="13" style="text-align:center;">Daten werden geladen...</td></tr>
+          <tr><td colspan="14" style="text-align:center;">Daten werden geladen...</td></tr>
         </tbody>
       </table>
     </div>
@@ -898,6 +876,11 @@
           <input type="text" id="kalibrierstichtag" placeholder="TT.MM.JJJJ">
         </div>
 
+        <div class="form-group">
+          <label>Kalibrierdatum</label>
+          <input type="text" id="kalibrierdatum" placeholder="TT.MM.JJJJ">
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn" onclick="closeModal()">Abbrechen</button>
           <button type="submit" class="btn btn-success">Speichern</button>
@@ -913,19 +896,19 @@
         <h2><i class="fas fa-calendar-alt"></i> Jahresbelastung</h2>
         <button class="close-modal" onclick="closeYearlyStatsModal()">&times;</button>
       </div>
-      
+
       <div class="year-selector">
         <button class="year-nav-btn" onclick="changeYear(-1)"><i class="fas fa-chevron-left"></i></button>
         <span class="year-display" id="yearlyYear">2026</span>
         <button class="year-nav-btn" onclick="changeYear(1)"><i class="fas fa-chevron-right"></i></button>
       </div>
-      
+
       <div id="yearlyStatsContent">
         <div class="yearly-stats-grid" id="yearlyStatsGrid"></div>
         <div class="yearly-total" id="yearlyTotal"></div>
         <div class="yearly-details" id="yearlyDetails"></div>
       </div>
-      
+
       <div class="modal-actions">
         <button class="btn" onclick="closeYearlyStatsModal()">Schließen</button>
       </div>
@@ -941,7 +924,7 @@
     window.toggleTheme = function() {
       const body = document.body;
       const themeIcon = document.getElementById('themeIcon');
-      
+
       if (body.getAttribute('data-theme') === 'light') {
         body.setAttribute('data-theme', 'dark');
         themeIcon.className = 'fas fa-sun';
@@ -1074,7 +1057,7 @@
       return '';
     }
 
-    // ===== CSV Export Funktion =====
+    // ===== CSV Export Funktion (minimal erweitert) =====
     function exportAllData() {
       if (currentPruefmittel.length === 0) {
         alert('Keine Daten zum Exportieren vorhanden!');
@@ -1085,15 +1068,16 @@
         'Equipment',
         'Bezeichnung',
         'Material',
+        'HerstSerialNr',
         'Hersteller',
-        'Typbezeichnung',
-        'Seriennummer',
+        'Typbezeichng',
         'Sortierfeld',
         'Kostenstelle',
-        'Arbeitsplatz',
-        'Anwenderstatus',
-        'Zyklus',
-        'Kalibrierstichtag'
+        'Verantw.ArbPl.',
+        'Anwenderstat.',
+        'Prüfzyklus',
+        'Kal.-Stichtag',
+        'Kalibrierdatum'
       ];
 
       const csvRows = [];
@@ -1104,15 +1088,16 @@
           item.equipment || '',
           item.bezeichnung || '',
           item.material || '',
+          item.seriennummer || '',
           item.hersteller || '',
           item.typbezeichnung || '',
-          item.seriennummer || '',
           item.sortierfeld || '',
           item.kostenstelle || '',
           item.arbeitsplatz || '',
           item.anwenderstatus || 'FERT',
           item.zyklus || '',
-          item.kalibrierstichtag || ''
+          item.kalibrierstichtag || '',
+          item.kalibrierdatum || ''
         ];
         csvRows.push(row.join(';'));
       });
@@ -1121,38 +1106,38 @@
       const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      
+
       const date = new Date();
       const dateStr = date.toISOString().split('T')[0];
-      
+
       link.setAttribute('href', url);
       link.setAttribute('download', `pruefmittel_export_${dateStr}.csv`);
       link.style.visibility = 'hidden';
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
-    // ===== Jahresbelastungsberechnung =====
+    // ===== Jahresbelastungsberechnung (UNVERÄNDERT) =====
     function calculateYearlyLoad(targetYear) {
       const monthlyLoad = Array(12).fill(0);
       const monthlyDetails = Array(12).fill().map(() => []);
-      
+
       currentPruefmittel.forEach(item => {
         const startDate = parseGermanDateToDate(item.kalibrierstichtag);
         if (!startDate) return;
-        
+
         const cycleDays = parseCycleToDays(item.zyklus);
         const cycleMs = cycleDays * 24 * 60 * 60 * 1000;
-        
+
         let currentDate = new Date(startDate);
         const maxDate = new Date(targetYear + 2, 11, 31);
-        
+
         while (currentDate <= maxDate) {
           const year = currentDate.getFullYear();
           const month = currentDate.getMonth();
-          
+
           if (year === targetYear) {
             monthlyLoad[month]++;
             monthlyDetails[month].push({
@@ -1161,15 +1146,15 @@
               date: currentDate.toLocaleDateString('de-DE')
             });
           }
-          
+
           currentDate = new Date(currentDate.getTime() + cycleMs);
         }
-        
+
         let pastDate = new Date(startDate.getTime() - cycleMs);
         while (pastDate.getFullYear() <= targetYear + 1) {
           const year = pastDate.getFullYear();
           const month = pastDate.getMonth();
-          
+
           if (year === targetYear) {
             monthlyLoad[month]++;
             monthlyDetails[month].push({
@@ -1178,12 +1163,12 @@
               date: pastDate.toLocaleDateString('de-DE')
             });
           }
-          
+
           pastDate = new Date(pastDate.getTime() - cycleMs);
           if (pastDate.getFullYear() < targetYear - 5) break;
         }
       });
-      
+
       monthlyDetails.forEach(monthArray => {
         monthArray.sort((a, b) => {
           const dateA = parseGermanDateToDate(a.date);
@@ -1191,11 +1176,11 @@
           return dateA - dateB;
         });
       });
-      
+
       return { monthlyLoad, monthlyDetails };
     }
 
-    // ===== Jahresbelastung anzeigen =====
+    // ===== Jahresbelastung anzeigen (UNVERÄNDERT) =====
     function showYearlyStats() {
       updateYearlyStats(currentYearlyStatsYear);
       document.getElementById('yearlyStatsModal').style.display = 'flex';
@@ -1208,26 +1193,25 @@
 
     function updateYearlyStats(year) {
       document.getElementById('yearlyYear').textContent = year;
-      
+
       const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
       const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
-      
+
       const monthNames = [
         'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
       ];
-      
+
       const today = new Date();
       const currentMonth = today.getMonth();
       const currentYear = today.getFullYear();
-      
+
       const grid = document.getElementById('yearlyStatsGrid');
       grid.innerHTML = monthlyLoad.map((count, index) => {
         const isCurrentMonth = (year === currentYear && index === currentMonth);
         const details = monthlyDetails[index];
-        const cycleInfo = details.length > 0 ? 
-          `${details.length} Geräte` : '';
-        
+        const cycleInfo = details.length > 0 ? `${details.length} Geräte` : '';
+
         return `
           <div class="yearly-stat-card ${isCurrentMonth ? 'highlight' : ''}">
             <div class="month">${monthNames[index]}</div>
@@ -1236,7 +1220,7 @@
           </div>
         `;
       }).join('');
-      
+
       document.getElementById('yearlyTotal').innerHTML = `
         <div class="total-label">Kalibrierungen im Jahr ${year}</div>
         <div class="total-value">${totalForYear}</div>
@@ -1244,13 +1228,13 @@
           basierend auf ${currentPruefmittel.length} Prüfmitteln
         </div>
       `;
-      
+
       const highLoadMonths = monthlyLoad
         .map((count, index) => ({ count, index }))
         .filter(m => m.count > 5)
         .sort((a, b) => b.count - a.count)
         .slice(0, 3);
-      
+
       if (highLoadMonths.length > 0) {
         const detailsHtml = `
           <div class="details-title">📋 Top-Belastungsmonate:</div>
@@ -1276,7 +1260,7 @@
     // ===== Hauptfunktionen =====
     async function loadPruefmittel() {
       showLoading();
-      
+
       try {
         const { data, error } = await supabaseClient
           .from('pruefmittel')
@@ -1298,6 +1282,7 @@
           typbezeichnung: normalizeUmlautsPreserveWordCase(p.typbezeichnung),
           zyklus: normalizeUmlautsPreserveWordCase(p.zyklus),
           kalibrierstichtag: normalizeUmlautsPreserveWordCase(p.kalibrierstichtag),
+          kalibrierdatum: normalizeUmlautsPreserveWordCase(p.kalibrierdatum), // NEU
           anwenderstatus: normalizeStatus(p.anwenderstatus)
         }));
 
@@ -1305,7 +1290,7 @@
         filterData();
       } catch (error) {
         document.getElementById('tableBody').innerHTML =
-          `<tr><td colspan="13" style="text-align:center;color:var(--btn-danger);">
+          `<tr><td colspan="14" style="text-align:center;color:var(--btn-danger);">
             Fehler beim Laden: ${error.message}
           </td></tr>`;
       } finally {
@@ -1337,9 +1322,9 @@
       const dir = sortState.dir;
 
       return [...data].sort((x, y) => {
-        if (key === 'kalibrierstichtag') {
-          const dx = parseGermanDateToDate(x.kalibrierstichtag);
-          const dy = parseGermanDateToDate(y.kalibrierstichtag);
+        if (key === 'kalibrierstichtag' || key === 'kalibrierdatum') {
+          const dx = parseGermanDateToDate(x[key]);
+          const dy = parseGermanDateToDate(y[key]);
           const mul = dir === 'asc' ? 1 : -1;
           if (!dx && !dy) return 0;
           if (!dx) return 1;
@@ -1420,7 +1405,8 @@
         8: 'arbeitsplatz',
         9: 'anwenderstatus',
         10: 'zyklus',
-        11: 'kalibrierstichtag'
+        11: 'kalibrierstichtag',
+        12: 'kalibrierdatum' // NEU
       };
 
       ths.forEach(th => th.setAttribute('data-base-text', th.textContent.trim()));
@@ -1456,7 +1442,8 @@
         8: 'arbeitsplatz',
         9: 'anwenderstatus',
         10: 'zyklus',
-        11: 'kalibrierstichtag'
+        11: 'kalibrierstichtag',
+        12: 'kalibrierdatum' // NEU
       };
 
       ths.forEach((th, idx) => {
@@ -1496,18 +1483,18 @@
       const tbody = document.getElementById('tableBody');
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;">Keine Prüfmittel gefunden</td></tr>';
         return;
       }
 
       let html = '';
-      
+
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
         const statusNormalized = normalizeStatus(item.anwenderstatus);
         const statusClass = statusClassFromNormalized(statusNormalized);
         const rowClass = getDueRowClass(item.kalibrierstichtag);
-        
+
         html += `<tr class="${rowClass}">`;
         html += `<td><strong>${item.equipment || '-'}</strong></td>`;
         html += `<td>${item.bezeichnung || '-'}</td>`;
@@ -1521,24 +1508,25 @@
         html += `<td><span class="status-badge status-${statusClass}">${statusNormalized}</span></td>`;
         html += `<td>${item.zyklus || '-'}</td>`;
         html += `<td>${item.kalibrierstichtag || '-'}</td>`;
+        html += `<td>${item.kalibrierdatum || '-'}</td>`;
         html += `<td>`;
         html += `<button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>`;
         html += `<button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>`;
         html += `</td>`;
         html += `</tr>`;
       }
-      
+
       tbody.innerHTML = html;
     }
 
     async function editPruefmittel(id) {
       console.log('Edit clicked with ID:', id);
-      
+
       if (!id) {
         alert('Fehler: Keine ID übergeben');
         return;
       }
-      
+
       const item = currentPruefmittel.find(p => p.id == id);
       if (!item) {
         alert('Fehler: Prüfmittel nicht gefunden');
@@ -1560,6 +1548,7 @@
       document.getElementById('anwenderstatus').value = normalizeStatus(item.anwenderstatus);
       document.getElementById('zyklus').value = item.zyklus || '';
       document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
+      document.getElementById('kalibrierdatum').value = item.kalibrierdatum || '';
 
       document.getElementById('pruefmittelModal').style.display = 'flex';
     }
@@ -1658,21 +1647,23 @@
         for (let i = 0; i < dataRows.length; i++) {
           try {
             const values = dataRows[i].split(';').map(v => v.trim());
-            
-            if (values.length >= 12) {
+
+            // MINIMAL: jetzt 13 Spalten
+            if (values.length >= 13) {
               const item = {
                 equipment: values[0] || null,
                 bezeichnung: values[1] || null,
                 material: values[2] || null,
-                hersteller: values[3] || null,
-                typbezeichnung: values[4] || null,
-                seriennummer: values[5] || null,
+                seriennummer: values[3] || null,       // HerstSerialNr
+                hersteller: values[4] || null,
+                typbezeichnung: values[5] || null,
                 sortierfeld: values[6] || null,
                 kostenstelle: values[7] || null,
                 arbeitsplatz: values[8] || null,
                 anwenderstatus: values[9] || 'FERT',
                 zyklus: values[10] || null,
-                kalibrierstichtag: values[11] || null
+                kalibrierstichtag: values[11] || null,
+                kalibrierdatum: values[12] || null     // NEU
               };
 
               if (!item.equipment || !item.bezeichnung) {
@@ -1686,7 +1677,7 @@
 
               importData.push(item);
             } else {
-              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 12, erhalten: ${values.length})`);
+              errors.push(`Zeile ${i + 2}: Ungültige Anzahl an Spalten (erwartet: 13, erhalten: ${values.length})`);
             }
           } catch (err) {
             errors.push(`Zeile ${i + 2}: Fehler beim Parsen - ${err.message}`);
@@ -1731,12 +1722,12 @@
           let message = `Import abgeschlossen:\n`;
           message += `✅ ${inserts} neue Datensätze eingefügt\n`;
           message += `🔄 ${updates} vorhandene Datensätze aktualisiert\n`;
-          
+
           if (errors.length > 0) {
             message += `\n❌ Fehler bei ${errors.length} Datensätzen:\n${errors.slice(0, 10).join('\n')}`;
             if (errors.length > 10) message += `\n... und ${errors.length - 10} weitere Fehler`;
           }
-          
+
           alert(message);
           await loadPruefmittel();
         } else {
@@ -1797,7 +1788,8 @@
           arbeitsplatz: document.getElementById('arbeitsplatz').value || null,
           anwenderstatus: normalizeStatus(document.getElementById('anwenderstatus').value),
           zyklus: document.getElementById('zyklus').value || null,
-          kalibrierstichtag: document.getElementById('kalibrierstichtag').value || null
+          kalibrierstichtag: document.getElementById('kalibrierstichtag').value || null,
+          kalibrierdatum: document.getElementById('kalibrierdatum').value || null // NEU
         };
 
         const editId = document.getElementById('editId').value;
@@ -1831,7 +1823,7 @@
     window.onclick = function(event) {
       const modal = document.getElementById('pruefmittelModal');
       if (event.target === modal) closeModal();
-      
+
       const yearlyModal = document.getElementById('yearlyStatsModal');
       if (event.target === yearlyModal) closeYearlyStatsModal();
     };
