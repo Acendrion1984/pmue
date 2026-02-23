@@ -475,7 +475,7 @@
     th.sortable { cursor: pointer; user-select: none; }
     th.sortable:hover { background: var(--kpi-icon-bg); }
 
-    /* Theme Toggle Button */
+    /* Theme Toggle Button - ORIGINAL AUS IHRER APP */
     .theme-toggle-btn {
       position: fixed;
       bottom: 20px;
@@ -999,7 +999,7 @@
   </div>
 
   <script>
-    // ===== SYNCHRONISIERTES THEME MANAGEMENT =====
+    // ===== THEME MANAGEMENT - ORIGINAL AUS IHRER APP =====
     const THEME_STORAGE_KEY = 'pmu-theme-preference';
 
     // Theme initialisieren
@@ -1035,6 +1035,7 @@
             themeIcon.classList.add('fa-sun');
         }
         
+        // Andere Tabs benachrichtigen
         localStorage.setItem('theme_timestamp', Date.now().toString());
     }
 
@@ -1590,7 +1591,7 @@
       window.print();
     }
 
-    // ===== WICHTIG: Korrigierte renderTable Funktion =====
+    // ===== Korrigierte renderTable Funktion =====
     function renderTable(data) {
       const tbody = document.getElementById('tableBody');
 
@@ -1621,7 +1622,6 @@
         html += `<td>${item.zyklus || '-'}</td>`;
         html += `<td>${item.kalibrierstichtag || '-'}</td>`;
         html += `<td>`;
-        // WICHTIG: So wird die ID korrekt übergeben
         html += `<button class="action-btn" onclick="editPruefmittel('${item.id}')"><i class="fas fa-edit"></i></button>`;
         html += `<button class="action-btn" onclick="deletePruefmittel('${item.id}')"><i class="fas fa-trash"></i></button>`;
         html += `</td>`;
@@ -1631,32 +1631,24 @@
       tbody.innerHTML = html;
     }
 
-    // ===== WICHTIG: Korrigierte editPruefmittel Funktion =====
+    // ===== Korrigierte editPruefmittel Funktion =====
     async function editPruefmittel(id) {
       console.log('Edit clicked with ID:', id);
       
-      // Prüfen ob ID existiert
       if (!id) {
         alert('Fehler: Keine ID übergeben');
         return;
       }
       
-      // Prüfmittel in der Liste suchen
       const item = currentPruefmittel.find(p => p.id == id);
       if (!item) {
         alert('Fehler: Prüfmittel nicht gefunden');
         return;
       }
 
-      console.log('Editing item:', item);
-
-      // Modal-Titel ändern
       document.getElementById('modalTitle').textContent = 'Prüfmittel bearbeiten';
-      
-      // ID setzen
       document.getElementById('editId').value = item.id;
 
-      // Formular mit Daten füllen
       document.getElementById('equipment').value = item.equipment || '';
       document.getElementById('bezeichnung').value = item.bezeichnung || '';
       document.getElementById('material').value = item.material || '';
@@ -1670,7 +1662,6 @@
       document.getElementById('zyklus').value = item.zyklus || '';
       document.getElementById('kalibrierstichtag').value = item.kalibrierstichtag || '';
 
-      // Modal öffnen
       document.getElementById('pruefmittelModal').style.display = 'flex';
     }
 
