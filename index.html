@@ -350,7 +350,7 @@
     .status-UEINT { background: var(--badge-short-bg); }
     .status-ueINT { background: var(--badge-short-bg); }
     .status-ÜEXT { background: var(--badge-short-bg); }
-    .status-REPA { background: var(--badge-warning-bg); }
+    .status-REPA { background: var(--btn-warning); }
     .status-DISP { background: var(--badge-method-bg); }
     .status-NAUF { background: var(--badge-closed-bg); }
 
@@ -693,7 +693,7 @@
 </head>
 
 <body data-theme="light">
-  <!-- Theme Toggle Button - EXAKT WIE IM ZfP-PORTAL -->
+  <!-- Theme Toggle Button -->
   <div class="theme-toggle" onclick="toggleTheme()">
     <i class="fas fa-moon" id="themeIcon"></i>
   </div>
@@ -937,7 +937,7 @@
   </div>
 
   <script>
-    // ===== THEME MANAGEMENT - EXAKT WIE IM ZfP-PORTAL =====
+    // ===== THEME MANAGEMENT - EXAKT WIE IM ZfP-PORTAL mit GLEICHEM localStorage KEY =====
     window.toggleTheme = function() {
       const body = document.body;
       const themeIcon = document.getElementById('themeIcon');
@@ -945,20 +945,31 @@
       if (body.getAttribute('data-theme') === 'light') {
         body.setAttribute('data-theme', 'dark');
         themeIcon.className = 'fas fa-sun';
-        localStorage.setItem('pmu-theme-preference', 'dark');
+        localStorage.setItem('zfp-theme-preference', 'dark'); // GLEICHER KEY wie im Portal!
       } else {
         body.setAttribute('data-theme', 'light');
         themeIcon.className = 'fas fa-moon';
-        localStorage.setItem('pmu-theme-preference', 'light');
+        localStorage.setItem('zfp-theme-preference', 'light'); // GLEICHER KEY wie im Portal!
       }
     };
 
-    // Gespeichertes Theme laden
-    const savedTheme = localStorage.getItem('pmu-theme-preference');
+    // Gespeichertes Theme laden - mit dem GLEICHEN KEY
+    const savedTheme = localStorage.getItem('zfp-theme-preference'); // GLEICHER KEY!
     if (savedTheme) {
       document.body.setAttribute('data-theme', savedTheme);
       document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
+
+    // Auf Änderungen in anderen Tabs reagieren
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'zfp-theme-preference') { // GLEICHER KEY!
+        const newTheme = e.newValue;
+        if (newTheme) {
+          document.body.setAttribute('data-theme', newTheme);
+          document.getElementById('themeIcon').className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+      }
+    });
 
     /* === SUPABASE KONFIGURATION === */
     const SUPABASE_URL = 'https://wqrynlgbspkjzxuxauvq.supabase.co';
