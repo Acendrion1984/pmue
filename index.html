@@ -927,10 +927,10 @@
     let sortState = { key: null, dir: 'asc' };
     let currentYearlyStatsYear = new Date().getFullYear();
 
-    // Constants für die Berechnung
-    const TODAY = new Date(2026, 1, 23); // 23.02.2026
-    const THIS_YEAR = 2026;
-    const NEXT_YEAR = 2027;
+    // DYNAMISCHE DATUMSBERECHNUNG - IMMER AKTUELL!
+    const TODAY = new Date(); // Heutiges Datum (z.B. 27.02.2026)
+    const THIS_YEAR = TODAY.getFullYear();
+    const NEXT_YEAR = THIS_YEAR + 1;
 
     document.addEventListener('DOMContentLoaded', function() {
       loadPruefmittel();
@@ -1027,125 +1027,110 @@
     }
 
     function calculateYearlyLoad(year) {
-  const monthlyLoad = Array(12).fill(0);
-  const monthlyDetails = Array(12).fill().map(() => []);
+      const monthlyLoad = Array(12).fill(0);
+      const monthlyDetails = Array(12).fill().map(() => []);
 
-  if (year === THIS_YEAR) {
-    // 2026: Jan-Feb = Kalibrierdatum, Mär-Dez = Kalibrierstichtag
-    currentPruefmittel.forEach(item => {
-      // Kalibrierdatum für Jan-Feb 2026 (bis 23.02.)
-      const calDate = parseGermanDate(item.kalibrierdatum);
-      if (calDate && calDate.getFullYear() === THIS_YEAR) {
-        const month = calDate.getMonth();
-        const day = calDate.getDate();
-        // Nur Jan (0) und Feb (1) bis 23.02.
-        if (month === 0 || (month === 1 && day <= 23)) {
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: item.kalibrierdatum,
-            type: 'erledigt'
-          });
-        }
-      }
-
-      // Kalibrierstichtag für Feb (ab 24.) - Dez 2026
-      const dueDate = parseGermanDate(item.kalibrierstichtag);
-      if (dueDate && dueDate.getFullYear() === THIS_YEAR) {
-        const month = dueDate.getMonth();
-        const day = dueDate.getDate();
-        // Für Februar: nur Tage ab 24. zählen
-        if (month === 1 && day >= 24) {
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: item.kalibrierstichtag,
-            type: 'geplant'
-          });
-        }
-        // Für Monate März-Dezember: alle Tage zählen
-        if (month >= 2) {
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: item.kalibrierstichtag,
-            type: 'geplant'
-          });
-        }
-      }
-    });
-  } 
-  else if (year === NEXT_YEAR) {
-    // 2027: Jedes Equipment maximal EINMAL
-    const processedEquipments = new Set();
-    
-    currentPruefmittel.forEach(item => {
-      const dueDate = parseGermanDate(item.kalibrierstichtag);
-      const calDate = parseGermanDate(item.kalibrierdatum);
-      const cycleDays = parseCycleToDays(item.zyklus);
-      const equipmentId = item.id || item.equipment;
-      
-      // 1. Priorität: Manuell gesetzte Stichtage in 2027
-      if (dueDate && dueDate.getFullYear() === NEXT_YEAR) {
-        const month = dueDate.getMonth();
-        monthlyLoad[month]++;
-        monthlyDetails[month].push({
-          equipment: item.equipment || '-',
-          bezeichnung: item.bezeichnung || '-',
-          date: item.kalibrierstichtag
+      if (year === THIS_YEAR) {
+        // AKTUELLES JAHR: Aufteilung basierend auf HEUTE
+        currentPruefmittel.forEach(item => {
+          // 1. BEREITS ERFOLGTE Prüfungen (Kalibrierdatum) - wenn sie VOR oder AM HEUTE liegen
+          const calDate = parseGermanDate(item.kalibrierdatum);
+          if (calDate && calDate <= TODAY) {
+            const month = calDate.getMonth();
+            monthlyLoad[month]++;
+            monthlyDetails[month].push({
+              equipment: item.equipment || '-',
+              bezeichnung: item.bezeichnung || '-',
+              date: item.kalibrierdatum,
+              type: 'erledigt'
+            });
+          }
+          
+          // 2. ZUKÜNFTIGE Prüfungen (Kalibrierstichtag) - wenn sie NACH HEUTE liegen
+          const dueDate = parseGermanDate(item.kalibrierstichtag);
+          if (dueDate && dueDate > TODAY) {
+            const month = dueDate.getMonth();
+            monthlyLoad[month]++;
+            monthlyDetails[month].push({
+              equipment: item.equipment || '-',
+              bezeichnung: item.bezeichnung || '-',
+              date: item.kalibrierstichtag,
+              type: 'geplant'
+            });
+          }
         });
-        processedEquipments.add(equipmentId);
+      } 
+      else if (year === NEXT_YEAR) {
+        // NÄCHSTES JAHR: Jedes Equipment maximal EINMAL basierend auf Zyklen
+        const processedEquipments = new Set();
+        
+        currentPruefmittel.forEach(item => {
+          const dueDate = parseGermanDate(item.kalibrierstichtag);
+          const calDate = parseGermanDate(item.kalibrierdatum);
+          const cycleDays = parseCycleToDays(item.zyklus);
+          const equipmentId = item.id || item.equipment;
+          
+          // 1. Priorität: Manuell gesetzte Stichtage im nächsten Jahr
+          if (dueDate && dueDate.getFullYear() === NEXT_YEAR) {
+            const month = dueDate.getMonth();
+            monthlyLoad[month]++;
+            monthlyDetails[month].push({
+              equipment: item.equipment || '-',
+              bezeichnung: item.bezeichnung || '-',
+              date: item.kalibrierstichtag,
+              type: 'stichtag'
+            });
+            processedEquipments.add(equipmentId);
+          }
+          // 2. Priorität: Equipment mit Kalibrierdatum in diesem Jahr
+          else if (calDate && calDate.getFullYear() === THIS_YEAR && !processedEquipments.has(equipmentId)) {
+            const nextDate = new Date(calDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
+            if (nextDate.getFullYear() === NEXT_YEAR) {
+              const month = nextDate.getMonth();
+              monthlyLoad[month]++;
+              monthlyDetails[month].push({
+                equipment: item.equipment || '-',
+                bezeichnung: item.bezeichnung || '-',
+                date: nextDate.toLocaleDateString('de-DE'),
+                type: 'zyklus'
+              });
+              processedEquipments.add(equipmentId);
+            }
+          }
+          // 3. Priorität: Equipment mit Kalibrierstichtag in diesem Jahr
+          else if (dueDate && dueDate.getFullYear() === THIS_YEAR && !processedEquipments.has(equipmentId)) {
+            const nextDate = new Date(dueDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
+            if (nextDate.getFullYear() === NEXT_YEAR) {
+              const month = nextDate.getMonth();
+              monthlyLoad[month]++;
+              monthlyDetails[month].push({
+                equipment: item.equipment || '-',
+                bezeichnung: item.bezeichnung || '-',
+                date: nextDate.toLocaleDateString('de-DE'),
+                type: 'zyklus'
+              });
+              processedEquipments.add(equipmentId);
+            }
+          }
+        });
       }
-      // 2. Priorität: Equipment mit Kalibrierdatum in 2026
-      else if (calDate && calDate.getFullYear() === THIS_YEAR && !processedEquipments.has(equipmentId)) {
-        const nextDate = new Date(calDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
-        if (nextDate.getFullYear() === NEXT_YEAR) {
-          const month = nextDate.getMonth();
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: nextDate.toLocaleDateString('de-DE')
-          });
-          processedEquipments.add(equipmentId);
-        }
-      }
-      // 3. Priorität: Equipment mit Kalibrierstichtag in 2026
-      else if (dueDate && dueDate.getFullYear() === THIS_YEAR && !processedEquipments.has(equipmentId)) {
-        const nextDate = new Date(dueDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
-        if (nextDate.getFullYear() === NEXT_YEAR) {
-          const month = nextDate.getMonth();
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: nextDate.toLocaleDateString('de-DE')
-          });
-          processedEquipments.add(equipmentId);
-        }
-      }
-    });
-  }
 
-  // Details nach Datum sortieren
-  monthlyDetails.forEach(monthArray => {
-    monthArray.sort((a, b) => {
-      const dateA = parseGermanDate(a.date);
-      const dateB = parseGermanDate(b.date);
-      return dateA - dateB;
-    });
-  });
+      // Details nach Datum sortieren
+      monthlyDetails.forEach(monthArray => {
+        monthArray.sort((a, b) => {
+          const dateA = parseGermanDate(a.date);
+          const dateB = parseGermanDate(b.date);
+          return dateA - dateB;
+        });
+      });
 
-  return { monthlyLoad, monthlyDetails };
-}
+      return { monthlyLoad, monthlyDetails };
+    }
 
-function showYearlyStats() {
-  updateYearlyStats(currentYearlyStatsYear);
-  document.getElementById('yearlyStatsModal').style.display = 'flex';
-}
+    function showYearlyStats() {
+      updateYearlyStats(currentYearlyStatsYear);
+      document.getElementById('yearlyStatsModal').style.display = 'flex';
+    }
 
     function changeYear(delta) {
       currentYearlyStatsYear += delta;
@@ -1154,54 +1139,50 @@ function showYearlyStats() {
       updateYearlyStats(currentYearlyStatsYear);
     }
 
-function updateYearlyStats(year) {
-  document.getElementById('yearlyYear').textContent = year;
-  const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
-  const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
+    function updateYearlyStats(year) {
+      document.getElementById('yearlyYear').textContent = year;
+      const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
+      const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
 
-  const monthNames = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-  ];
+      const monthNames = [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+      ];
 
-  const today = new Date();
-  const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
+      const currentMonth = TODAY.getMonth();
+      const currentYear = TODAY.getFullYear();
 
-  const grid = document.getElementById('yearlyStatsGrid');
-  grid.innerHTML = monthlyLoad.map((count, index) => {
-    const isCurrent = (year === currentYear && index === currentMonth);
-    const details = monthlyDetails[index];
-    const erledigt = details.filter(d => d.type === 'erledigt').length;
-    const geplant = details.filter(d => d.type === 'geplant' || d.type === 'stichtag').length;
-    const zyklus = details.filter(d => d.type === 'zyklus').length;
-    
-let infoText = '';
-// NUR erledigte anzeigen, keine geplanten
-if (erledigt > 0) {
-  infoText = `${erledigt} erledigt`;
-}
+      const grid = document.getElementById('yearlyStatsGrid');
+      grid.innerHTML = monthlyLoad.map((count, index) => {
+        const isCurrent = (year === currentYear && index === currentMonth);
+        const details = monthlyDetails[index];
+        const erledigt = details.filter(d => d.type === 'erledigt').length;
+        
+        let infoText = '';
+        if (erledigt > 0) {
+          infoText = `${erledigt} erledigt`;
+        }
 
-    return `
-      <div class="yearly-stat-card ${isCurrent ? 'highlight' : ''}">
-        <div class="month">${monthNames[index]}</div>
-        <div class="count">${count}</div>
-        ${infoText ? `<div class="count-info">${infoText}</div>` : ''}
-      </div>
-    `;
-  }).join('');
+        return `
+          <div class="yearly-stat-card ${isCurrent ? 'highlight' : ''}">
+            <div class="month">${monthNames[index]}</div>
+            <div class="count">${count}</div>
+            ${infoText ? `<div class="count-info">${infoText}</div>` : ''}
+          </div>
+        `;
+      }).join('');
 
-  document.getElementById('yearlyTotal').innerHTML = `
-    <div class="total-label">Kalibrierungen im Jahr ${year}</div>
-    <div class="total-value">${totalForYear}</div>
-    <div style="margin-top: 10px; color: var(--text-secondary); font-size: 14px;">
-      basierend auf ${currentPruefmittel.length} Prüfmitteln
-    </div>
-  `;
+      document.getElementById('yearlyTotal').innerHTML = `
+        <div class="total-label">Kalibrierungen im Jahr ${year}</div>
+        <div class="total-value">${totalForYear}</div>
+        <div style="margin-top: 10px; color: var(--text-secondary); font-size: 14px;">
+          basierend auf ${currentPruefmittel.length} Prüfmitteln
+        </div>
+      `;
 
-  // Details-Bereich immer leeren (keine Aufschlüsselung mehr)
-  document.getElementById('yearlyDetails').innerHTML = '';
-}
+      // Details-Bereich immer leeren
+      document.getElementById('yearlyDetails').innerHTML = '';
+    }
 
     function filterData() {
       const status = document.getElementById('statusFilter').value;
@@ -1210,9 +1191,9 @@ if (erledigt > 0) {
       const kostenstelleSearch = (document.getElementById('kostenstelleFilter').value || '').toLowerCase().trim();
       const faelligkeit = document.getElementById('faelligkeitFilter').value;
 
-      const heute = new Date();
-      const in7Tagen = new Date(); in7Tagen.setDate(heute.getDate() + 7);
-      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
+      const heute = TODAY;
+      const in7Tagen = new Date(heute); in7Tagen.setDate(heute.getDate() + 7);
+      const in30Tagen = new Date(heute); in30Tagen.setDate(heute.getDate() + 30);
 
       let filtered = [...currentPruefmittel];
 
@@ -1324,8 +1305,8 @@ if (erledigt > 0) {
       const total = currentPruefmittel.length;
       const aktiv = currentPruefmittel.filter(p => normalizeStatus(p.anwenderstatus) === 'FERT').length;
       
-      const heute = new Date();
-      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
+      const heute = TODAY;
+      const in30Tagen = new Date(heute); in30Tagen.setDate(heute.getDate() + 30);
       const faelligkeiten = currentPruefmittel.filter(p => {
         const d = parseGermanDate(p.kalibrierstichtag);
         return d ? d <= in30Tagen : false;
@@ -1339,9 +1320,9 @@ if (erledigt > 0) {
     }
 
     function renderKpiCards() {
-      const heute = new Date();
-      const in30Tagen = new Date(); in30Tagen.setDate(heute.getDate() + 30);
-      const in7Tagen = new Date(); in7Tagen.setDate(heute.getDate() + 7);
+      const heute = TODAY;
+      const in30Tagen = new Date(heute); in30Tagen.setDate(heute.getDate() + 30);
+      const in7Tagen = new Date(heute); in7Tagen.setDate(heute.getDate() + 7);
 
       const in30 = currentPruefmittel.filter(p => {
         const d = parseGermanDate(p.kalibrierstichtag);
