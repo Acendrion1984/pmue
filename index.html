@@ -1026,27 +1026,21 @@
       }
     }
 
-    function calculateYearlyLoad(year) {
+function calculateYearlyLoad(year) {
   const monthlyLoad = Array(12).fill(0);
   const monthlyDetails = Array(12).fill().map(() => []);
 
+  // NUR Geräte mit Kalibrierstichtag berücksichtigen!
+  const relevantePruefmittel = currentPruefmittel.filter(item => 
+    item.kalibrierstichtag && item.kalibrierstichtag.trim() !== ''
+  );
+
+  console.log(`Geräte mit Stichtag: ${relevantePruefmittel.length} von ${currentPruefmittel.length}`);
+
   if (year === THIS_YEAR) {
-    // AKTUELLES JAHR: Vergangenheit + Zukunft
-    currentPruefmittel.forEach(item => {
-      // 1. VERGANGENHEIT: Kalibrierdatum (tatsächlich durchgeführte Prüfungen)
-      const calDate = parseGermanDate(item.kalibrierdatum);
-      if (calDate && calDate.getFullYear() === THIS_YEAR) {
-        const month = calDate.getMonth();
-        monthlyLoad[month]++;
-        monthlyDetails[month].push({
-          equipment: item.equipment || '-',
-          bezeichnung: item.bezeichnung || '-',
-          date: item.kalibrierdatum,
-          type: 'erledigt'
-        });
-      }
-      
-      // 2. ZUKUNFT: Kalibrierstichtag (geplante Prüfungen)
+    // AKTUELLES JAHR: Stichtage im aktuellen Jahr
+    relevantePruefmittel.forEach(item => {
+      // Stichtag (geplante Prüfungen)
       const dueDate = parseGermanDate(item.kalibrierstichtag);
       if (dueDate && dueDate.getFullYear() === THIS_YEAR) {
         const month = dueDate.getMonth();
@@ -1055,62 +1049,56 @@
           equipment: item.equipment || '-',
           bezeichnung: item.bezeichnung || '-',
           date: item.kalibrierstichtag,
-          type: 'geplant'
+          type: 'Stichtag'
         });
+      }
+      
+      // Kalibrierdatum (erledigte Prüfungen) - nur wenn vorhanden
+      const calDate = parseGermanDate(item.kalibrierdatum);
+      if (calDate && calDate.getFullYear() === THIS_YEAR) {
+        // Vermeide Doppelzählung wenn Stichtag und Kalibrierdatum im gleichen Monat sind
+        const isDuplicate = monthlyDetails[calDate.getMonth()].some(
+          d => d.equipment === (item.equipment || '-') && d.type === 'Stichtag'
+        );
+        
+        if (!isDuplicate) {
+          const month = calDate.getMonth();
+          monthlyLoad[month]++;
+          monthlyDetails[month].push({
+            equipment: item.equipment || '-',
+            bezeichnung: item.bezeichnung || '-',
+            date: item.kalibrierdatum,
+            type: 'erledigt'
+          });
+        }
       }
     });
   } 
-  else if (year === NEXT_YEAR) {
-    // NÄCHSTES JAHR: Prognose basierend auf Zyklen
-    const processedEquipments = new Set();
-    
-    currentPruefmittel.forEach(item => {
+  else if (year > THIS_YEAR) {
+    // ZUKÜNFTIGE JAHRE: Basierend auf Stichtag + Zyklus
+    relevantePruefmittel.forEach(item => {
       const dueDate = parseGermanDate(item.kalibrierstichtag);
-      const calDate = parseGermanDate(item.kalibrierdatum);
       const cycleDays = parseCycleToDays(item.zyklus);
-      const equipmentId = item.id || item.equipment;
       
-      // 1. Priorität: Manuell gesetzter Stichtag im nächsten Jahr
-      if (dueDate && dueDate.getFullYear() === NEXT_YEAR) {
-        const month = dueDate.getMonth();
-        monthlyLoad[month]++;
-        monthlyDetails[month].push({
-          equipment: item.equipment || '-',
-          bezeichnung: item.bezeichnung || '-',
-          date: item.kalibrierstichtag,
-          type: 'stichtag'
-        });
-        processedEquipments.add(equipmentId);
-      }
-      // 2. Priorität: Vom Kalibrierdatum aus berechnet
-      else if (calDate && calDate.getFullYear() <= THIS_YEAR && !processedEquipments.has(equipmentId)) {
-        // Wenn das letzte Kalibrierdatum in diesem Jahr oder früher war
-        const nextDate = new Date(calDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
-        if (nextDate.getFullYear() === NEXT_YEAR) {
-          const month = nextDate.getMonth();
-          monthlyLoad[month]++;
-          monthlyDetails[month].push({
-            equipment: item.equipment || '-',
-            bezeichnung: item.bezeichnung || '-',
-            date: nextDate.toLocaleDateString('de-DE'),
-            type: 'zyklus'
-          });
-          processedEquipments.add(equipmentId);
+      if (dueDate) {
+        // Vom Stichtag aus den nächsten Zyklus berechnen
+        let nextDate = new Date(dueDate);
+        
+        // So viele Zyklen addieren, bis wir im gewünschten Jahr sind
+        while (nextDate.getFullYear() < year) {
+          nextDate = new Date(nextDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
         }
-      }
-      // 3. Priorität: Vom Kalibrierstichtag aus berechnet
-      else if (dueDate && dueDate.getFullYear() <= THIS_YEAR && !processedEquipments.has(equipmentId)) {
-        const nextDate = new Date(dueDate.getTime() + cycleDays * 24 * 60 * 60 * 1000);
-        if (nextDate.getFullYear() === NEXT_YEAR) {
+        
+        // Prüfen ob wir genau in diesem Jahr gelandet sind
+        if (nextDate.getFullYear() === year) {
           const month = nextDate.getMonth();
           monthlyLoad[month]++;
           monthlyDetails[month].push({
             equipment: item.equipment || '-',
             bezeichnung: item.bezeichnung || '-',
             date: nextDate.toLocaleDateString('de-DE'),
-            type: 'zyklus'
+            type: `Zyklus (alle ${cycleDays} Tage)`
           });
-          processedEquipments.add(equipmentId);
         }
       }
     });
@@ -1125,6 +1113,10 @@
     });
   });
 
+  // Debug-Ausgabe
+  console.log(`Jahr ${year} - Gesamt: ${monthlyLoad.reduce((a, b) => a + b, 0)}`);
+  console.log('Monatliche Verteilung:', monthlyLoad);
+
   return { monthlyLoad, monthlyDetails };
 }
 
@@ -1134,54 +1126,54 @@
     }
 
     function changeYear(delta) {
-      currentYearlyStatsYear += delta;
-      if (currentYearlyStatsYear < THIS_YEAR) currentYearlyStatsYear = THIS_YEAR;
-      if (currentYearlyStatsYear > NEXT_YEAR) currentYearlyStatsYear = NEXT_YEAR;
-      updateYearlyStats(currentYearlyStatsYear);
-    }
+  currentYearlyStatsYear += delta;
+  if (currentYearlyStatsYear < THIS_YEAR) currentYearlyStatsYear = THIS_YEAR;
+  if (currentYearlyStatsYear > THIS_YEAR + 5) currentYearlyStatsYear = THIS_YEAR + 5; // Bis zu 5 Jahre in die Zukunft
+  updateYearlyStats(currentYearlyStatsYear);
+}
 
- function updateYearlyStats(year) {
-  document.getElementById('yearlyYear').textContent = year;
-  const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
-  const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
+    function updateYearlyStats(year) {
+      document.getElementById('yearlyYear').textContent = year;
+      const { monthlyLoad, monthlyDetails } = calculateYearlyLoad(year);
+      const totalForYear = monthlyLoad.reduce((a, b) => a + b, 0);
 
-  const monthNames = [
-    'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-    'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
-  ];
+      const monthNames = [
+        'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+      ];
 
-  const currentMonth = TODAY.getMonth();
-  const currentYear = TODAY.getFullYear();
+      const currentMonth = TODAY.getMonth();
+      const currentYear = TODAY.getFullYear();
 
-  const grid = document.getElementById('yearlyStatsGrid');
-  grid.innerHTML = monthlyLoad.map((count, index) => {
-    const isCurrent = (year === currentYear && index === currentMonth);
-    const details = monthlyDetails[index];
-    const erledigt = details.filter(d => d.type === 'erledigt').length;
-    const geplant = details.filter(d => d.type === 'geplant' || d.type === 'stichtag' || d.type === 'zyklus').length;
-    
-    let infoText = [];
-    if (erledigt > 0) infoText.push(`${erledigt} erledigt`);
-    if (geplant > 0) infoText.push(`${geplant} geplant`);
-    
-    return `
-      <div class="yearly-stat-card ${isCurrent ? 'highlight' : ''}">
-        <div class="month">${monthNames[index]}</div>
-        <div class="count">${count}</div>
-        ${infoText.length > 0 ? `<div class="count-info">${infoText.join(' • ')}</div>` : ''}
-      </div>
-    `;
-  }).join('');
+      const grid = document.getElementById('yearlyStatsGrid');
+      grid.innerHTML = monthlyLoad.map((count, index) => {
+        const isCurrent = (year === currentYear && index === currentMonth);
+        const details = monthlyDetails[index];
+        const erledigt = details.filter(d => d.type === 'erledigt').length;
+        const geplant = details.filter(d => d.type === 'geplant' || d.type === 'stichtag' || d.type === 'zyklus').length;
+        
+        let infoText = [];
+        if (erledigt > 0) infoText.push(`${erledigt} erledigt`);
+        if (geplant > 0) infoText.push(`${geplant} geplant`);
+        
+        return `
+          <div class="yearly-stat-card ${isCurrent ? 'highlight' : ''}">
+            <div class="month">${monthNames[index]}</div>
+            <div class="count">${count}</div>
+            ${infoText.length > 0 ? `<div class="count-info">${infoText.join(' • ')}</div>` : ''}
+          </div>
+        `;
+      }).join('');
 
-  document.getElementById('yearlyTotal').innerHTML = `
-    <div class="total-label">Kalibrierungen im Jahr ${year}</div>
-    <div class="total-value">${totalForYear}</div>
-    <div style="margin-top: 10px; color: var(--text-secondary); font-size: 14px;">
-      ${monthlyLoad.reduce((a, b) => a + b, 0)} Gesamt 
-      (${monthlyDetails.flat().filter(d => d.type === 'erledigt').length} erledigt, 
-       ${monthlyDetails.flat().filter(d => d.type !== 'erledigt').length} geplant)
-    </div>
-  `;
+      document.getElementById('yearlyTotal').innerHTML = `
+        <div class="total-label">Kalibrierungen im Jahr ${year}</div>
+        <div class="total-value">${totalForYear}</div>
+        <div style="margin-top: 10px; color: var(--text-secondary); font-size: 14px;">
+          ${monthlyLoad.reduce((a, b) => a + b, 0)} Gesamt 
+          (${monthlyDetails.flat().filter(d => d.type === 'erledigt').length} erledigt, 
+           ${monthlyDetails.flat().filter(d => d.type !== 'erledigt').length} geplant)
+        </div>
+      `;
 
       // Details-Bereich immer leeren
       document.getElementById('yearlyDetails').innerHTML = '';
